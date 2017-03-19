@@ -1,9 +1,8 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public partial class GUIForm : System.Windows.Forms.Form
+    public partial class GUIForm : Form
     {
         public GUIForm()
         {

@@ -16,15 +16,19 @@ namespace BattleCity
             set
             {
                 base.Selected = value;
-                GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 10, Rect.Y, 64.0f, 64.0f)));
+                GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 100.0f, Rect.Y - 12.0f, 64.0f, 64.0f)));
             }
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-            g.DrawString(Text, new Font("Arial", 14), new SolidBrush(Color.Black), new PointF(Rect.X, Rect.Y));
-            g.DrawImage(Properties.Resources.Tank_Selecting, Rect.X - 10, Rect.Y);
+            g.DrawString(Text, new Font(MyFont.GetFont(28), FontStyle.Regular), new SolidBrush(Color.White), new PointF(Rect.X, Rect.Y));
+
+            if(Selected)
+            {
+                g.DrawImage(Properties.Resources.Tank_Selecting, new RectangleF(Rect.X - 100.0f, Rect.Y - 12.0f, 64.0f, 64.0f), new RectangleF(0.0f, 0.0f, 64.0f, 64.0f), GraphicsUnit.Pixel);
+            }
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)

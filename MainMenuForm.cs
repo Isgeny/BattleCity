@@ -8,27 +8,76 @@ namespace BattleCity
     public class MainMenuForm : AbstractForm
     {
         private int position;
-
-        private System.Collections.Generic.List<BattleCity.GUIObject> btns;
+        private List<GUIObject> btns;
+        private GUIObject btn1Player;
+        private GUIObject btn2Player;
+        private GUIObject btnConstruction;
+        private GUIObject btnOptions;
+        private GUIObject btnRecords;
+        private GUIObject btnExit;
 
         public MainMenuForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
-            throw new System.NotImplementedException();
+            position = 0;
+
+            btn1Player        = new SelectButton(GUIForm, new RectangleF(270.0f, 370.0f, 0.0f, 0.0f), "1 PLAYER", true);
+            btn2Player        = new SelectButton(GUIForm, new RectangleF(270.0f, 450.0f, 0.0f, 0.0f), "2 PLAYER");
+            btnConstruction   = new SelectButton(GUIForm, new RectangleF(270.0f, 530.0f, 0.0f, 0.0f), "CONSTRUCTION");
+            btnOptions        = new SelectButton(GUIForm, new RectangleF(270.0f, 610.0f, 0.0f, 0.0f), "OPTIONS");
+            btnRecords        = new SelectButton(GUIForm, new RectangleF(270.0f, 690.0f, 0.0f, 0.0f), "RECORDS");
+            btnExit           = new SelectButton(GUIForm, new RectangleF(270.0f, 770.0f, 0.0f, 0.0f), "EXIT");
+
+            btns = new List<GUIObject>();
+            btns.Add(btn1Player);
+            btns.Add(btn2Player);
+            btns.Add(btnConstruction);
+            btns.Add(btnOptions);
+            btns.Add(btnRecords);
+            btns.Add(btnExit);
         }
 
         public override void Subscribe()
         {
-            throw new System.NotImplementedException();
+            GUIForm.Paint += OnPaint;
+            GUIForm.KeyDown += OnKeyDown;
+
+            foreach(GUIObject btn in btns)
+            {
+                btn.SubscribeToForm();
+            }
+
+            btn1Player.Clicked      += OnBtn1PlayerClick;
+            btn2Player.Clicked      += OnBtn2PlayerClick;
+            btnConstruction.Clicked += OnBtnConstructionClicked;
+            btnOptions.Clicked      += OnBtnOptionsClicked;
+            btnRecords.Clicked      += OnBtnRecords;
+            btnExit.Clicked         += OnBtnExitClicked;
         }
 
         public override void Unsubscribe()
         {
-            throw new System.NotImplementedException();
+            GUIForm.Paint -= OnPaint;
+            GUIForm.KeyDown -= OnKeyDown;
+
+            foreach(GUIObject btn in btns)
+            {
+                btn.UnsubscribeFromForm();
+            }
+
+            btn1Player.Clicked      -= OnBtn1PlayerClick;
+            btn2Player.Clicked      -= OnBtn2PlayerClick;
+            btnConstruction.Clicked -= OnBtnConstructionClicked;
+            btnOptions.Clicked      -= OnBtnOptionsClicked;
+            btnRecords.Clicked      -= OnBtnRecords;
+            btnExit.Clicked         -= OnBtnExitClicked;
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            throw new System.NotImplementedException();
+            Graphics g = e.Graphics;
+            g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(new Point(), GUIForm.Size));
+            g.DrawImage(Properties.Resources.Main_Title, 144, 30);
+            g.DrawString("MADE BY ISAEV EVGENY 8I52 2017", MyFont.GetFont(12), new SolidBrush(Color.White), 20.0f, 875.0f);
         }
 
         private void OnBtn1PlayerClick(object sender, EventArgs e)
@@ -46,16 +95,6 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        private void OnBtnExitClicked(object sender, EventArgs e)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        private void OnKeyDown(object sender, KeyEventArgs e)
-        {
-            throw new System.NotImplementedException();
-        }
-
         private void OnBtnOptionsClicked(object sender, EventArgs e)
         {
             throw new System.NotImplementedException();
@@ -65,5 +104,26 @@ namespace BattleCity
         {
             throw new System.NotImplementedException();
         }
+
+        private void OnBtnExitClicked(object sender, EventArgs e)
+        {
+            GUIForm.Close();
+        }
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Down)
+            {
+                btns[position].Selected = false;
+                position = ++position % 6;
+                btns[position].Selected = true;
+            }
+            else if(e.KeyCode == Keys.Up)
+            {
+                btns[position].Selected = false;
+                position = (position - 1 < 0) ? 5 : --position;
+                btns[position].Selected = true;
+            }
+        }   
     }
 }

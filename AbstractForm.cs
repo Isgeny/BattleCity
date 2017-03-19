@@ -1,31 +1,24 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-
-namespace BattleCity
+﻿namespace BattleCity
 {
     public abstract class AbstractForm
     {
         private GameManager gameManager;
-
         private GUIForm guiForm;
 
         public AbstractForm(GUIForm guiForm, GameManager gameManager)
         {
-            throw new System.NotImplementedException();
+            this.gameManager = gameManager;
+            this.guiForm = guiForm;
         }
 
         public GameManager GameManager
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
+            get { return gameManager; }
         }
 
         public GUIForm GUIForm
         {
-            get => default(GUIForm);
+            get { return guiForm; }
         }
 
         public abstract void Subscribe();

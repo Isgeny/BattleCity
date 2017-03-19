@@ -10,34 +10,49 @@ namespace BattleCity
         private MainMenuForm mainMenu;
         private GameForm game;
         private ConstructionForm construction;
-        private BattleCity.OptionsForm options;
+        private OptionsForm options;
         private RecordsForm records;
 
         public GameManager(GUIForm guiForm)
         {
-            throw new System.NotImplementedException();
+            mainMenu = new MainMenuForm(guiForm, this);
+
+            ActiveForm = mainMenu;
         }
 
         public AbstractForm ActiveForm
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
-
+            get { return activeForm; }
             set
             {
+                activeForm = value;
+                activeForm.Subscribe();
             }
         }
 
-        public RecordsForm Records
+        public MainMenuForm MainMenu
         {
-            get => default(RecordsForm);
+            get { return mainMenu; }
         }
 
         public GameForm Game
         {
-            get => default(GameForm);
+            get { return game; }
+        }
+
+        public ConstructionForm Construction
+        {
+            get { return construction; }
+        }
+
+        public OptionsForm Options
+        {
+            get { return options; }
+        }
+
+        public RecordsForm Records
+        {
+            get { return records; }
         }
     }
 }

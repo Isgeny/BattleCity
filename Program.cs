@@ -13,7 +13,11 @@ namespace BattleCity
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new GUIForm());
+
+            GUIForm guiForm = new GUIForm();
+            GameManager gameManager = new GameManager(guiForm);
+
+            Application.Run(guiForm);
         }
     }
 }
