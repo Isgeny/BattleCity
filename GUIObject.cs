@@ -1,49 +1,36 @@
 ﻿using System;
 using System.Drawing;
-using System.Windows.Forms;
 
 namespace BattleCity
 {
     public abstract class GUIObject : Object
     {
-        private bool selected;
-
         private string text;
+        private bool selected;
 
         public event EventHandler Clicked;
 
         public GUIObject(GUIForm guiForm, RectangleF rect, string text, bool selected) : base(guiForm, rect)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public bool Selected
-        {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
-
-            set
-            {
-            }
+            this.text = text;
+            this.selected = selected;
         }
 
         public string Text
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
+            get { return text; }
+            set { text = value; }
+        }
 
-            set
-            {
-            }
+        public bool Selected
+        {
+            get { return selected; }
+            set { selected = value; }
         }
 
         protected void OnClicked(EventArgs e)
         {
-            throw new System.NotImplementedException();
+            Clicked?.Invoke(this, e);
         }
     }
 }
