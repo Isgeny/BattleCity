@@ -1,0 +1,13 @@
+bin/
+Images/
+obj/
+Properties/
+Sounds/
+Stages/
+*.config
+*.csproj
+*.user
+*.sln
+ClassDiagram.cd
+*.resx
+.vs/
