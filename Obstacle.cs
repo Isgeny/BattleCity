@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
+﻿using System.Drawing;
 
 namespace BattleCity
 {
@@ -9,25 +7,20 @@ namespace BattleCity
         private int resistance;
         private bool passable;
 
-        public Obstacle(GUIForm guiForm, RectangleF rect, int resistance, bool passable) : base(guiForm, rect)
+        public Obstacle(GUIForm guiForm, RectangleF rect, int resistance, bool passable = false) : base(guiForm, rect)
         {
-            throw new System.NotImplementedException();
+            this.resistance = resistance;
+            this.passable = passable;
         }
 
         public int Resistance
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
+            get { return resistance; }
         }
 
         public bool Passable
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
+            get { return passable; }
         }
 
         public abstract void ShellCollision(Shell shell);

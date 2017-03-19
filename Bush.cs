@@ -8,12 +8,12 @@ namespace BattleCity
     {
         public Bush(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, 1, true)
         {
-            throw new System.NotImplementedException();
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            throw new System.NotImplementedException();
+            Graphics g = e.Graphics;
+            g.DrawImage(Properties.Resources.Tile_3, Rect.X, Rect.Y);
         }
 
         public override void ShellCollision(Shell shell)
@@ -23,12 +23,12 @@ namespace BattleCity
 
         public override void SubscribeToForm()
         {
-            throw new System.NotImplementedException();
+            GUIForm.Paint += OnPaint;
         }
 
         public override void UnsubscribeFromForm()
         {
-            throw new System.NotImplementedException();
+            GUIForm.Paint -= OnPaint;
         }
     }
 }

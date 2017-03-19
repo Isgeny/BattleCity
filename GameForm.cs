@@ -7,13 +7,10 @@ namespace BattleCity
 {
     public class GameForm : AbstractForm
     {
-        private Bonus bonus;
-
-        private CompTanksManager cTanksManager;
-
         private Field field;
-
         private PlayerTanksManager pTanksManager;
+        private CompTanksManager cTanksManager;
+        private Bonus bonus;
 
         public GameForm(GUIForm guiForm, GameManager gameManager, int players) : base(guiForm, gameManager)
         {
