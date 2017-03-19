@@ -6,8 +6,15 @@ namespace BattleCity
 {
     public class SelectButton : GUIObject
     {
+        private Sprite sprite;
+
         public SelectButton(GUIForm guiForm, RectangleF rect, string text, bool selected = false) : base(guiForm, rect, text, selected)
         {
+            sprite = new Sprite(guiForm, Properties.Resources.Tank_Selecting, new RectangleF(Rect.X - 100.0f, Rect.Y - 12.0f, 64.0f, 64.0f), 75);
+            if(Selected)
+            {
+                sprite.StartAnimation();
+            }
         }
 
         public override bool Selected
@@ -16,7 +23,14 @@ namespace BattleCity
             set
             {
                 base.Selected = value;
-                GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 100.0f, Rect.Y - 12.0f, 64.0f, 64.0f)));
+                if(Selected)
+                {
+                    sprite.StartAnimation();
+                }
+                else
+                {
+                    sprite.StopAnimation();
+                }
             }
         }
 
@@ -24,11 +38,6 @@ namespace BattleCity
         {
             Graphics g = e.Graphics;
             g.DrawString(Text, new Font(MyFont.GetFont(28), FontStyle.Regular), new SolidBrush(Color.White), new PointF(Rect.X, Rect.Y));
-
-            if(Selected)
-            {
-                g.DrawImage(Properties.Resources.Tank_Selecting, new RectangleF(Rect.X - 100.0f, Rect.Y - 12.0f, 64.0f, 64.0f), new RectangleF(0.0f, 0.0f, 64.0f, 64.0f), GraphicsUnit.Pixel);
-            }
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
@@ -43,12 +52,14 @@ namespace BattleCity
         {
             GUIForm.Paint += OnPaint;
             GUIForm.KeyDown += OnKeyDown;
+            sprite.SubscribeToForm();
         }
 
         public override void UnsubscribeFromForm()
         {
             GUIForm.Paint -= OnPaint;
             GUIForm.KeyDown -= OnKeyDown;
+            sprite.UnsubscribeFromForm();
         }
     }
 }

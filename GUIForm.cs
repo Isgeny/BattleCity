@@ -7,6 +7,7 @@ namespace BattleCity
         public GUIForm()
         {
             InitializeComponent();
+            DoubleBuffered = true;
         }
     }
 }
