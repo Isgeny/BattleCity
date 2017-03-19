@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
+﻿using System.Drawing;
 
 namespace BattleCity
 {
@@ -11,39 +9,26 @@ namespace BattleCity
 
         public Object(GUIForm guiForm, RectangleF rect)
         {
-            throw new System.NotImplementedException();
+            this.guiForm = guiForm;
+            this.rect = rect;
         }
 
         public RectangleF Rect
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
+            get { return rect; }
         }
 
-        public int GUIForm
+        public GUIForm GUIForm
         {
-            get => default(int);
+            get { return guiForm; }
         }
 
         public abstract void SubscribeToForm();
 
-        public virtual void SubscribeToObjectPosition(Object obj)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public abstract void UnsubscribeFromForm();
 
-        public virtual void UnsubscribeFromObjectPosition(Object obj)
-        {
-            throw new System.NotImplementedException();
-        }
+        public virtual void SubscribeToObjectPosition(Object obj) { }
 
-        protected void OnCheckPosition(RectEvent e)
-        {
-            throw new System.NotImplementedException();
-        }
+        public virtual void UnsubscribeFromObjectPosition(Object obj) { }
     }
 }
