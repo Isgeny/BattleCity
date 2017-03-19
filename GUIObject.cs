@@ -10,7 +10,7 @@ namespace BattleCity
 
         public event EventHandler Clicked;
 
-        public GUIObject(GUIForm guiForm, RectangleF rect, string text, bool selected) : base(guiForm, rect)
+        public GUIObject(GUIForm guiForm, RectangleF rect, string text, bool selected = false) : base(guiForm, rect)
         {
             this.text = text;
             this.selected = selected;
@@ -22,7 +22,7 @@ namespace BattleCity
             set { text = value; }
         }
 
-        public bool Selected
+        public virtual bool Selected
         {
             get { return selected; }
             set { selected = value; }
