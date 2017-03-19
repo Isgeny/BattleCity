@@ -18,7 +18,7 @@ namespace BattleCity
 
         public event EventHandler Destroyed;
 
-        public Tank(GUIForm guiForm, RectangleF rect, float speed, Direction direction)
+        public Tank(GUIForm guiForm, RectangleF rect, float speed, Direction direction) : base(guiForm, rect, 0.0f, Direction.Up)
         {
             throw new System.NotImplementedException();
         }

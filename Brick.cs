@@ -6,7 +6,7 @@ namespace BattleCity
 {
     public class Brick : Obstacle
     {
-        public Brick(GUIForm guiForm, RectangleF rect)
+        public Brick(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, 2, false)
         {
             throw new System.NotImplementedException();
         }

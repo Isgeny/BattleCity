@@ -6,7 +6,7 @@ namespace BattleCity
 {
     public class Ice : Obstacle
     {
-        public Ice(GUIForm guiForm, RectangleF rect)
+        public Ice(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, 0, true)
         {
             throw new System.NotImplementedException();
         }

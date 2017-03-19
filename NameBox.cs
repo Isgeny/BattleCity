@@ -7,7 +7,7 @@ namespace BattleCity
     public class NameBox : GUIObject
     {
 
-        public NameBox(GUIForm guiForm, RectangleF rect, string text, bool selected)
+        public NameBox(GUIForm guiForm, RectangleF rect, string text, bool selected) : base(guiForm, rect, text, selected)
         {
             throw new System.NotImplementedException();
         }

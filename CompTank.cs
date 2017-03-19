@@ -11,14 +11,14 @@ namespace BattleCity
 
         public event EventHandler BonusTankShooted;
 
-        public CompTank(GUIForm guiForm, RectangleF rect)
+        public CompTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, 0.0f, Direction.Up)
         {
             throw new System.NotImplementedException();
         }
 
         public bool Bonus
         {
-            get => default(int);
+            get => default(bool);
             set
             {
             }
@@ -42,7 +42,7 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        private void OnCheckPosition(object sender, PositionEventArgs e)
+        private void OnCheckPosition(object sender, RectEventArgs e)
         {
             throw new System.NotImplementedException();
         }

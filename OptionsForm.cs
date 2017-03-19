@@ -11,7 +11,7 @@ namespace BattleCity
 
         private System.Collections.Generic.List<BattleCity.GUIObject> optionsBtns;
 
-        public OptionsForm(GUIForm guiForm, GameManager gameManager)
+        public OptionsForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
             throw new System.NotImplementedException();
         }

@@ -11,7 +11,7 @@ namespace BattleCity
 
         private SortedDictionary<int, string> records;
 
-        public RecordsForm(GUIForm guiForm, GameManager gameManager)
+        public RecordsForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
             throw new System.NotImplementedException();
         }

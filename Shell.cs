@@ -10,7 +10,7 @@ namespace BattleCity
         private int power;
         private Tank creator;
 
-        public Shell(RectangleF rect, Tank creator)
+        public Shell(GUIForm guiForm, RectangleF rect, Tank creator) : base(guiForm, rect, 0.0f, Direction.Up)
         {
             throw new System.NotImplementedException();
         }
@@ -36,7 +36,7 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        private void OnCheckPosition(object sender, PositionEventArgs e)
+        private void OnCheckPosition(object sender, RectEventArgs e)
         {
             throw new NotImplementedException();
         }

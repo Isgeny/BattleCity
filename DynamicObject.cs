@@ -13,7 +13,7 @@ namespace BattleCity
 
         public event BattleCity.RectEventHandler CheckPosition;
 
-        public DynamicObject(GUIForm guiForm, RectangleF rect, float speed, Direction direction)
+        public DynamicObject(GUIForm guiForm, RectangleF rect, float speed, Direction direction) : base(guiForm, rect)
         {
             throw new System.NotImplementedException();
         }

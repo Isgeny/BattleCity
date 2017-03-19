@@ -6,7 +6,7 @@ namespace BattleCity
 {
     public class Bush : Obstacle
     {
-        public Bush(GUIForm guiForm, RectangleF rect)
+        public Bush(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, 1, true)
         {
             throw new System.NotImplementedException();
         }

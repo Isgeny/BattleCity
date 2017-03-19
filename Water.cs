@@ -6,7 +6,7 @@ namespace BattleCity
 {
     public class Water : Obstacle
     {
-        public Water(GUIForm guiForm, RectangleF rect)
+        public Water(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, 0, false)
         {
             throw new System.NotImplementedException();
         }

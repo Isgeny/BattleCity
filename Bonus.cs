@@ -15,7 +15,7 @@ namespace BattleCity
         public event EventHandler CompsShowel;
         public event EventHandler CompsWatch;
 
-        public Bonus(GUIForm guiForm, RectangleF rect, BonusType bonusType)
+        public Bonus(GUIForm guiForm, RectangleF rect, BonusType bonusType) : base(guiForm, rect)
         {
             throw new System.NotImplementedException();
         }
@@ -42,7 +42,7 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        private void OnCheckPosition(object sender, PositionEventArgs e)
+        private void OnCheckPosition(object sender, RectEventArgs e)
         {
             throw new System.NotImplementedException();
         }

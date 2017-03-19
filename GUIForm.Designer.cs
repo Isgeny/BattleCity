@@ -30,12 +30,13 @@
         {
             this.SuspendLayout();
             // 
-            // GameForm
+            // GUIForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(983, 731);
-            this.Name = "GameForm";
+            this.ClientSize = new System.Drawing.Size(1006, 913);
+            this.Name = "GUIForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "BattleCity";
             this.ResumeLayout(false);
 

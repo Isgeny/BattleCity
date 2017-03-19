@@ -11,7 +11,7 @@ namespace BattleCity
 
         private System.Collections.Generic.List<BattleCity.GUIObject> btns;
 
-        public MainMenuForm(GUIForm guiForm, GameManager gameManager)
+        public MainMenuForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
             throw new System.NotImplementedException();
         }

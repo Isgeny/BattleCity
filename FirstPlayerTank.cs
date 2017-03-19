@@ -7,7 +7,7 @@ namespace BattleCity
     public class FirstPlayerTank : PlayerTank
     {
 
-        public FirstPlayerTank(GUIForm guiForm, RectangleF rect)
+        public FirstPlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
             throw new System.NotImplementedException();
         }
@@ -17,7 +17,7 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        private override void OnPaint(object sender, PaintEventArgs e)
+        private void OnPaint(object sender, PaintEventArgs e)
         {
             throw new System.NotImplementedException();
         }
@@ -32,7 +32,7 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        private void OnCheckPosition(object sender, PositionEventArgs e)
+        private void OnCheckPosition(object sender, RectEventArgs e)
         {
             throw new System.NotImplementedException();
         }

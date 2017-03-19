@@ -10,7 +10,7 @@ namespace BattleCity
 
         private System.Collections.Generic.List<BattleCity.GUIObject> blockBtns;
 
-        public ConstructionForm(GUIForm guiForm, GameManager gameManager)
+        public ConstructionForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
             throw new System.NotImplementedException();
         }

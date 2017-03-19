@@ -13,7 +13,7 @@ namespace BattleCity
 
         public event EventHandler HQDestroyed;
 
-        public Field(GUIForm guiForm, RectangleF rect)
+        public Field(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
             throw new System.NotImplementedException();
         }
@@ -56,7 +56,7 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        private void OnCheckPosition(object sender, PositionEventArgs e)
+        private void OnCheckPosition(object sender, RectEventArgs e)
         {
             throw new System.NotImplementedException();
         }

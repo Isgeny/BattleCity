@@ -8,7 +8,7 @@ namespace BattleCity
     {
         private bool flag;
 
-        public OptionButton(GUIForm guiForm, RectangleF rect, string text, bool selected)
+        public OptionButton(GUIForm guiForm, RectangleF rect, string text, bool selected) : base(guiForm, rect, text, selected)
         {
             throw new System.NotImplementedException();
         }

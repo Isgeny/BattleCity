@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace BattleCity
 {
@@ -8,7 +9,7 @@ namespace BattleCity
     {
         private Dictionary<int, bool> keys;
 
-        public PlayerTank(GUIForm guiForm, RectangleF rect)
+        public PlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, 0.0f, Direction.Up)
         {
             throw new System.NotImplementedException();
         }

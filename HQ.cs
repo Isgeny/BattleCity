@@ -6,7 +6,7 @@ namespace BattleCity
 {
     public class HQ : Obstacle
     {
-        public HQ(GUIForm guiForm, RectangleF rect)
+        public HQ(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, 2, false)
         {
             throw new System.NotImplementedException();
         }

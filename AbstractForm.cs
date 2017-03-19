@@ -25,7 +25,7 @@ namespace BattleCity
 
         public GUIForm GUIForm
         {
-            get => default(int);
+            get => default(GUIForm);
         }
 
         public abstract void Subscribe();

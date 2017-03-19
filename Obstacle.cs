@@ -9,7 +9,7 @@ namespace BattleCity
         private int resistance;
         private bool passable;
 
-        public Obstacle(GUIForm guiForm, RectangleF rect = 1, int resistance = false, bool passable = "")
+        public Obstacle(GUIForm guiForm, RectangleF rect, int resistance, bool passable) : base(guiForm, rect)
         {
             throw new System.NotImplementedException();
         }

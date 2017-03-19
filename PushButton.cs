@@ -7,7 +7,7 @@ namespace BattleCity
     public class PushButton : GUIObject
     {
 
-        public PushButton(GUIForm guiForm, RectangleF rect, string text, bool selected)
+        public PushButton(GUIForm guiForm, RectangleF rect, string text, bool selected) : base(guiForm, rect, text, selected)
         {
             throw new System.NotImplementedException();
         }

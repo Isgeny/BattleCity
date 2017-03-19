@@ -7,7 +7,7 @@ namespace BattleCity
     public class SecondPlayerTank : PlayerTank
     {
 
-        public SecondPlayerTank(GUIForm guiForm, RectangleF rect)
+        public SecondPlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
             throw new System.NotImplementedException();
         }
@@ -32,7 +32,7 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        private void OnCheckPosition(object sender, PositionEventArgs e)
+        private void OnCheckPosition(object sender, RectEventArgs e)
         {
             throw new System.NotImplementedException();
         }

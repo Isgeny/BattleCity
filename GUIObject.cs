@@ -12,7 +12,7 @@ namespace BattleCity
 
         public event EventHandler Clicked;
 
-        public GUIObject(GUIForm guiForm, RectangleF rect, string text, bool selected)
+        public GUIObject(GUIForm guiForm, RectangleF rect, string text, bool selected) : base(guiForm, rect)
         {
             throw new System.NotImplementedException();
         }

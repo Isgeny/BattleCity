@@ -15,7 +15,7 @@ namespace BattleCity
 
         private PlayerTanksManager pTanksManager;
 
-        public GameForm(GUIForm guiForm, GameManager gameManager, int players)
+        public GameForm(GUIForm guiForm, GameManager gameManager, int players) : base(guiForm, gameManager)
         {
             throw new System.NotImplementedException();
         }

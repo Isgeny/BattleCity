@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace BattleCity
 {
@@ -9,17 +10,7 @@ namespace BattleCity
     {
         private int aliveTanks;
 
-        public CompTanksManager(GUIForm guiForm)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void UnsubscribeFromForm(GUIForm form)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public virtual void SubscribeToForm(GUIForm gameForm)
+        public CompTanksManager(GUIForm guiForm) : base(guiForm)
         {
             throw new System.NotImplementedException();
         }
@@ -34,12 +25,12 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        public void SubscribeToBonus(Bonus bonus)
+        private void OnBonusTaked()
         {
             throw new System.NotImplementedException();
         }
 
-        private void OnBonusTaked()
+        public void SubscribeToBonus(Bonus bonus)
         {
             throw new System.NotImplementedException();
         }

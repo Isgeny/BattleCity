@@ -17,7 +17,7 @@ namespace BattleCity
 
         public Tank Tanks
         {
-            get => default(int);
+            get => default(Tank);
             set
             {
             }

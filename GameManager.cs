@@ -32,12 +32,12 @@ namespace BattleCity
 
         public RecordsForm Records
         {
-            get => default(int);
+            get => default(RecordsForm);
         }
 
         public GameForm Game
         {
-            get => default(int);
+            get => default(GameForm);
         }
     }
 }
