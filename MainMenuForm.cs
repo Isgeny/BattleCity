@@ -20,12 +20,12 @@ namespace BattleCity
         {
             position = 0;
 
-            btn1Player        = new SelectButton(GUIForm, new RectangleF(270.0f, 370.0f, 0.0f, 0.0f), "1 PLAYER", true);
-            btn2Player        = new SelectButton(GUIForm, new RectangleF(270.0f, 450.0f, 0.0f, 0.0f), "2 PLAYER");
-            btnConstruction   = new SelectButton(GUIForm, new RectangleF(270.0f, 530.0f, 0.0f, 0.0f), "CONSTRUCTION");
-            btnOptions        = new SelectButton(GUIForm, new RectangleF(270.0f, 610.0f, 0.0f, 0.0f), "OPTIONS");
-            btnRecords        = new SelectButton(GUIForm, new RectangleF(270.0f, 690.0f, 0.0f, 0.0f), "RECORDS");
-            btnExit           = new SelectButton(GUIForm, new RectangleF(270.0f, 770.0f, 0.0f, 0.0f), "EXIT");
+            btn1Player        = new SelectButton(GUIForm, new RectangleF(270.0f, 390.0f, 0.0f, 0.0f), "1 PLAYER", true);
+            btn2Player        = new SelectButton(GUIForm, new RectangleF(270.0f, 470.0f, 0.0f, 0.0f), "2 PLAYER");
+            btnConstruction   = new SelectButton(GUIForm, new RectangleF(270.0f, 550.0f, 0.0f, 0.0f), "CONSTRUCTION");
+            btnOptions        = new SelectButton(GUIForm, new RectangleF(270.0f, 630.0f, 0.0f, 0.0f), "OPTIONS");
+            btnRecords        = new SelectButton(GUIForm, new RectangleF(270.0f, 710.0f, 0.0f, 0.0f), "RECORDS");
+            btnExit           = new SelectButton(GUIForm, new RectangleF(270.0f, 790.0f, 0.0f, 0.0f), "EXIT");
 
             btns = new List<GUIObject>();
             btns.Add(btn1Player);
@@ -74,15 +74,18 @@ namespace BattleCity
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            Bitmap bmap = GUIForm.Bitmap;
+            Graphics g = Graphics.FromImage(bmap);
+
             g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(new Point(), GUIForm.Size));
             g.DrawImage(Properties.Resources.Main_Title, 144, 30);
-            g.DrawString("MADE BY ISAEV EVGENY 8I52 2017", MyFont.GetFont(12), new SolidBrush(Color.White), 20.0f, 875.0f);
+            g.DrawString("MADE BY ISAEV EVGENY 8I52 2017", MyFont.GetFont(12), new SolidBrush(Color.White), 20.0f, 920.0f);
         }
 
         private void OnBtn1PlayerClick(object sender, EventArgs e)
         {
-            throw new System.NotImplementedException();
+            Unsubscribe();
+            GameManager.ActiveForm = GameManager.Game;
         }
 
         private void OnBtn2PlayerClick(object sender, EventArgs e)

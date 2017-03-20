@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace BattleCity
@@ -12,7 +13,8 @@ namespace BattleCity
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            Bitmap bmap = GUIForm.Bitmap;
+            Graphics g = Graphics.FromImage(bmap);
             g.DrawImage(Properties.Resources.Tile_4, Rect.X, Rect.Y);
         }
 

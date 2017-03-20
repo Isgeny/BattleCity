@@ -10,7 +10,7 @@ namespace BattleCity
         private int power;
         private Tank creator;
 
-        public Shell(GUIForm guiForm, RectangleF rect, Tank creator) : base(guiForm, rect, 0.0f, Direction.Up)
+        public Shell(GUIForm guiForm, RectangleF rect, Tank creator) : base(guiForm, rect, Direction.Up)
         {
             throw new System.NotImplementedException();
         }

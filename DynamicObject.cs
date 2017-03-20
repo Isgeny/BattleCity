@@ -6,62 +6,47 @@ namespace BattleCity
 {
     public abstract class DynamicObject : Object
     {
-        private System.Threading.Timer moveTimer;
+        private Timer moveTimer;
         private float dx;
         private float dy;
         private Direction direction;
 
-        public event BattleCity.RectEventHandler CheckPosition;
+        public event RectEventHandler CheckPosition;
 
-        public DynamicObject(GUIForm guiForm, RectangleF rect, float speed, Direction direction) : base(guiForm, rect)
+        public DynamicObject(GUIForm guiForm, RectangleF rect, Direction direction) : base(guiForm, rect)
         {
-            throw new System.NotImplementedException();
+            dx = 0.0f;
+            dy = 0.0f;
+            this.direction = direction;
         }
 
-        public System.Threading.Timer MoveTimer
+        public Timer MoveTimer
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
-            set { }
-        }
-
-        public float Speed
-        {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
+            get { return moveTimer; }
+            set { moveTimer = value; }
         }
 
         public float Dx
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
+            get { return dx; }
+            set { dx = value; }
         }
 
         public float Dy
         {
-            get => default(int);
-            set
-            {
-            }
+            get { return dy; }
+            set { dy = value; }
         }
 
         public Direction Direction
         {
-            get => default(Direction);
-            set
-            {
-            }
+            get { return direction; }
+            set { direction = value; }
         }
 
         public virtual void Move()
         {
-            throw new System.NotImplementedException();
+            RectangleF newRect = new RectangleF(Rect.X + dx, Rect.Y + dy, Rect.Width, Rect.Height);
         }
     }
 }

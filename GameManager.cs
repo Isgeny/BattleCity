@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace BattleCity
 {
@@ -11,11 +13,12 @@ namespace BattleCity
         private GameForm game;
         private ConstructionForm construction;
         private OptionsForm options;
-        private RecordsForm records;
+        private RecordsForm records;      
 
         public GameManager(GUIForm guiForm)
         {
-            mainMenu = new MainMenuForm(guiForm, this);
+            mainMenu    = new MainMenuForm(guiForm, this);
+            game        = new GameForm(guiForm, this, 1);
 
             ActiveForm = mainMenu;
         }
@@ -54,5 +57,7 @@ namespace BattleCity
         {
             get { return records; }
         }
+
+        
     }
 }

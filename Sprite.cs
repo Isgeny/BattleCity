@@ -10,21 +10,21 @@ namespace BattleCity
         private Timer frameTimer;
         private float currentFrame;
         private float frameStep;
-        private bool singleShoot;
+        private bool changeable;
 
-        public Sprite(GUIForm guiForm, Bitmap spriteImage, RectangleF rect, int interval, float frameStep = 64.0f, bool singleShoot = false) : base(guiForm, rect)
+        public Sprite(GUIForm guiForm, Bitmap spriteImage, RectangleF rect, int interval, float frameStep = 64.0f, bool changeable = false) : base(guiForm, rect)
         {
             currentFrame = 0;
             this.frameStep = frameStep;
-            this.singleShoot = singleShoot;
+            this.changeable = changeable;
             this.spriteImage = spriteImage;
 
             frameTimer = new Timer();
             frameTimer.Interval = interval;
-            frameTimer.Tick += NextFrame;
+            frameTimer.Tick += OnFrameTimer;
         }
 
-        private void NextFrame(object sender, EventArgs e)
+        private void OnFrameTimer(object sender, EventArgs e)
         {
             if(currentFrame < spriteImage.Width - spriteImage.Height)
             {
@@ -32,33 +32,39 @@ namespace BattleCity
             }
             else
             {
-                if(singleShoot)
-                {
-                    frameTimer.Stop();
-                    UnsubscribeFromForm();
-                }
                 currentFrame = 0.0f;
             }
             GUIForm.Invalidate(new Region(Rect));
         }
 
+        public void NextFrame()
+        {
+            if(currentFrame < spriteImage.Width - spriteImage.Height)
+            {
+                currentFrame += frameStep;
+            }
+            else
+            {
+                currentFrame = 0.0f;
+            }
+        }
+
         public void StartAnimation()
         {
             frameTimer.Enabled = true;
-            GUIForm.Invalidate(new Region(Rect));
         }
 
         public void StopAnimation()
         {
             frameTimer.Enabled = false;
-            GUIForm.Invalidate(new Region(Rect));
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            if(frameTimer.Enabled)
+            if(frameTimer.Enabled || changeable)
             {
-                Graphics g = e.Graphics;
+                Bitmap bmap = GUIForm.Bitmap;
+                Graphics g = Graphics.FromImage(bmap);
                 g.DrawImage(spriteImage, Rect, new RectangleF(currentFrame, 0.0f, spriteImage.Height, spriteImage.Height), GraphicsUnit.Pixel);
             }
         }
@@ -66,11 +72,13 @@ namespace BattleCity
         public override void SubscribeToForm()
         {
             GUIForm.Paint += OnPaint;
+            GUIForm.Invalidate(new Region(Rect));
         }
 
         public override void UnsubscribeFromForm()
         {
             GUIForm.Paint -= OnPaint;
+            GUIForm.Invalidate(new Region(Rect));
         }
     }
 }

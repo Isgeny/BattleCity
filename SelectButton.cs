@@ -36,7 +36,8 @@ namespace BattleCity
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            Bitmap bmap = GUIForm.Bitmap;
+            Graphics g = Graphics.FromImage(bmap);
             g.DrawString(Text, new Font(MyFont.GetFont(28), FontStyle.Regular), new SolidBrush(Color.White), new PointF(Rect.X, Rect.Y));
         }
 

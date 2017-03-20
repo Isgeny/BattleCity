@@ -7,7 +7,7 @@ namespace BattleCity
 {
     public class Field : Object
     {
-        private BattleCity.Obstacle[][] obstacles;
+        private Obstacle[,] obstacles;
         private int stage;
         private const int SZ = 26;
 
@@ -15,28 +15,68 @@ namespace BattleCity
 
         public Field(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
-            throw new System.NotImplementedException();
+            stage = 39;
+            obstacles = new Obstacle[SZ, SZ];
         }
 
         public int Stage
         {
-            get
+            get { return stage; }
+        }
+
+        public Obstacle[,] Obstacles
+        {
+            get { return obstacles; }
+        }
+
+        public void LoadStage(int stage)
+        {
+            string s = Properties.Resources.ResourceManager.GetString("Stage_" + stage.ToString());
+            int i = 0, j = 0;
+            for(int c = 0; c < s.Length; c++)
             {
-                throw new System.NotImplementedException();
+                char ch = s[c];
+                switch(ch)
+                {
+                    case 'b':
+                        obstacles[i, j] = new Brick(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f)));
+                        break;
+                    case 'c':
+                        obstacles[i, j] = new Concrete(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f))); 
+                        break;
+                    case 's':
+                        obstacles[i, j] = new Bush(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f)));
+                        break;
+                    case 'w':
+                        obstacles[i, j] = new Water(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f)));
+                        break;
+                    case 'i':
+                        obstacles[i, j] = new Ice(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f)));
+                        break;
+                    default:
+                        break;
+                }
+                j++;
+                if(j > 25)
+                {
+                    i++;
+                    j = 0;
+                }
             }
+
+            Obstacle hq = new HQ(GUIForm, new RectangleF(FromMatrixPos(24, 12), new SizeF(64.0f, 64.0f)));
+            obstacles[24, 12] = hq;
+            obstacles[24, 13] = hq;
+            obstacles[25, 12] = hq;
+            obstacles[25, 13] = hq;
         }
 
-        public Obstacle[][] Obstacles
+        private PointF FromMatrixPos(int i, int j)
         {
-            get => default(Obstacle[][]);
+            return new PointF(Rect.X + j*32.0f, Rect.Y + i*32.0f);
         }
 
-        public void loadStage(int stage)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void loadNextStage()
+        public void LoadNextStage()
         {
             throw new System.NotImplementedException();
         }
@@ -48,7 +88,10 @@ namespace BattleCity
 
         public override void SubscribeToForm()
         {
-            throw new System.NotImplementedException();
+            foreach(Obstacle obst in obstacles)
+            {
+                obst?.SubscribeToForm();
+            }
         }
 
         public override void SubscribeToObjectPosition(Object obj)
@@ -61,7 +104,7 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        private List<PointF> RectCorners(Direction direction)
+        private List<PointF> RectCorners()
         {
             throw new System.NotImplementedException();
         }
@@ -83,7 +126,10 @@ namespace BattleCity
 
         public override void UnsubscribeFromForm()
         {
-            throw new System.NotImplementedException();
+            foreach(Obstacle obst in obstacles)
+            {
+                obst.UnsubscribeFromForm();
+            }
         }
     }
 }

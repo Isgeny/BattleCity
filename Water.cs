@@ -1,19 +1,14 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
+﻿using System.Drawing;
 
 namespace BattleCity
 {
     public class Water : Obstacle
     {
+        private Sprite sprite;
+
         public Water(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, 0, false)
         {
-        }
-
-        private void OnPaint(object sender, PaintEventArgs e)
-        {
-            Graphics g = e.Graphics;
-            g.DrawImage(Properties.Resources.Tile_2, Rect.X, Rect.Y);
+            sprite = new Sprite(guiForm, Properties.Resources.Tile_2, rect, 1000, 32.0f);
         }
 
         public override void ShellCollision(Shell shell)
@@ -23,12 +18,14 @@ namespace BattleCity
 
         public override void SubscribeToForm()
         {
-            GUIForm.Paint += OnPaint;
+            sprite.SubscribeToForm();
+            sprite.StartAnimation();
         }
 
         public override void UnsubscribeFromForm()
         {
-            GUIForm.Paint -= OnPaint;
+            sprite.UnsubscribeFromForm();
+            sprite.StopAnimation();
         }
     }
 }
