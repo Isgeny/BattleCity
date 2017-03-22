@@ -1,15 +1,15 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace BattleCity
 {
     public class HQ : Obstacle
     {
-        Sprite sprite;
         private bool destroyed;
 
         public HQ(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, 2, false)
         {
-            sprite = new Sprite(GUIForm, Properties.Resources.Tile_5, rect, 1, 64.0f, true);
             destroyed = false;
         }
 
@@ -19,12 +19,21 @@ namespace BattleCity
             set
             {
                 destroyed = value;
-                if(destroyed)
-                {
-                    sprite.NextFrame();
-                }
+                GUIForm.Invalidate(new Region(Rect));
             }
         }
+
+        private void OnPaint(object sender, PaintEventArgs e)
+        {
+            RectangleF clipRect = e.ClipRectangle;
+            if(Rect.IntersectsWith(clipRect))
+            {
+                Graphics g = e.Graphics;
+                float currentFrame = (!destroyed) ? 0.0f : 64.0f;
+                g.DrawImage(Properties.Resources.Tile_5, Rect, new RectangleF(currentFrame, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
+            }
+        }
+
 
         public override void ShellCollision(Shell shell)
         {
@@ -33,12 +42,12 @@ namespace BattleCity
 
         public override void SubscribeToForm()
         {
-            sprite.SubscribeToForm();
+            GUIForm.Paint += OnPaint;
         }
 
         public override void UnsubscribeFromForm()
         {
-            sprite.UnsubscribeFromForm();
+            GUIForm.Paint -= OnPaint;
         }
     }
 }

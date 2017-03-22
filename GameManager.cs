@@ -57,7 +57,5 @@ namespace BattleCity
         {
             get { return records; }
         }
-
-        
     }
 }

@@ -34,6 +34,8 @@ namespace BattleCity
             btns.Add(btnOptions);
             btns.Add(btnRecords);
             btns.Add(btnExit);
+
+            guiForm.Invalidate();
         }
 
         public override void Subscribe()
@@ -74,9 +76,7 @@ namespace BattleCity
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            Bitmap bmap = GUIForm.Bitmap;
-            Graphics g = Graphics.FromImage(bmap);
-
+            Graphics g = e.Graphics;
             g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(new Point(), GUIForm.Size));
             g.DrawImage(Properties.Resources.Main_Title, 144, 30);
             g.DrawString("MADE BY ISAEV EVGENY 8I52 2017", MyFont.GetFont(12), new SolidBrush(Color.White), 20.0f, 920.0f);

@@ -94,6 +94,14 @@ namespace BattleCity
             }
         }
 
+        public override void UnsubscribeFromForm()
+        {
+            foreach(Obstacle obst in obstacles)
+            {
+                obst.UnsubscribeFromForm();
+            }
+        }
+
         public override void SubscribeToObjectPosition(Object obj)
         {
             throw new System.NotImplementedException();
@@ -122,14 +130,6 @@ namespace BattleCity
         public override void UnsubscribeFromObjectPosition(Object obj)
         {
             throw new System.NotImplementedException();
-        }
-
-        public override void UnsubscribeFromForm()
-        {
-            foreach(Obstacle obst in obstacles)
-            {
-                obst.UnsubscribeFromForm();
-            }
         }
     }
 }

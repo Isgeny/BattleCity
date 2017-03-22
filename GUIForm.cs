@@ -1,44 +1,59 @@
-﻿using System.Windows.Forms;
-using System;
+﻿using System;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace BattleCity
 {
     public partial class GUIForm : Form
     {
-        private Bitmap bitmap;
         private Timer mainTimer;
+        private int fps;
+        private System.Timers.Timer fpstimer;
 
         public GUIForm()
         {
             InitializeComponent();
-            
+         
             DoubleBuffered = true;
 
-            bitmap = new Bitmap(1024, 960);
-
-            Paint += OnPaint;
+            fpstimer = new System.Timers.Timer(1000);
+            fpstimer.Elapsed += (sender1, args) =>
+            {
+                Update(delegate
+                {
+                    Text = "FPS: " + fps;
+                    fps = 0;
+                });
+            };
+            fpstimer.Start();
 
             mainTimer = new Timer();
-            mainTimer.Interval = 1000/60;
+            mainTimer.Interval = 15;
             mainTimer.Tick += OnMainTimerTick;
             mainTimer.Start();
         }
 
-        public Bitmap Bitmap
+        public void Update(MethodInvoker callback)
         {
-            get { return bitmap; }
+            if(IsDisposed || Disposing)
+                return;
+
+            try
+            {
+                if(InvokeRequired)
+                    Invoke(callback);
+                else
+                    callback();
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
 
         private void OnMainTimerTick(object sender, EventArgs e)
         {
-            Invalidate();
-        }
-
-        private void OnPaint(object sender, PaintEventArgs e)
-        {
-            Graphics g = e.Graphics;
-            g.DrawImageUnscaled(bitmap, 0, 0);
+            fps++;
         }
     }
 }

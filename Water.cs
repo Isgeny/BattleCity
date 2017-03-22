@@ -1,14 +1,34 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace BattleCity
 {
     public class Water : Obstacle
     {
-        private Sprite sprite;
+        private Timer spriteTimer;
 
         public Water(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, 0, false)
         {
-            sprite = new Sprite(guiForm, Properties.Resources.Tile_2, rect, 1000, 32.0f);
+            spriteTimer = new Timer();
+            spriteTimer.Interval = 1500;
+            spriteTimer.Tick += OnSpriteTimer;
+        }
+
+        private void OnPaint(object sender, PaintEventArgs e)
+        {
+            RectangleF clipRect = e.ClipRectangle;
+            if(Rect.IntersectsWith(clipRect))
+            {
+                Graphics g = e.Graphics;
+                float currentFrame = (DateTime.Now.Millisecond % 1000 < 500) ? 0.0f : 32.0f;
+                g.DrawImage(Properties.Resources.Tile_2, Rect, new RectangleF(currentFrame, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
+            }
+        }
+
+        private void OnSpriteTimer(object sender, EventArgs e)
+        {
+            GUIForm.Invalidate(new Region(Rect));
         }
 
         public override void ShellCollision(Shell shell)
@@ -18,14 +38,14 @@ namespace BattleCity
 
         public override void SubscribeToForm()
         {
-            sprite.SubscribeToForm();
-            sprite.StartAnimation();
+            GUIForm.Paint += OnPaint;
+            spriteTimer.Start();
         }
 
         public override void UnsubscribeFromForm()
         {
-            sprite.UnsubscribeFromForm();
-            sprite.StopAnimation();
+            GUIForm.Paint -= OnPaint;
+            spriteTimer.Stop();
         }
     }
 }

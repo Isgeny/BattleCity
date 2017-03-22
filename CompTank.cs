@@ -11,7 +11,7 @@ namespace BattleCity
 
         public event EventHandler BonusTankShooted;
 
-        public CompTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, 0.0f, Direction.Up)
+        public CompTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, Direction.Up)
         {
             throw new System.NotImplementedException();
         }

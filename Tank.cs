@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace BattleCity
@@ -18,127 +17,127 @@ namespace BattleCity
 
         public event EventHandler Destroyed;
 
-        public Tank(GUIForm guiForm, RectangleF rect, float speed, Direction direction) : base(guiForm, rect, Direction.Up)
+        public Tank(GUIForm guiForm, RectangleF rect, Direction direction) : base(guiForm, rect, Direction.Up)
         {
-            throw new System.NotImplementedException();
+            hp = 1;
+            lives = 1;
+            stars = 0;
+            immortal = false;
+            amphibian = false;
+            gun = false;
+            ammo = 1;
+            points = 0;
         }
 
         public int HP
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
-
-            set
-            {
-            }
+            get { return hp; }
+            set { hp = value; }
         }
 
         public int Lives
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
-
-            set
-            {
-            }
+            get { return lives; }
+            set { lives = value; }
         }
 
         public int Stars
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
-
-            set
-            {
-            }
+            get { return stars; }
+            set { stars = value; }
         }
 
         public bool Immortal
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
-
-            set
-            {
-            }
+            get { return immortal; }
+            set { immortal = value; }
         }
 
         public bool Amphibian
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
-
-            set
-            {
-            }
+            get { return amphibian; }
+            set { amphibian = value; }
         }
 
         public bool Gun
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
-
-            set
-            {
-            }
+            get { return gun; }
+            set { gun = value; }
         }
 
         public int Ammo
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
-
-            set
-            {
-            }
+            get { return ammo; }
+            set { ammo = value; }
         }
 
         public int Points
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
-
-            set
-            {
-            }
+            get { return points; }
+            set { points = value; }
         }
 
         protected void Turn(Direction direction)
         {
-            throw new System.NotImplementedException();
+            //Округление координат перед поворотом (для удобства движения)
+            if(Direction == Direction.Up || Direction == Direction.Down)
+            {
+                if(Direction == Direction.Right)
+                {
+                    float newX = (float)Math.Round(Rect.Left / Rect.Height) * Rect.Height;
+                    RectangleF newRect = new RectangleF(newX, Rect.Y, Rect.Width, Rect.Height);
+                    Rect = newRect;
+                }
+                else
+                {
+                    float newX = (float)Math.Round(Rect.Right / Rect.Height) * Rect.Height;
+                    RectangleF newRect = new RectangleF(newX - Rect.Width, Rect.Y, Rect.Width, Rect.Height);
+                    Rect = newRect;
+                }
+            }
+            else
+            {
+                if(Direction == Direction.Up)
+                {
+                    float newY = (float)Math.Round(Rect.Bottom / Rect.Height) * Rect.Height;
+                    RectangleF newRect = new RectangleF(Rect.X, newY - Rect.Height, Rect.Width, Rect.Height);
+                    Rect = newRect;
+                }
+                else
+                {
+                    float newY = (float)Math.Round(Rect.Top / Rect.Height) * Rect.Height;
+                    RectangleF newRect = new RectangleF(Rect.X, newY, Rect.Width, Rect.Height);
+                    Rect = newRect;
+                }
+            }
+            //Поворот танка
+            Direction = direction;
         }
 
         protected abstract void Respawn();
 
         protected void Die()
         {
-            throw new System.NotImplementedException();
+            lives--;
+            if(lives < 0)
+            {
+                OnDestroyed(new EventArgs());
+            }
         }
 
         public bool IsAlive()
         {
-            throw new System.NotImplementedException();
+            return (lives >= 0) ? true : false;
         }
 
         protected void Shoot()
         {
             throw new System.NotImplementedException();
+        }
+
+        protected void OnDestroyed(EventArgs e)
+        {
+            Destroyed?.Invoke(this, e);
         }
     }
 }

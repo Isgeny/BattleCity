@@ -6,15 +6,14 @@ namespace BattleCity
 {
     public class SelectButton : GUIObject
     {
-        private Sprite sprite;
+        private Timer spriteTimer;
 
         public SelectButton(GUIForm guiForm, RectangleF rect, string text, bool selected = false) : base(guiForm, rect, text, selected)
         {
-            sprite = new Sprite(guiForm, Properties.Resources.Tank_Selecting, new RectangleF(Rect.X - 100.0f, Rect.Y - 12.0f, 64.0f, 64.0f), 75);
-            if(Selected)
-            {
-                sprite.StartAnimation();
-            }
+            spriteTimer = new Timer();
+            spriteTimer.Interval = 24;
+            spriteTimer.Tick += OnSpriteTimer;
+            Selected = selected;
         }
 
         public override bool Selected
@@ -25,20 +24,30 @@ namespace BattleCity
                 base.Selected = value;
                 if(Selected)
                 {
-                    sprite.StartAnimation();
+                    spriteTimer.Start();
                 }
                 else
                 {
-                    sprite.StopAnimation();
+                    spriteTimer.Stop();
                 }
+                GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 100.0f, Rect.Y - 12.0f, 64.0f, 64.0f)));
             }
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            Bitmap bmap = GUIForm.Bitmap;
-            Graphics g = Graphics.FromImage(bmap);
+            Graphics g = e.Graphics;
             g.DrawString(Text, new Font(MyFont.GetFont(28), FontStyle.Regular), new SolidBrush(Color.White), new PointF(Rect.X, Rect.Y));
+            if(Selected)
+            {
+                float currentFrame = (DateTime.Now.Millisecond % 24 < 13) ? 0.0f : 64.0f;
+                g.DrawImage(Properties.Resources.Tank_Selecting, new RectangleF(Rect.X - 100.0f, Rect.Y - 12.0f, 64.0f, 64.0f), new RectangleF(currentFrame, 0.0f, 64.0f, 64.0f), GraphicsUnit.Pixel);
+            }
+        }
+
+        private void OnSpriteTimer(object sender, EventArgs e)
+        {
+            GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 100.0f, Rect.Y - 12.0f, 64.0f, 64.0f)));
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
@@ -53,14 +62,12 @@ namespace BattleCity
         {
             GUIForm.Paint += OnPaint;
             GUIForm.KeyDown += OnKeyDown;
-            sprite.SubscribeToForm();
         }
 
         public override void UnsubscribeFromForm()
         {
             GUIForm.Paint -= OnPaint;
             GUIForm.KeyDown -= OnKeyDown;
-            sprite.UnsubscribeFromForm();
         }
     }
 }

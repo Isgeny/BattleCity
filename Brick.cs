@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace BattleCity
@@ -13,9 +12,12 @@ namespace BattleCity
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            Bitmap bmap = GUIForm.Bitmap;
-            Graphics g = Graphics.FromImage(bmap);
-            g.DrawImage(Properties.Resources.Tile_0, Rect.X, Rect.Y);
+            RectangleF clipRect = e.ClipRectangle;
+            if(Rect.IntersectsWith(clipRect))
+            {
+                Graphics g = e.Graphics;
+                g.DrawImage(Properties.Resources.Tile_0, Rect.X, Rect.Y);
+            }
         }
 
         public override void ShellCollision(Shell shell)
@@ -30,7 +32,7 @@ namespace BattleCity
 
         public override void UnsubscribeFromForm()
         {
-            GUIForm.Paint += OnPaint;
+            GUIForm.Paint -= OnPaint;
         }
     }
 }

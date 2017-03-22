@@ -4,17 +4,18 @@ using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public class SecondPlayerTank : PlayerTank
+    public class SecondPlayerTank : Tank
     {
 
-        public SecondPlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
+        public SecondPlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, Direction.Up)
         {
-            throw new System.NotImplementedException();
+            
         }
 
         protected override void Respawn()
         {
-            throw new System.NotImplementedException();
+            RectangleF newRect = new RectangleF(576.0f, 832.0f, Rect.Width, Rect.Height);
+            Rect = newRect;
         }
 
         private void OnPaint(object sender, PaintEventArgs e)

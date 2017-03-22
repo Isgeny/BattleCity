@@ -2,7 +2,7 @@
 
 namespace BattleCity
 {
-    public delegate void RectEventHandler(RectangleF rect);
+    public delegate void RectEventHandler(object sender, RectEventArgs e);
 
     public class RectEventArgs
     {

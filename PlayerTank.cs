@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace BattleCity
 {
-    public abstract class PlayerTank : Tank
+    public abstract class PlayerTank
     {
-        private Dictionary<int, bool> keys;
-
-        public PlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, 0.0f, Direction.Up)
+        public PlayerTank(GUIForm guiForm, RectangleF rect)/* : base(guiForm, rect, Direction.Up)*/
         {
-            throw new System.NotImplementedException();
+
         }
 
-        public override void Move()
+        /*public override void Move()
         {
             throw new System.NotImplementedException();
-        }
+        }*/
 
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
