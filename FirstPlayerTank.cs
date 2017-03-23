@@ -20,6 +20,12 @@ namespace BattleCity
             Rect = newRect;
         }
 
+        private void OnPaint(object sender, PaintEventArgs e)
+        {
+            //Graphics g = GUIForm.Painter.Graphics;
+            //g.DrawImage(Properties.Resources.P1_1_0, Rect, new RectangleF(0.0f, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
+        }
+
         /*private void OnRedraw(object sender, EventArgs e)
         {
             Graphics g = GUIForm.Painter.Graphics;

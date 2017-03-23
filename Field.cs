@@ -29,6 +29,17 @@ namespace BattleCity
             get { return obstacles; }
         }
 
+        private void OnPaint(object sender, PaintEventArgs e)
+        {
+            RectangleF clipRect = e.ClipRectangle;
+            if(Rect.IntersectsWith(clipRect))
+            {
+                Graphics g = e.Graphics;
+                g.DrawImage(Properties.Resources.Flag, 928.0f, 420.0f);
+                g.DrawString(stage.ToString(), MyFont.GetFont(20), new SolidBrush(Color.Black), new PointF(930.0f, 485.0f));
+            }
+        }
+
         public void LoadStage(int stage)
         {
             string s = Properties.Resources.ResourceManager.GetString("Stage_" + stage.ToString());
@@ -88,6 +99,7 @@ namespace BattleCity
 
         public override void SubscribeToForm()
         {
+            GUIForm.Paint += OnPaint;
             foreach(Obstacle obst in obstacles)
             {
                 obst?.SubscribeToForm();
@@ -96,6 +108,7 @@ namespace BattleCity
 
         public override void UnsubscribeFromForm()
         {
+            GUIForm.Paint -= OnPaint;
             foreach(Obstacle obst in obstacles)
             {
                 obst.UnsubscribeFromForm();
