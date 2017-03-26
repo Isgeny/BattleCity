@@ -48,6 +48,8 @@ namespace BattleCity
 
             p2Tank.SubscribeToPaint();
 
+            field.SubscribeBushesToPaint();
+
             p1Tank.SubscribeToCheckPosition(p2Tank);
             p2Tank.SubscribeToCheckPosition(p1Tank);
 
@@ -65,6 +67,8 @@ namespace BattleCity
             p1Tank.UnsubscribeFromPaint();
 
             p2Tank.UnsubscribeFromPaint();
+
+            field.UnsubscribeBushesFromPaint();
 
             p1Tank.UnsubscribeFromCheckPosition(p2Tank);
             p2Tank.UnsubscribeFromCheckPosition(p1Tank);

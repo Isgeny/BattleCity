@@ -10,6 +10,7 @@ namespace BattleCity
     {
         public FirstPlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
+            Amphibian = true;
         }
 
         protected override void Respawn()
@@ -33,6 +34,11 @@ namespace BattleCity
                 }
 
                 g.DrawImage(bmp, Rect, new RectangleF(currentFrame, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
+
+                if(Amphibian)
+                {
+                    g.DrawImage(Properties.Resources.Ship_Shield, Rect.X, Rect.Y);
+                }
             }            
         }
 

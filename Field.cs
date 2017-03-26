@@ -97,6 +97,10 @@ namespace BattleCity
             GUIForm.Paint += OnPaint;
             foreach(Object obst in obstacles)
             {
+                if(obst is Bush)
+                {
+                    continue;
+                }
                 obst?.SubscribeToPaint();
             }
         }
@@ -106,7 +110,33 @@ namespace BattleCity
             GUIForm.Paint -= OnPaint;
             foreach(Object obst in obstacles)
             {
+                if(obst is Bush)
+                {
+                    continue;
+                }
                 obst?.UnsubscribeFromPaint();
+            }
+        }
+
+        public void SubscribeBushesToPaint()
+        {
+            foreach(Object obst in obstacles)
+            {
+                if(obst is Bush)
+                {
+                    obst?.SubscribeToPaint();
+                }
+            }
+        }
+
+        public void UnsubscribeBushesFromPaint()
+        {
+            foreach(Object obst in obstacles)
+            {
+                if(obst is Bush)
+                {
+                    obst?.UnsubscribeFromPaint();
+                }
             }
         }
 
