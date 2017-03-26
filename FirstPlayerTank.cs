@@ -26,6 +26,12 @@ namespace BattleCity
                 Graphics g = e.Graphics;
                 float currentFrame = ((Rect.X + Rect.Y) % 8 < 4) ? 0.0f : 64.0f;
                 Bitmap bmp = GetCurrentSprite();
+
+                if(OnIce && IceTicks != 27)
+                {
+                    currentFrame = 0.0f;
+                }
+
                 g.DrawImage(bmp, Rect, new RectangleF(currentFrame, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
             }            
         }
@@ -37,24 +43,28 @@ namespace BattleCity
                 Dx = 0.0f;
                 Dy = -2.75f;
                 Direction = Direction.Up;
+                IceTicks = 28;
             }
             else if(Keyboard.IsKeyDown(Key.Left))
             {
                 Dx = -2.75f;
                 Dy = 0.0f;
                 Direction = Direction.Left;
+                IceTicks = 28;
             }
             else if(Keyboard.IsKeyDown(Key.Down))
             {
                 Dx = 0.0f;
                 Dy = 2.75f;
                 Direction = Direction.Down;
+                IceTicks = 28;
             }
             else if(Keyboard.IsKeyDown(Key.Right))
             {
                 Dx = 2.75f;
                 Dy = 0.0f;
                 Direction = Direction.Right;
+                IceTicks = 28;
             }
             else
             {

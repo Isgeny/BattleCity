@@ -25,7 +25,11 @@ namespace BattleCity
             {
                 if(sender is Tank)
                 {
-                    
+                    if(sender is PlayerTank)
+                    {
+                        PlayerTank t = sender as PlayerTank;
+                        t.OnIce = true;
+                    }
                 }
             }
         }

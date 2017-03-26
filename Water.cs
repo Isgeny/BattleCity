@@ -47,7 +47,7 @@ namespace BattleCity
         {
             if(Rect.IntersectsWith(e.Rect))
             {
-                if(sender is Tank/* && !((Tank)sender).Amphibian*/)
+                if(sender is Tank && !((Tank)sender).Amphibian)
                 {
                     ((Tank)sender).StopMoving();
                 }

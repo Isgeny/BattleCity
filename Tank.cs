@@ -80,18 +80,20 @@ namespace BattleCity
         protected void Turn(Direction direction)
         {
             //Округление координат перед поворотом
+            RectangleF oldRect = Rect;
+            RectangleF newRect;
             if(Direction == Direction.Up || Direction == Direction.Down)
             {
                 if(Direction == Direction.Right)
                 {
                     float newX = (float)Math.Round(Rect.Left / (Rect.Height / 2.0f)) * Rect.Height / 2.0f;
-                    RectangleF newRect = new RectangleF(newX, Rect.Y, Rect.Width, Rect.Height);
+                    newRect = new RectangleF(newX, Rect.Y, Rect.Width, Rect.Height);
                     Rect = newRect;
                 }
                 else
                 {
                     float newX = (float)Math.Round(Rect.Right / (Rect.Height / 2.0f)) * Rect.Height / 2.0f;
-                    RectangleF newRect = new RectangleF(newX - Rect.Width, Rect.Y, Rect.Width, Rect.Height);
+                    newRect = new RectangleF(newX - Rect.Width, Rect.Y, Rect.Width, Rect.Height);
                     Rect = newRect;
                 }
             }
@@ -100,16 +102,19 @@ namespace BattleCity
                 if(Direction == Direction.Up)
                 {
                     float newY = (float)Math.Round(Rect.Bottom / (Rect.Height / 2.0f)) * Rect.Height / 2.0f;
-                    RectangleF newRect = new RectangleF(Rect.X, newY - Rect.Height, Rect.Width, Rect.Height);
+                    newRect = new RectangleF(Rect.X, newY - Rect.Height, Rect.Width, Rect.Height);
                     Rect = newRect;
                 }
                 else
                 {
                     float newY = (float)Math.Round(Rect.Top / (Rect.Height / 2.0f)) * Rect.Height / 2.0f;
-                    RectangleF newRect = new RectangleF(Rect.X, newY, Rect.Width, Rect.Height);
+                    newRect = new RectangleF(Rect.X, newY, Rect.Width, Rect.Height);
                     Rect = newRect;
                 }
             }
+            Rect = newRect;
+            GUIForm.Invalidate(new Region(oldRect));
+            GUIForm.Invalidate(new Region(newRect));
             //Поворот танка
             Direction = direction;
         }
