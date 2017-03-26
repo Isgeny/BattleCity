@@ -1,28 +1,36 @@
 ﻿using System.Drawing;
+using System.Windows.Forms;
 
 namespace BattleCity
 {
     public abstract class Obstacle : Object
     {
-        private int resistance;
-        private bool passable;
-
-        public Obstacle(GUIForm guiForm, RectangleF rect, int resistance, bool passable = false) : base(guiForm, rect)
+        public Obstacle(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
-            this.resistance = resistance;
-            this.passable = passable;
         }
 
-        public int Resistance
+        public override void SubscribeToForm()
         {
-            get { return resistance; }
+            GUIForm.Paint += OnPaint;
         }
 
-        public bool Passable
+        public override void UnsubscribeFromForm()
         {
-            get { return passable; }
+            GUIForm.Paint -= OnPaint;
         }
 
-        public abstract void ShellCollision(Shell shell);
+        public override void SubscribeToObjectPosition(Object obj)
+        {
+            obj.CheckPosition += OnCheckPosition;
+        }
+
+        public override void UnsubscribeFromObjectPosition(Object obj)
+        {
+            obj.CheckPosition -= OnCheckPosition;
+        }
+
+        protected abstract void OnPaint(object sender, PaintEventArgs e);
+
+        protected abstract void OnCheckPosition(object sender, RectEventArgs e);
     }
 }

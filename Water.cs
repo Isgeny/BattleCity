@@ -8,14 +8,14 @@ namespace BattleCity
     {
         private Timer spriteTimer;
 
-        public Water(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, 0, false)
+        public Water(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
             spriteTimer = new Timer();
             spriteTimer.Interval = 1500;
             spriteTimer.Tick += OnSpriteTimer;
         }
 
-        private void OnPaint(object sender, PaintEventArgs e)
+        protected override void OnPaint(object sender, PaintEventArgs e)
         {
             RectangleF clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))
@@ -31,38 +31,23 @@ namespace BattleCity
             GUIForm.Invalidate(new Region(Rect));
         }
 
-        public override void ShellCollision(Shell shell)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public override void SubscribeToForm()
         {
-            GUIForm.Paint += OnPaint;
+            base.SubscribeToForm();
             spriteTimer.Start();
         }
 
         public override void UnsubscribeFromForm()
         {
-            GUIForm.Paint -= OnPaint;
+            base.UnsubscribeFromForm();
             spriteTimer.Stop();
         }
 
-        public override void SubscribeToObjectPosition(Object obj)
-        {
-            base.SubscribeToObjectPosition(obj);
-        }
-
-        public override void UnsubscribeFromObjectPosition(Object obj)
-        {
-            base.UnsubscribeFromObjectPosition(obj);
-        }
-
-        private void OnChekPosition(object sender, RectEventArgs e)
+        protected override void OnCheckPosition(object sender, RectEventArgs e)
         {
             if(Rect.IntersectsWith(e.Rect))
             {
-                if(sender is Tank)
+                if(sender is Tank && !((Tank)sender).Amphibian)
                 {
                     ((Tank)sender).StopMoving();
                 }
