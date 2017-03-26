@@ -6,28 +6,17 @@ namespace BattleCity
 {
     public class PushButton : GUIObject
     {
-
         public PushButton(GUIForm guiForm, RectangleF rect, string text, bool selected) : base(guiForm, rect, text, selected)
         {
             throw new System.NotImplementedException();
         }
 
-        private void OnPaint(object sender, PaintEventArgs e)
+        protected override void OnPaint(object sender, PaintEventArgs e)
         {
             throw new System.NotImplementedException();
         }
 
-        private void OnMouseClick(object sender, MouseEventArgs e)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void SubscribeToForm()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void UnsubscribeFromForm()
+        protected override void OnMouseClick(object sender, MouseEventArgs e)
         {
             throw new System.NotImplementedException();
         }

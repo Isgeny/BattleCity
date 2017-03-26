@@ -6,15 +6,15 @@ namespace BattleCity
 {
     public abstract class PlayerTank
     {
-        public PlayerTank(GUIForm guiForm, RectangleF rect)/* : base(guiForm, rect, Direction.Up)*/
+        /*public PlayerTank(GUIForm guiForm, RectangleF rect)/* : base(guiForm, rect, Direction.Up)
         {
 
         }
 
-        /*public override void Move()
+        public override void Move()
         {
             throw new System.NotImplementedException();
-        }*/
+        }
 
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
@@ -34,6 +34,6 @@ namespace BattleCity
         private Direction GetCurrentDirection()
         {
             throw new System.NotImplementedException();
-        }
+        }*/
     }
 }

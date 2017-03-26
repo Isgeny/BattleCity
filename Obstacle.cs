@@ -9,7 +9,7 @@ namespace BattleCity
         {
         }
 
-        public override void SubscribeToForm()
+        /*public override void SubscribeToForm()
         {
             GUIForm.Paint += OnPaint;
         }
@@ -17,20 +17,6 @@ namespace BattleCity
         public override void UnsubscribeFromForm()
         {
             GUIForm.Paint -= OnPaint;
-        }
-
-        public override void SubscribeToObjectPosition(Object obj)
-        {
-            obj.CheckPosition += OnCheckPosition;
-        }
-
-        public override void UnsubscribeFromObjectPosition(Object obj)
-        {
-            obj.CheckPosition -= OnCheckPosition;
-        }
-
-        protected abstract void OnPaint(object sender, PaintEventArgs e);
-
-        protected abstract void OnCheckPosition(object sender, RectEventArgs e);
+        }*/
     }
 }

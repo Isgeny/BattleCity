@@ -20,7 +20,7 @@ namespace BattleCity
             Rect = newRect;
         }
 
-        private void OnPaint(object sender, PaintEventArgs e)
+        protected override void OnPaint(object sender, PaintEventArgs e)
         {
             RectangleF clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))
@@ -32,17 +32,17 @@ namespace BattleCity
             }            
         }
 
-        public override void SubscribeToForm()
+        public override void SubscribeToPaint()
         {
-            GUIForm.Paint += OnPaint;
+            base.SubscribeToPaint();
 
             MoveTimer.Tick += OnMoveTimerTick;
             MoveTimer.Start();        
         }
 
-        public override void UnsubscribeFromForm()
+        public override void UnsubscribeFromPaint()
         {
-            GUIForm.Paint -= OnPaint;
+            base.UnsubscribeFromPaint();
 
             MoveTimer.Tick -= OnMoveTimerTick;
             MoveTimer.Stop();
@@ -79,7 +79,7 @@ namespace BattleCity
                 Dx = 0.0f;
                 Dy = 0.0f;
             }
-            OnCheckPosition(new RectEventArgs(new RectangleF(Rect.X + Dx, Rect.Y + Dy, Rect.Width, Rect.Height)));
+            InvokeCheckPosition(new RectEventArgs(new RectangleF(Rect.X + Dx, Rect.Y + Dy, Rect.Width, Rect.Height)));
             Move();
             Turn(Direction);
         }
@@ -92,17 +92,7 @@ namespace BattleCity
             return bmp;
         }
 
-        private void OnCheckPosition(object sender, RectEventArgs e)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void SubscribeToObjectPosition(Object obj)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void UnsubscribeFromObjectPosition(Object obj)
+        protected override void OnCheckPosition(object sender, RectEventArgs e)
         {
             throw new System.NotImplementedException();
         }

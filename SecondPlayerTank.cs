@@ -6,7 +6,6 @@ namespace BattleCity
 {
     public class SecondPlayerTank : Tank
     {
-
         public SecondPlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, Direction.Up)
         {
             
@@ -18,7 +17,7 @@ namespace BattleCity
             Rect = newRect;
         }
 
-        private void OnPaint(object sender, PaintEventArgs e)
+        /*private void OnPaint(object sender, PaintEventArgs e)
         {
             throw new System.NotImplementedException();
         }
@@ -46,6 +45,6 @@ namespace BattleCity
         public override void UnsubscribeFromObjectPosition(Object obj)
         {
             throw new System.NotImplementedException();
-        }
+        }*/
     }
 }

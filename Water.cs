@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public class Water : Obstacle
+    public class Water : Object
     {
         private Timer spriteTimer;
 
@@ -31,15 +31,15 @@ namespace BattleCity
             GUIForm.Invalidate(new Region(Rect));
         }
 
-        public override void SubscribeToForm()
+        public override void SubscribeToPaint()
         {
-            base.SubscribeToForm();
+            base.SubscribeToPaint();
             spriteTimer.Start();
         }
 
-        public override void UnsubscribeFromForm()
+        public override void UnsubscribeFromPaint()
         {
-            base.UnsubscribeFromForm();
+            base.UnsubscribeFromPaint();
             spriteTimer.Stop();
         }
 
@@ -47,7 +47,7 @@ namespace BattleCity
         {
             if(Rect.IntersectsWith(e.Rect))
             {
-                if(sender is Tank && !((Tank)sender).Amphibian)
+                if(sender is Tank/* && !((Tank)sender).Amphibian*/)
                 {
                     ((Tank)sender).StopMoving();
                 }

@@ -13,22 +13,12 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        private void OnPaint(object sender, PaintEventArgs e)
+        protected override void OnPaint(object sender, PaintEventArgs e)
         {
             throw new System.NotImplementedException();
         }
 
-        public override void SubscribeToForm()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        private void OnKeyDown(object sender, KeyEventArgs e)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void UnsubscribeFromForm()
+        protected override void OnKeyDown(object sender, KeyEventArgs e)
         {
             throw new System.NotImplementedException();
         }

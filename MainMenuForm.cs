@@ -45,7 +45,8 @@ namespace BattleCity
 
             foreach(GUIObject btn in btns)
             {
-                btn.SubscribeToForm();
+                btn.SubscribeToPaint();
+                btn.SubscribeToKeyDown();
             }
 
             btn1Player.Clicked      += OnBtn1PlayerClick;
@@ -63,7 +64,8 @@ namespace BattleCity
 
             foreach(GUIObject btn in btns)
             {
-                btn.UnsubscribeFromForm();
+                btn.UnsubscribeFromPaint();
+                btn.UnsubscribeFromKeyDown();
             }
 
             btn1Player.Clicked      -= OnBtn1PlayerClick;

@@ -37,7 +37,7 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        private void OnPaint(object sender, PaintEventArgs e)
+        /*private void OnPaint(object sender, PaintEventArgs e)
         {
             throw new System.NotImplementedException();
         }
@@ -110,6 +110,6 @@ namespace BattleCity
         private void RotateAntiClockwise()
         {
             throw new System.NotImplementedException();
-        }
+        }*/
     }
 }

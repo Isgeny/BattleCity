@@ -32,27 +32,12 @@ namespace BattleCity
             }
         }
 
-        private void OnPaint(object sender, PaintEventArgs e)
+        protected override void OnPaint(object sender, PaintEventArgs e)
         {
             throw new System.NotImplementedException();
         }
 
         private void Generate()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        private void OnCheckPosition(object sender, RectEventArgs e)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void SubscribeToForm()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void SubscribeToObjectPosition(Object obj)
         {
             throw new System.NotImplementedException();
         }
@@ -63,16 +48,6 @@ namespace BattleCity
         }
 
         public void SubscribeToBonusTank(CompTank tank)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void UnsubscribeFromObjectPosition(Object obj)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void UnsubscribeFromForm()
         {
             throw new System.NotImplementedException();
         }

@@ -34,7 +34,7 @@ namespace BattleCity
             }
         }
 
-        private void OnPaint(object sender, PaintEventArgs e)
+        protected override void OnPaint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
             g.DrawString(Text, new Font(MyFont.GetFont(28), FontStyle.Regular), new SolidBrush(Color.White), new PointF(Rect.X, Rect.Y));
@@ -45,29 +45,17 @@ namespace BattleCity
             }
         }
 
-        private void OnSpriteTimer(object sender, EventArgs e)
-        {
-            GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 100.0f, Rect.Y - 12.0f, 64.0f, 64.0f)));
-        }
-
-        private void OnKeyDown(object sender, KeyEventArgs e)
+        protected override void OnKeyDown(object sender, KeyEventArgs e)
         {
             if(Selected && e.KeyCode == Keys.Enter)
             {
-                OnClicked(new EventArgs());
+                InvokeClicked(new EventArgs());
             }
         }
 
-        public override void SubscribeToForm()
+        private void OnSpriteTimer(object sender, EventArgs e)
         {
-            GUIForm.Paint += OnPaint;
-            GUIForm.KeyDown += OnKeyDown;
-        }
-
-        public override void UnsubscribeFromForm()
-        {
-            GUIForm.Paint -= OnPaint;
-            GUIForm.KeyDown -= OnKeyDown;
+            GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 100.0f, Rect.Y - 12.0f, 64.0f, 64.0f)));
         }
     }
 }

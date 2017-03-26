@@ -7,7 +7,7 @@ namespace BattleCity
 {
     public class Field : Object
     {
-        private Obstacle[,] obstacles;
+        private List<Object> obstacles;
         private int stage;
         private const int SZ = 26;
 
@@ -16,7 +16,7 @@ namespace BattleCity
         public Field(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
             stage = 39;
-            obstacles = new Obstacle[SZ, SZ];
+            obstacles = new List<Object>();
         }
 
         public int Stage
@@ -24,12 +24,12 @@ namespace BattleCity
             get { return stage; }
         }
 
-        public Obstacle[,] Obstacles
+        public List<Object> Obstacles
         {
             get { return obstacles; }
         }
 
-        private void OnPaint(object sender, PaintEventArgs e)
+        protected override void OnPaint(object sender, PaintEventArgs e)
         {
             RectangleF clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))
@@ -50,19 +50,19 @@ namespace BattleCity
                 switch(ch)
                 {
                     case 'b':
-                        obstacles[i, j] = new Brick(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f)));
+                        obstacles.Add(new Brick(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f))));
                         break;
                     case 'c':
-                        obstacles[i, j] = new Concrete(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f))); 
+                        obstacles.Add(new Concrete(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f)))); 
                         break;
                     case 's':
-                        obstacles[i, j] = new Bush(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f)));
+                        obstacles.Add(new Bush(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f))));
                         break;
                     case 'w':
-                        obstacles[i, j] = new Water(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f)));
+                        obstacles.Add(new Water(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f))));
                         break;
                     case 'i':
-                        obstacles[i, j] = new Ice(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f)));
+                        obstacles.Add(new Ice(GUIForm, new RectangleF(FromMatrixPos(i, j), new SizeF(32.0f, 32.0f))));
                         break;
                     default:
                         break;
@@ -74,12 +74,7 @@ namespace BattleCity
                     j = 0;
                 }
             }
-
-            Obstacle hq = new HQ(GUIForm, new RectangleF(FromMatrixPos(24, 12), new SizeF(64.0f, 64.0f)));
-            obstacles[24, 12] = hq;
-            obstacles[24, 13] = hq;
-            obstacles[25, 12] = hq;
-            obstacles[25, 13] = hq;
+            obstacles.Add(new HQ(GUIForm, new RectangleF(FromMatrixPos(24, 12), new SizeF(64.0f, 64.0f))));
         }
 
         private PointF FromMatrixPos(int i, int j)
@@ -92,45 +87,43 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        private List<Obstacle> CollideableObstacles(System.Collections.Generic.List<System.Drawing.PointF> rectCorners)
+        private List<Obstacle> CollideableObstacles(List<PointF> rectCorners)
         {
             throw new System.NotImplementedException();
         }
 
-        public override void SubscribeToForm()
+        public override void SubscribeToPaint()
         {
             GUIForm.Paint += OnPaint;
-            foreach(Obstacle obst in obstacles)
+            foreach(Object obst in obstacles)
             {
-                obst?.SubscribeToForm();
+                obst?.SubscribeToPaint();
             }
         }
 
-        public override void UnsubscribeFromForm()
+        public override void UnsubscribeFromPaint()
         {
             GUIForm.Paint -= OnPaint;
-            foreach(Obstacle obst in obstacles)
+            foreach(Object obst in obstacles)
             {
-                obst.UnsubscribeFromForm();
+                obst?.UnsubscribeFromPaint();
             }
         }
 
-        public override void SubscribeToObjectPosition(Object obj)
+        public override void SubscribeToCheckPosition(Object obj)
         {
-            foreach(Obstacle obst in Obstacles)
+            foreach(Object obst in Obstacles)
             {
-                obst?.SubscribeToObjectPosition(obj);
+                obst?.SubscribeToCheckPosition(obj);
             }
         }
 
-        public override void UnsubscribeFromObjectPosition(Object obj)
+        public override void UnsubscribeFromCheckPosition(Object obj)
         {
-            throw new System.NotImplementedException();
-        }
-
-        private void OnCheckPosition(object sender, RectEventArgs e)
-        {
-            throw new System.NotImplementedException();
+            foreach(Object obst in Obstacles)
+            {
+                obst?.UnsubscribeFromCheckPosition(obj);
+            }
         }
 
         private List<PointF> RectCorners()

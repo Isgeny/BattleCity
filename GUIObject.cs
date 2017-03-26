@@ -28,7 +28,7 @@ namespace BattleCity
             set { selected = value; }
         }
 
-        protected void OnClicked(EventArgs e)
+        protected void InvokeClicked(EventArgs e)
         {
             Clicked?.Invoke(this, e);
         }

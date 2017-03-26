@@ -15,7 +15,7 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        public int Power
+        /*public int Power
         {
             get
             {
@@ -64,6 +64,6 @@ namespace BattleCity
         public override void SubscribeToForm()
         {
             throw new System.NotImplementedException();
-        }
+        }*/
     }
 }

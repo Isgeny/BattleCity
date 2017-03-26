@@ -10,9 +10,9 @@ namespace BattleCity
         private Field field;
         private FirstPlayerTank p1Tank;
 
-        private PlayerTanksManager pTanksManager;
+        /*private PlayerTanksManager pTanksManager;
         private CompTanksManager cTanksManager;
-        private Bonus bonus;
+        private Bonus bonus;*/
 
         public GameForm(GUIForm guiForm, GameManager gameManager, int players) : base(guiForm, gameManager)
         {
@@ -34,42 +34,22 @@ namespace BattleCity
             g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(64, 64, 832, 832));
         }
 
-        private void OnRedraw(object sender, EventArgs e)
-        {
-            /*Graphics g = GUIForm.Painter.Graphics;
-            g.FillRectangle(new SolidBrush(Color.FromArgb(102, 102, 102)), new Rectangle(0, 0, 1024, 960));
-            g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(64, 64, 832, 832));*/
-        }
-
-        /*private void Redraw()
-        {
-            Graphics g = GUIForm.Painter.Graphics;
-            g.FillRectangle(new SolidBrush(Color.FromArgb(102, 102, 102)), new Rectangle(0, 0, 1024, 960));
-            g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(64, 64, 832, 832));
-            GUIForm.Painter.Redraw();
-        }*/
-
         public override void Subscribe()
         {
             GUIForm.Paint += OnPaint;
-            field.SubscribeToForm();
-            field.SubscribeToObjectPosition(p1Tank);
+            field.SubscribeToPaint();
+            field.SubscribeToCheckPosition(p1Tank);
+            p1Tank.SubscribeToPaint();
 
             GUIForm.Invalidate();
-            //GUIForm.Redraw += OnRedraw;
-            
-            p1Tank.SubscribeToForm();
-
-            //GUIForm.Painter.Redraw();
         }
 
         public override void Unsubscribe()
         {
-            //GUIForm.Redraw -= OnRedraw;
-            //field.UnsubscribeFromForm();
-            //p1Tank.UnsubscribeFromForm();
-
-            //GUIForm.Painter.Redraw();
+            GUIForm.Paint -= OnPaint;
+            field.UnsubscribeFromPaint();
+            field.UnsubscribeFromCheckPosition(p1Tank);
+            p1Tank.UnsubscribeFromPaint();
         }
     }
 }

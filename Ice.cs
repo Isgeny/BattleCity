@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public class Ice : Obstacle
+    public class Ice : Object
     {
         public Ice(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
