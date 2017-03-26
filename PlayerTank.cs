@@ -4,36 +4,48 @@ using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public abstract class PlayerTank
+    public abstract class PlayerTank : Tank
     {
-        /*public PlayerTank(GUIForm guiForm, RectangleF rect)/* : base(guiForm, rect, Direction.Up)
+        public PlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, Direction.Up)
         {
-
+            MoveTimer = new Timer();
+            MoveTimer.Interval = 1000 / 60;
         }
 
-        public override void Move()
+        public override void SubscribeToPaint()
         {
-            throw new System.NotImplementedException();
+            base.SubscribeToPaint();
+
+            MoveTimer.Tick += OnMoveTimerTick;
+            MoveTimer.Start();
         }
 
-        private void OnKeyUp(object sender, KeyEventArgs e)
+        public override void UnsubscribeFromPaint()
         {
-            throw new System.NotImplementedException();
+            base.UnsubscribeFromPaint();
+
+            MoveTimer.Tick -= OnMoveTimerTick;
+            MoveTimer.Stop();
         }
 
-        private void OnKeyDown(object sender, KeyEventArgs e)
+        protected virtual void OnMoveTimerTick(object sender, EventArgs e)
         {
-            throw new System.NotImplementedException();
+            InvokeCheckPosition(new RectEventArgs(new RectangleF(Rect.X + Dx, Rect.Y + Dy, Rect.Width, Rect.Height)));
+            Move();
+            Turn(Direction);
         }
 
-        private void OnMoveTimerTick()
-        {
-            throw new System.NotImplementedException();
-        }
+        protected abstract Bitmap GetCurrentSprite();
 
-        private Direction GetCurrentDirection()
+        protected override void OnCheckPosition(object sender, RectEventArgs e)
         {
-            throw new System.NotImplementedException();
-        }*/
+            if(Rect.IntersectsWith(e.Rect))
+            {
+                if(sender is Tank)
+                {
+                    ((Tank)sender).StopMoving();
+                }
+            }
+        }
     }
 }

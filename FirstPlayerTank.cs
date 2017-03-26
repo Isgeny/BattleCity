@@ -6,12 +6,10 @@ using System.Resources;
 
 namespace BattleCity
 {
-    public class FirstPlayerTank : Tank
+    public class FirstPlayerTank : PlayerTank
     {
-        public FirstPlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, Direction.Up)
+        public FirstPlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
-            MoveTimer = new Timer();
-            MoveTimer.Interval = 1000/60;
         }
 
         protected override void Respawn()
@@ -32,23 +30,7 @@ namespace BattleCity
             }            
         }
 
-        public override void SubscribeToPaint()
-        {
-            base.SubscribeToPaint();
-
-            MoveTimer.Tick += OnMoveTimerTick;
-            MoveTimer.Start();        
-        }
-
-        public override void UnsubscribeFromPaint()
-        {
-            base.UnsubscribeFromPaint();
-
-            MoveTimer.Tick -= OnMoveTimerTick;
-            MoveTimer.Stop();
-        }
-
-        private void OnMoveTimerTick(object sender, EventArgs e)
+        protected override void OnMoveTimerTick(object sender, EventArgs e)
         {
             if(Keyboard.IsKeyDown(Key.Up))
             {
@@ -79,22 +61,15 @@ namespace BattleCity
                 Dx = 0.0f;
                 Dy = 0.0f;
             }
-            InvokeCheckPosition(new RectEventArgs(new RectangleF(Rect.X + Dx, Rect.Y + Dy, Rect.Width, Rect.Height)));
-            Move();
-            Turn(Direction);
+            base.OnMoveTimerTick(sender, e);
         }
 
-        private Bitmap GetCurrentSprite()
+        protected override Bitmap GetCurrentSprite()
         {
             ResourceManager rm = Properties.Resources.ResourceManager;
             string filename = "P1_" + Stars + "_" + (int)Direction;
             Bitmap bmp = (Bitmap)rm.GetObject(filename);
             return bmp;
-        }
-
-        protected override void OnCheckPosition(object sender, RectEventArgs e)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }
