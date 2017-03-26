@@ -110,8 +110,17 @@ namespace BattleCity
             }
         }
 
+        protected override void OnCheckPosition(object sender, RectEventArgs e)
+        {
+            if(!Rect.Contains(e.Rect))
+            {
+                ((DynamicObject)sender).StopMoving();
+            }
+        }
+
         public override void SubscribeToCheckPosition(Object obj)
         {
+            obj.CheckPosition += OnCheckPosition;
             foreach(Object obst in Obstacles)
             {
                 obst?.SubscribeToCheckPosition(obj);
@@ -120,6 +129,7 @@ namespace BattleCity
 
         public override void UnsubscribeFromCheckPosition(Object obj)
         {
+            obj.CheckPosition -= OnCheckPosition;
             foreach(Object obst in Obstacles)
             {
                 obst?.UnsubscribeFromCheckPosition(obj);

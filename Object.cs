@@ -79,21 +79,5 @@ namespace BattleCity
         {
             guiForm.MouseClick -= OnMouseClick;
         }
-
-
-
-
-        /// <summary>
-        /// /////////////////////////////////////////
-        /// </summary>
-        public virtual void SubscribeToForm()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public virtual void UnsubscribeFromForm()
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }
