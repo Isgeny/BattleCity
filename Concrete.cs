@@ -34,5 +34,26 @@ namespace BattleCity
         {
             GUIForm.Paint -= OnPaint;
         }
+
+        public override void SubscribeToObjectPosition(Object obj)
+        {
+            obj.CheckPosition += OnCheckPosition;
+        }
+
+        public override void UnsubscribeFromObjectPosition(Object obj)
+        {
+            obj.CheckPosition -= OnCheckPosition;
+        }
+
+        private void OnCheckPosition(object sender, RectEventArgs e)
+        {
+            if(Rect.IntersectsWith(e.Rect))
+            {
+                if(sender is Tank)
+                {
+                    ((Tank)sender).StopMoving();
+                }
+            }
+        }
     }
 }

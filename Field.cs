@@ -117,6 +117,14 @@ namespace BattleCity
 
         public override void SubscribeToObjectPosition(Object obj)
         {
+            foreach(Obstacle obst in Obstacles)
+            {
+                obst?.SubscribeToObjectPosition(obj);
+            }
+        }
+
+        public override void UnsubscribeFromObjectPosition(Object obj)
+        {
             throw new System.NotImplementedException();
         }
 
@@ -136,11 +144,6 @@ namespace BattleCity
         }
 
         public void PlaceObstacle(Obstacle obstacle, byte i, byte j)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void UnsubscribeFromObjectPosition(Object obj)
         {
             throw new System.NotImplementedException();
         }

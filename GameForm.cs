@@ -19,7 +19,7 @@ namespace BattleCity
             field = new Field(guiForm, new RectangleF(64.0f, 64.0f, 832.0f, 832.0f));
             field.LoadStage(39);
 
-            //p1Tank = new FirstPlayerTank(GUIForm, new RectangleF(320.0f, 832.0f, 64.0f, 64.0f));
+            p1Tank = new FirstPlayerTank(GUIForm, new RectangleF(320.0f, 832.0f, 64.0f, 64.0f));
         }
 
         public Field Field
@@ -53,11 +53,12 @@ namespace BattleCity
         {
             GUIForm.Paint += OnPaint;
             field.SubscribeToForm();
+            field.SubscribeToObjectPosition(p1Tank);
 
             GUIForm.Invalidate();
             //GUIForm.Redraw += OnRedraw;
             
-            //p1Tank.SubscribeToForm();
+            p1Tank.SubscribeToForm();
 
             //GUIForm.Painter.Redraw();
         }

@@ -24,6 +24,13 @@ namespace BattleCity
             get { return guiForm; }
         }
 
+        public event RectEventHandler CheckPosition;
+
+        protected void OnCheckPosition(RectEventArgs e)
+        {
+            CheckPosition?.Invoke(this, e);
+        }
+
         public abstract void SubscribeToForm();
 
         public abstract void UnsubscribeFromForm();

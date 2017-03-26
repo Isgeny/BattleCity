@@ -2,12 +2,12 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Resources;
 
 namespace BattleCity
 {
     public class FirstPlayerTank : Tank
     {
-
         public FirstPlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, Direction.Up)
         {
             MoveTimer = new Timer();
@@ -22,63 +22,30 @@ namespace BattleCity
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            //Graphics g = GUIForm.Painter.Graphics;
-            //g.DrawImage(Properties.Resources.P1_1_0, Rect, new RectangleF(0.0f, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
-        }
-
-        /*private void OnRedraw(object sender, EventArgs e)
-        {
-            Graphics g = GUIForm.Painter.Graphics;
-            g.DrawImage(Properties.Resources.P1_1_0, Rect, new RectangleF(0.0f, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
-        }*/
-
-        private void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
-        {
-            /*switch(e.KeyCode)
+            RectangleF clipRect = e.ClipRectangle;
+            if(Rect.IntersectsWith(clipRect))
             {
-                case Keys.Up:
-                    Dx = 0.0f;
-                    Dy = -2.25f;
-                    break;
-                case Keys.Left:
-                    Dx = -2.25f;
-                    Dy = 0.0f;
-                    break;
-                case Keys.Down:
-                    Dx = 0.0f;
-                    Dy = 2.25f;
-                    break;
-                case Keys.Right:
-                    Dx = 2.25f;
-                    Dy = 0.0f;
-                    break;
-                default:
-                    break;
-            }*/
-        }
-
-        private void OnKeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
-        {
-            /*Dx = 0.0f;
-            Dy = 0.0f;*/
+                Graphics g = e.Graphics;
+                float currentFrame = ((Rect.X + Rect.Y) % 8 < 4) ? 0.0f : 64.0f;
+                Bitmap bmp = GetCurrentSprite();
+                g.DrawImage(bmp, Rect, new RectangleF(currentFrame, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
+            }            
         }
 
         public override void SubscribeToForm()
         {
-            /*GUIForm.Redraw += OnRedraw;
-            GUIForm.KeyDown += OnKeyDown;
-            GUIForm.KeyUp += OnKeyUp;
+            GUIForm.Paint += OnPaint;
 
             MoveTimer.Tick += OnMoveTimerTick;
-            MoveTimer.Start();*/
+            MoveTimer.Start();        
         }
 
         public override void UnsubscribeFromForm()
         {
-            /*GUIForm.Redraw -= OnRedraw;
-            GUIForm.KeyDown -= OnKeyDown;
-            GUIForm.KeyUp -= OnKeyUp;
-            MoveTimer.Tick -= OnMoveTimerTick;*/
+            GUIForm.Paint -= OnPaint;
+
+            MoveTimer.Tick -= OnMoveTimerTick;
+            MoveTimer.Stop();
         }
 
         private void OnMoveTimerTick(object sender, EventArgs e)
@@ -86,24 +53,43 @@ namespace BattleCity
             if(Keyboard.IsKeyDown(Key.Up))
             {
                 Dx = 0.0f;
-                Dy = -2.25f;
+                Dy = -2.75f;
+                Direction = Direction.Up;
             }
             else if(Keyboard.IsKeyDown(Key.Left))
             {
-                Dx = -2.25f;
+                Dx = -2.75f;
                 Dy = 0.0f;
+                Direction = Direction.Left;
             }
             else if(Keyboard.IsKeyDown(Key.Down))
             {
                 Dx = 0.0f;
-                Dy = 2.25f;
+                Dy = 2.75f;
+                Direction = Direction.Down;
             }
             else if(Keyboard.IsKeyDown(Key.Right))
             {
-                Dx = 2.25f;
+                Dx = 2.75f;
+                Dy = 0.0f;
+                Direction = Direction.Right;
+            }
+            else
+            {
+                Dx = 0.0f;
                 Dy = 0.0f;
             }
+            OnCheckPosition(new RectEventArgs(new RectangleF(Rect.X + Dx, Rect.Y + Dy, Rect.Width, Rect.Height)));
             Move();
+            Turn(Direction);
+        }
+
+        private Bitmap GetCurrentSprite()
+        {
+            ResourceManager rm = Properties.Resources.ResourceManager;
+            string filename = "P1_" + Stars + "_" + (int)Direction;
+            Bitmap bmp = (Bitmap)rm.GetObject(filename);
+            return bmp;
         }
 
         private void OnCheckPosition(object sender, RectEventArgs e)

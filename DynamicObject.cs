@@ -10,7 +10,6 @@ namespace BattleCity
         private float dx;
         private float dy;
         private Direction direction;
-        public event RectEventHandler CheckPosition;
 
         public DynamicObject(GUIForm guiForm, RectangleF rect, Direction direction) : base(guiForm, rect)
         {
@@ -46,13 +45,17 @@ namespace BattleCity
 
         public virtual void Move()
         {
+            RectangleF oldRect = Rect;
             RectangleF newRect = new RectangleF(Rect.X + dx, Rect.Y + dy, Rect.Width, Rect.Height);
             Rect = newRect;
+            GUIForm.Invalidate(new Region(oldRect));
+            GUIForm.Invalidate(new Region(newRect));
         }
 
-        protected void OnCheckPosition(RectEventArgs e)
+        public virtual void StopMoving()
         {
-            CheckPosition?.Invoke(this, e);
+            dx = 0.0f;
+            dy = 0.0f;
         }
     }
 }

@@ -79,18 +79,18 @@ namespace BattleCity
 
         protected void Turn(Direction direction)
         {
-            //Округление координат перед поворотом (для удобства движения)
+            //Округление координат перед поворотом
             if(Direction == Direction.Up || Direction == Direction.Down)
             {
                 if(Direction == Direction.Right)
                 {
-                    float newX = (float)Math.Round(Rect.Left / Rect.Height) * Rect.Height;
+                    float newX = (float)Math.Round(Rect.Left / (Rect.Height / 2.0f)) * Rect.Height / 2.0f;
                     RectangleF newRect = new RectangleF(newX, Rect.Y, Rect.Width, Rect.Height);
                     Rect = newRect;
                 }
                 else
                 {
-                    float newX = (float)Math.Round(Rect.Right / Rect.Height) * Rect.Height;
+                    float newX = (float)Math.Round(Rect.Right / (Rect.Height / 2.0f)) * Rect.Height / 2.0f;
                     RectangleF newRect = new RectangleF(newX - Rect.Width, Rect.Y, Rect.Width, Rect.Height);
                     Rect = newRect;
                 }
@@ -99,13 +99,13 @@ namespace BattleCity
             {
                 if(Direction == Direction.Up)
                 {
-                    float newY = (float)Math.Round(Rect.Bottom / Rect.Height) * Rect.Height;
+                    float newY = (float)Math.Round(Rect.Bottom / (Rect.Height / 2.0f)) * Rect.Height / 2.0f;
                     RectangleF newRect = new RectangleF(Rect.X, newY - Rect.Height, Rect.Width, Rect.Height);
                     Rect = newRect;
                 }
                 else
                 {
-                    float newY = (float)Math.Round(Rect.Top / Rect.Height) * Rect.Height;
+                    float newY = (float)Math.Round(Rect.Top / (Rect.Height / 2.0f)) * Rect.Height / 2.0f;
                     RectangleF newRect = new RectangleF(Rect.X, newY, Rect.Width, Rect.Height);
                     Rect = newRect;
                 }
