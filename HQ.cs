@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public class HQ : Obstacle
+    public class HQ : Object
     {
         private bool destroyed;
 
@@ -40,6 +40,12 @@ namespace BattleCity
                 if(sender is Tank)
                 {
                     ((Tank)sender).StopMoving();
+                }
+                else if(sender is Shell)
+                {
+                    Shell s = sender as Shell;
+                    s.InvokeDestroy();
+                    Destroyed = true;
                 }
             }
         }

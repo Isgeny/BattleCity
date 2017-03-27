@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace BattleCity
@@ -26,6 +27,15 @@ namespace BattleCity
                 if(sender is Tank)
                 {
                     ((Tank)sender).StopMoving();
+                }
+                else if(sender is Shell)
+                {
+                    Shell s = sender as Shell;
+                    s.InvokeDestroy();
+                    if(s.Creator.Stars == 3)
+                    {
+                        InvokeDestroy();
+                    }
                 }
             }
         }

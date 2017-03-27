@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace BattleCity
@@ -12,6 +13,7 @@ namespace BattleCity
         {
             this.guiForm = guiForm;
             this.rect = rect;
+            Destroy += OnDestroy;
         }
 
         public RectangleF Rect
@@ -79,6 +81,29 @@ namespace BattleCity
         public virtual void UnsubscribeFromMouseClick()
         {
             guiForm.MouseClick -= OnMouseClick;
+        }
+
+        public event EventHandler Destroy;
+
+        public void InvokeDestroy()
+        {
+            Destroy?.Invoke(this, new EventArgs());
+        }
+
+        protected virtual void OnDestroy(object sender, EventArgs e)
+        {
+            UnsubscribeFromPaint();
+            GUIForm.Invalidate(new Region(Rect));
+        }
+
+        public void SubscribeToDestroy()
+        {
+            Destroy += OnDestroy;
+        }
+
+        public void UnsubscribeFromDestroy()
+        {
+            Destroy -= OnDestroy;
         }
     }
 }

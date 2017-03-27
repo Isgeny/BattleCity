@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace BattleCity
@@ -26,8 +27,15 @@ namespace BattleCity
                 if(sender is Shell)
                 {
                     Shell s = sender as Shell;
-                    UnsubscribeFromPaint();
-                    SubscribeToPaint();
+                    if(s.Creator.Gun)
+                    {
+                        InvokeDestroy();
+                    }
+                    else
+                    {
+                        UnsubscribeFromPaint();
+                        SubscribeToPaint();
+                    }
                 }
                 else if(sender is Tank)
                 {

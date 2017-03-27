@@ -86,5 +86,14 @@ namespace BattleCity
             Bitmap bmp = (Bitmap)rm.GetObject(filename);
             return bmp;
         }
+
+        protected override void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Space)
+            {
+                Shell shell = new Shell(GUIForm, this);
+                InvokeShoot(new ShellEventArgs(shell));
+            }
+        }
     }
 }

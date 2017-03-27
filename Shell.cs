@@ -27,22 +27,22 @@ namespace BattleCity
                 case Direction.Up:
                     Dx = 0.0f;
                     Dy = -speed;
-                    Rect = new RectangleF(creator.Rect.X + 22.0f, creator.Rect.Y - 8.0f, 16.0f, 16.0f);
+                    Rect = new RectangleF(creator.Rect.X + 22.0f, creator.Rect.Y - 6.0f, 16.0f, 16.0f);
                     break;
                 case Direction.Left:
                     Dx = -speed;
                     Dy = 0.0f;
-                    Rect = new RectangleF(creator.Rect.X - 8.0f, creator.Rect.Y + 22.0f, 16.0f, 16.0f);
+                    Rect = new RectangleF(creator.Rect.X - 6.0f, creator.Rect.Y + 22.0f, 16.0f, 16.0f);
                     break;
                 case Direction.Down:
                     Dx = 0.0f;
                     Dy = speed;
-                    Rect = new RectangleF(creator.Rect.X + 22.0f, creator.Rect.Y + 55.0f, 16.0f, 16.0f);
+                    Rect = new RectangleF(creator.Rect.X + 22.0f, creator.Rect.Y + 50.0f, 16.0f, 16.0f);
                     break;
                 case Direction.Right:
                     Dx = speed;
                     Dy = 0.0f;
-                    Rect = new RectangleF(creator.Rect.X + 55.0f, creator.Rect.Y + 22.0f, 16.0f, 16.0f);
+                    Rect = new RectangleF(creator.Rect.X + 50.0f, creator.Rect.Y + 22.0f, 16.0f, 16.0f);
                     break;
             }
         }
@@ -73,13 +73,30 @@ namespace BattleCity
 
         protected override void OnCheckPosition(object sender, RectEventArgs e)
         {
-            throw new NotImplementedException();
+            if(Rect.IntersectsWith(e.Rect) && sender is Tank)
+            {
+                InvokeDestroy();
+            }
         }
 
         private void OnMoveTimer(object sender, EventArgs e)
         {
             InvokeCheckPosition(new RectEventArgs(new RectangleF(Rect.X + Dx, Rect.Y + Dy, Rect.Width, Rect.Height)));
             Move();
+        }
+
+        protected override void OnDestroy(object sender, EventArgs e)
+        {
+            base.OnDestroy(sender, e);
+            MoveTimer.Stop();
+        }
+
+        public override void SubscribeToCheckPosition(Object creator)
+        {
+            if(this.creator != creator)
+            {
+                base.SubscribeToCheckPosition(creator);
+            }
         }
     }
 }

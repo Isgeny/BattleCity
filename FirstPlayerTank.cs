@@ -8,11 +8,11 @@ namespace BattleCity
 {
     public class FirstPlayerTank : PlayerTank
     {
-        //private Shell shell;
-
         public FirstPlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
             Amphibian = true;
+            Gun = true;
+            Stars = 0;
         }
 
         protected override void Respawn()

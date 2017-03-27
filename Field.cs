@@ -9,10 +9,9 @@ namespace BattleCity
     {
         private List<Object> obstacles;
         private int stage;
-        private const int SZ = 26;
 
         public event EventHandler HQDestroyed;
-        public event ShellEventHandler ShellCollision;
+        public event EventHandler ObstacleDestroyed;
 
         public Field(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
@@ -83,14 +82,9 @@ namespace BattleCity
             return new PointF(Rect.X + j*32.0f, Rect.Y + i*32.0f);
         }
 
-        public void LoadNextStage()
+        private void LoadNextStage()
         {
-            throw new System.NotImplementedException();
-        }
-
-        private List<Obstacle> CollideableObstacles(List<PointF> rectCorners)
-        {
-            throw new System.NotImplementedException();
+            LoadStage(++stage);
         }
 
         public override void SubscribeToPaint()
@@ -147,9 +141,26 @@ namespace BattleCity
             }
         }
 
-        private List<PointF> RectCorners()
+        private void OnObstacleDestroy(object sender, EventArgs e)
         {
-            throw new System.NotImplementedException();
+            obstacles.Remove((Object)sender);
+            ObstacleDestroyed.Invoke(sender, e); 
+        }
+
+        public void SubscribeToObstaclesDestroy()
+        {
+            foreach(Object obst in Obstacles)
+            {
+                obst.Destroy += OnObstacleDestroy;
+            }
+        }
+
+        public void UnsubscribeFromObstaclesDestroy()
+        {
+            foreach(Object obst in Obstacles)
+            {
+                obst.Destroy -= OnObstacleDestroy;
+            }
         }
 
         public void CleanField()
