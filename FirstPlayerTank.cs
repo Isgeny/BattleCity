@@ -8,6 +8,8 @@ namespace BattleCity
 {
     public class FirstPlayerTank : PlayerTank
     {
+        //private Shell shell;
+
         public FirstPlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
             Amphibian = true;
@@ -86,6 +88,15 @@ namespace BattleCity
             string filename = "P1_" + Stars + "_" + (int)Direction;
             Bitmap bmp = (Bitmap)rm.GetObject(filename);
             return bmp;
+        }
+
+        protected override void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                Shell shell = new Shell(GUIForm, this);
+                InvokeShoot(new ShellEventArgs(shell));
+            }
         }
     }
 }

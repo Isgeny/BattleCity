@@ -12,6 +12,7 @@ namespace BattleCity
         private const int SZ = 26;
 
         public event EventHandler HQDestroyed;
+        public event ShellEventHandler ShellCollision;
 
         public Field(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
@@ -97,10 +98,6 @@ namespace BattleCity
             GUIForm.Paint += OnPaint;
             foreach(Object obst in obstacles)
             {
-                if(obst is Bush)
-                {
-                    continue;
-                }
                 obst?.SubscribeToPaint();
             }
         }
@@ -110,33 +107,7 @@ namespace BattleCity
             GUIForm.Paint -= OnPaint;
             foreach(Object obst in obstacles)
             {
-                if(obst is Bush)
-                {
-                    continue;
-                }
                 obst?.UnsubscribeFromPaint();
-            }
-        }
-
-        public void SubscribeBushesToPaint()
-        {
-            foreach(Object obst in obstacles)
-            {
-                if(obst is Bush)
-                {
-                    obst?.SubscribeToPaint();
-                }
-            }
-        }
-
-        public void UnsubscribeBushesFromPaint()
-        {
-            foreach(Object obst in obstacles)
-            {
-                if(obst is Bush)
-                {
-                    obst?.UnsubscribeFromPaint();
-                }
             }
         }
 
@@ -145,6 +116,13 @@ namespace BattleCity
             if(!Rect.Contains(e.Rect))
             {
                 ((DynamicObject)sender).StopMoving();
+                if(sender is Shell)
+                {
+                    Shell s = sender as Shell;
+                    s.UnsubscribeFromPaint();
+                    UnsubscribeFromCheckPosition(s);
+                    s.MoveTimer.Stop();
+                }
             }
         }
 
@@ -153,7 +131,10 @@ namespace BattleCity
             obj.CheckPosition += OnCheckPosition;
             foreach(Object obst in Obstacles)
             {
-                obst?.SubscribeToCheckPosition(obj);
+                if(obj is Tank || (obj is Shell && !(obst is Ice || obst is Water)))
+                {
+                    obst?.SubscribeToCheckPosition(obj);
+                }
             }
         }
 

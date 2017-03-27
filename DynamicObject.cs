@@ -13,10 +13,11 @@ namespace BattleCity
 
         public DynamicObject(GUIForm guiForm, RectangleF rect, Direction direction) : base(guiForm, rect)
         {
+            moveTimer = new Timer();
+            moveTimer.Interval = 1000 / 60;
             dx = 0.0f;
             dy = 0.0f;
             this.direction = direction;
-            moveTimer = null;
         }
 
         public Timer MoveTimer

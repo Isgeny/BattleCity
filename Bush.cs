@@ -23,7 +23,17 @@ namespace BattleCity
         {
             if(Rect.IntersectsWith(e.Rect))
             {
-
+                if(sender is Shell)
+                {
+                    Shell s = sender as Shell;
+                    UnsubscribeFromPaint();
+                    SubscribeToPaint();
+                }
+                else if(sender is Tank)
+                {
+                    UnsubscribeFromPaint();
+                    SubscribeToPaint();
+                }
             }
         }
     }

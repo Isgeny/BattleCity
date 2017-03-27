@@ -48,10 +48,12 @@ namespace BattleCity
 
             p2Tank.SubscribeToPaint();
 
-            field.SubscribeBushesToPaint();
-
             p1Tank.SubscribeToCheckPosition(p2Tank);
             p2Tank.SubscribeToCheckPosition(p1Tank);
+
+            p1Tank.SubscribeToKeyDown();
+
+            p1Tank.Shoot += OnShoot;
 
             GUIForm.Invalidate();
         }
@@ -68,10 +70,17 @@ namespace BattleCity
 
             p2Tank.UnsubscribeFromPaint();
 
-            field.UnsubscribeBushesFromPaint();
-
             p1Tank.UnsubscribeFromCheckPosition(p2Tank);
             p2Tank.UnsubscribeFromCheckPosition(p1Tank);
+
+            p1Tank.Shoot -= OnShoot;
+        }
+
+        private void OnShoot(object sender, ShellEventArgs e)
+        {
+            Shell s = e.Shell;
+            field.SubscribeToCheckPosition(s);
+            s.SubscribeToPaint();
         }
     }
 }

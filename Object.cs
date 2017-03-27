@@ -23,6 +23,7 @@ namespace BattleCity
         public GUIForm GUIForm
         {
             get { return guiForm; }
+            set { guiForm = value; }
         }
 
         public event RectEventHandler CheckPosition;

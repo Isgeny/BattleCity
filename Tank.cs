@@ -15,8 +15,6 @@ namespace BattleCity
         private int ammo;
         private int points;
 
-        public event EventHandler Destroyed;
-
         public Tank(GUIForm guiForm, RectangleF rect, Direction direction) : base(guiForm, rect, Direction.Up)
         {
             hp = 1;
@@ -126,7 +124,7 @@ namespace BattleCity
             lives--;
             if(lives < 0)
             {
-                OnDestroyed(new EventArgs());
+                InvokeDestroyed(new EventArgs());
             }
         }
 
@@ -135,14 +133,18 @@ namespace BattleCity
             return (lives >= 0) ? true : false;
         }
 
-        protected void Shoot()
-        {
-            throw new System.NotImplementedException();
-        }
+        public event EventHandler Destroyed;
 
-        protected void OnDestroyed(EventArgs e)
+        protected void InvokeDestroyed(EventArgs e)
         {
             Destroyed?.Invoke(this, e);
+        }
+
+        public event ShellEventHandler Shoot;
+
+        protected void InvokeShoot(ShellEventArgs e)
+        {
+            Shoot?.Invoke(this, e);
         }
     }
 }

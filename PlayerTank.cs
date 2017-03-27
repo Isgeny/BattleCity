@@ -11,9 +11,6 @@ namespace BattleCity
 
         public PlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, Direction.Up)
         {
-            MoveTimer = new Timer();
-            MoveTimer.Interval = 1000 / 60;
-
             iceTicks = 28;
             onIce = false;
         }
