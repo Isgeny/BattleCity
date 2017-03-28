@@ -36,12 +36,18 @@ namespace BattleCity
             g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(64, 64, 832, 832));
 
             g.DrawImageUnscaled(Properties.Resources.Player_Icon, new Point(910, 626));
+            string name = "";
+            name += Properties.Settings.Default.P1Name[0];
+            name += Properties.Settings.Default.P1Name[1];
             g.DrawString(p1Tank.Lives.ToString(), MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(940.0f, 626.0f));
-            g.DrawString(Properties.Settings.Default.P1Name, MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(910.0f, 585.0f));
+            g.DrawString(name, MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(910.0f, 585.0f));
 
             g.DrawImageUnscaled(Properties.Resources.Player_Icon, new Point(910, 732));
             g.DrawString(p2Tank.Lives.ToString(), MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(940.0f, 732.0f));
-            g.DrawString(Properties.Settings.Default.P2Name, MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(910.0f, 690.0f));
+            name = "";
+            name += Properties.Settings.Default.P2Name[0];
+            name += Properties.Settings.Default.P2Name[1];
+            g.DrawString(name, MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(910.0f, 690.0f));
         }
 
         public override void Subscribe()
