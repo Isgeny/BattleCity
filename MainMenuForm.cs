@@ -110,7 +110,8 @@ namespace BattleCity
 
         private void OnBtnRecords(object sender, EventArgs e)
         {
-            throw new System.NotImplementedException();
+            Unsubscribe();
+            GameManager.ActiveForm = GameManager.Records;
         }
 
         private void OnBtnExitClicked(object sender, EventArgs e)

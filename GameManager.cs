@@ -21,6 +21,7 @@ namespace BattleCity
             game        = new GameForm(guiForm, this, 1);
 
             options     = new OptionsForm(guiForm, this);
+            records     = new RecordsForm(guiForm, this);
 
             ActiveForm = mainMenu;
         }

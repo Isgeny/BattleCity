@@ -15,7 +15,6 @@ namespace BattleCity
         public GUIObject(GUIForm guiForm, RectangleF rect, string text, bool selected = false) : base(guiForm, rect)
         {
             this.text = text;
-            this.selected = selected;
 
             spriteTimer = new Timer();
             spriteTimer.Interval = 24;
