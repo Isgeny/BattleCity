@@ -55,6 +55,8 @@ namespace BattleCity
             btnOptions.Clicked      += OnBtnOptionsClicked;
             btnRecords.Clicked      += OnBtnRecords;
             btnExit.Clicked         += OnBtnExitClicked;
+
+            GUIForm.Invalidate();
         }
 
         public override void Unsubscribe()
@@ -102,7 +104,8 @@ namespace BattleCity
 
         private void OnBtnOptionsClicked(object sender, EventArgs e)
         {
-            throw new System.NotImplementedException();
+            Unsubscribe();
+            GameManager.ActiveForm = GameManager.Options;
         }
 
         private void OnBtnRecords(object sender, EventArgs e)

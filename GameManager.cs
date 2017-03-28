@@ -20,6 +20,8 @@ namespace BattleCity
             mainMenu    = new MainMenuForm(guiForm, this);
             game        = new GameForm(guiForm, this, 1);
 
+            options     = new OptionsForm(guiForm, this);
+
             ActiveForm = mainMenu;
         }
 
