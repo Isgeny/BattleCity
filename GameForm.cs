@@ -49,11 +49,13 @@ namespace BattleCity
             p1Tank.SubscribeToPaint();
             p1Tank.SubscribeToCheckPosition(p2Tank);
             p1Tank.SubscribeToKeyDown();
+            p1Tank.SubscribeToKeyUp();
             p1Tank.Shoot += OnShoot;
 
             p2Tank.SubscribeToPaint();
             p2Tank.SubscribeToCheckPosition(p1Tank);
             p2Tank.SubscribeToKeyDown();
+            p2Tank.SubscribeToKeyUp();
             p2Tank.Shoot += OnShoot;
 
             GUIForm.Invalidate();
@@ -71,11 +73,14 @@ namespace BattleCity
 
             p1Tank.UnsubscribeFromPaint();
             p1Tank.UnsubscribeFromCheckPosition(p2Tank);
+            p1Tank.UnsubscribeFromKeyDown();
+            p1Tank.UnsubscribeFromKeyUp();
             p1Tank.Shoot -= OnShoot;
 
             p2Tank.UnsubscribeFromPaint();
             p2Tank.UnsubscribeFromCheckPosition(p1Tank);
             p2Tank.UnsubscribeFromKeyDown();
+            p2Tank.UnsubscribeFromKeyUp();
             p2Tank.Shoot -= OnShoot;
         }
 

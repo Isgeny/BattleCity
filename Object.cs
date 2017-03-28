@@ -71,6 +71,18 @@ namespace BattleCity
             guiForm.KeyDown -= OnKeyDown;
         }
 
+        protected virtual void OnKeyUp(object sender, KeyEventArgs e) { }
+
+        public virtual void SubscribeToKeyUp()
+        {
+            guiForm.KeyUp += OnKeyUp;
+        }
+
+        public virtual void UnsubscribeFromKeyUp()
+        {
+            guiForm.KeyUp -= OnKeyUp;
+        }
+
         protected virtual void OnMouseClick(object sender, MouseEventArgs e) { }
 
         public virtual void SubscribeToMouseClick()

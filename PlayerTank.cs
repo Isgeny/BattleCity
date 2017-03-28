@@ -8,11 +8,19 @@ namespace BattleCity
     {
         private int iceTicks;
         private bool onIce;
+        private bool shootPressed;
 
         public PlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, Direction.Up)
         {
             iceTicks = 28;
             onIce = false;
+            shootPressed = false;
+        }
+
+        public int IceTicks
+        {
+            get { return iceTicks; }
+            set { iceTicks = value; }
         }
 
         public bool OnIce
@@ -21,10 +29,10 @@ namespace BattleCity
             set { onIce = value; }
         }
 
-        public int IceTicks
+        public bool ShootPressed
         {
-            get { return iceTicks; }
-            set { iceTicks = value; }
+            get { return shootPressed; }
+            set { shootPressed = value; }
         }
 
         public override void SubscribeToPaint()
@@ -88,6 +96,11 @@ namespace BattleCity
                     ((Tank)sender).StopMoving();
                 }
             }
+        }
+
+        protected override void OnKeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            shootPressed = false;
         }
     }
 }

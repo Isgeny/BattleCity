@@ -89,11 +89,12 @@ namespace BattleCity
 
         protected override void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Space && Ammo > 0)
+            if(e.KeyCode == Keys.Space && Ammo > 0 && !ShootPressed)
             {
                 Ammo--;
                 Shell shell = new Shell(GUIForm, this);
                 InvokeShoot(new ShellEventArgs(shell));
+                ShootPressed = true;
             }
         }
     }
