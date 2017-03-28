@@ -32,12 +32,9 @@ namespace BattleCity
         protected override void OnPaint(object sender, PaintEventArgs e)
         {
             RectangleF clipRect = e.ClipRectangle;
-            if(Rect.IntersectsWith(clipRect))
-            {
-                Graphics g = e.Graphics;
-                g.DrawImage(Properties.Resources.Flag, 910.0f, 420.0f);
-                g.DrawString(stage.ToString(), MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(930.0f, 485.0f));
-            }
+            Graphics g = e.Graphics;
+            g.DrawImage(Properties.Resources.Flag, 910.0f, 420.0f);
+            g.DrawString(stage.ToString(), MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(930.0f, 485.0f));
         }
 
         public void LoadStage(int stage)
