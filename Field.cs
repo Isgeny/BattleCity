@@ -35,8 +35,8 @@ namespace BattleCity
             if(Rect.IntersectsWith(clipRect))
             {
                 Graphics g = e.Graphics;
-                g.DrawImage(Properties.Resources.Flag, 928.0f, 420.0f);
-                g.DrawString(stage.ToString(), MyFont.GetFont(20), new SolidBrush(Color.Black), new PointF(930.0f, 485.0f));
+                g.DrawImage(Properties.Resources.Flag, 910.0f, 420.0f);
+                g.DrawString(stage.ToString(), MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(930.0f, 485.0f));
             }
         }
 

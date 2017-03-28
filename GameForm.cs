@@ -34,6 +34,17 @@ namespace BattleCity
             Graphics g = e.Graphics;
             g.FillRectangle(new SolidBrush(Color.FromArgb(102, 102, 102)), new Rectangle(0, 0, 1024, 960));
             g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(64, 64, 832, 832));
+
+            if(new RectangleF(928, 544, 64, 160).IntersectsWith(e.ClipRectangle))
+            {
+                g.DrawImageUnscaled(Properties.Resources.Player_Icon, new Point(910, 626));
+                g.DrawString(p1Tank.Lives.ToString(), MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(940.0f, 626.0f));
+                g.DrawString(Properties.Settings.Default.P1Name, MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(910.0f, 585.0f));
+
+                g.DrawImageUnscaled(Properties.Resources.Player_Icon, new Point(910, 732));
+                g.DrawString(p2Tank.Lives.ToString(), MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(940.0f, 732.0f));
+                g.DrawString(Properties.Settings.Default.P2Name, MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(910.0f, 690.0f));
+            }    
         }
 
         public override void Subscribe()

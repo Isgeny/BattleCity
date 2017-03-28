@@ -13,6 +13,7 @@ namespace BattleCity
             Amphibian = true;
             Gun = true;
             Stars = 0;
+            Lives = 9;
         }
 
         protected override void Respawn()
