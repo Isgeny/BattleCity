@@ -16,10 +16,10 @@ namespace BattleCity
             MoveTimer.Tick += OnMoveTimer;
             MoveTimer.Start();
 
-            float speed = 10.0f;
+            float speed = 7.0f;
             if(creator is PlayerTank && creator.Stars >= 1)
             {
-                speed = 20.0f;
+                speed = 10.0f;
             }
 
             switch(Direction)
@@ -88,7 +88,11 @@ namespace BattleCity
         protected override void OnDestroy(object sender, EventArgs e)
         {
             base.OnDestroy(sender, e);
-            MoveTimer.Stop();
+            if(MoveTimer.Enabled)
+            {
+                MoveTimer.Stop();
+                creator.Ammo++;
+            }
         }
 
         public override void SubscribeToCheckPosition(Object creator)

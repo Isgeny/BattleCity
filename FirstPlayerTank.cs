@@ -92,8 +92,9 @@ namespace BattleCity
 
         protected override void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Enter)
+            if(e.KeyCode == Keys.Enter && Ammo > 0)
             {
+                Ammo--;
                 Shell shell = new Shell(GUIForm, this);
                 InvokeShoot(new ShellEventArgs(shell));
             }

@@ -112,10 +112,7 @@ namespace BattleCity
                 ((DynamicObject)sender).StopMoving();
                 if(sender is Shell)
                 {
-                    Shell s = sender as Shell;
-                    s.UnsubscribeFromPaint();
-                    UnsubscribeFromCheckPosition(s);
-                    s.MoveTimer.Stop();
+                    ((Shell)sender).InvokeDestroy();
                 }
             }
         }
@@ -168,7 +165,7 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        public void PlaceObstacle(Obstacle obstacle, byte i, byte j)
+        public void PlaceObstacle(Object obstacle, byte i, byte j)
         {
             throw new System.NotImplementedException();
         }

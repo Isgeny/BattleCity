@@ -21,7 +21,7 @@ namespace BattleCity
             if(Rect.IntersectsWith(clipRect))
             {
                 Graphics g = e.Graphics;
-                float currentFrame = (DateTime.Now.Millisecond % 1000 < 500) ? 0.0f : 32.0f;
+                float currentFrame = (DateTime.Now.Millisecond % 1000 > 500) ? 0.0f : 32.0f;
                 g.DrawImage(Properties.Resources.Tile_2, Rect, new RectangleF(currentFrame, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
             }
         }

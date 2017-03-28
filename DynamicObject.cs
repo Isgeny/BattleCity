@@ -14,7 +14,7 @@ namespace BattleCity
         public DynamicObject(GUIForm guiForm, RectangleF rect, Direction direction) : base(guiForm, rect)
         {
             moveTimer = new Timer();
-            moveTimer.Interval = 1000 / 60;
+            moveTimer.Interval = 15;
             dx = 0.0f;
             dy = 0.0f;
             this.direction = direction;
@@ -46,11 +46,8 @@ namespace BattleCity
 
         public virtual void Move()
         {
-            RectangleF oldRect = Rect;
-            RectangleF newRect = new RectangleF(Rect.X + dx, Rect.Y + dy, Rect.Width, Rect.Height);
-            Rect = newRect;
-            GUIForm.Invalidate(new Region(oldRect));
-            GUIForm.Invalidate(new Region(newRect));
+            Rect = new RectangleF(Rect.X + dx, Rect.Y + dy, Rect.Width, Rect.Height);
+            GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 8.0f, Rect.Y - 8.0f, Rect.Width + 16.0f, Rect.Height + 16.0f)));
         }
 
         public virtual void StopMoving()

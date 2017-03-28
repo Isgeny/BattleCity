@@ -6,7 +6,7 @@ namespace BattleCity
 {
     public class ConstructionForm : AbstractForm
     {
-        private Obstacle mouseObstacle;
+        private Object mouseObstacle;
 
         private System.Collections.Generic.List<BattleCity.GUIObject> blockBtns;
 
