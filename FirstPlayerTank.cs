@@ -14,6 +14,7 @@ namespace BattleCity
             Gun = true;
             Stars = 0;
             Lives = 9;
+            Points = 999999;
         }
 
         protected override void Respawn()

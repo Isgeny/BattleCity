@@ -42,7 +42,7 @@ namespace BattleCity
                 {
                     spriteTimer.Stop();
                 }
-                GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 100.0f, Rect.Y - 12.0f, 64.0f, 64.0f)));
+                GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 100.0f, Rect.Y - 18.0f, 64.0f, 64.0f)));
             }
         }
 
@@ -57,13 +57,13 @@ namespace BattleCity
             if(Selected)
             {
                 float currentFrame = (DateTime.Now.Millisecond % 24 < 13) ? 0.0f : 64.0f;
-                g.DrawImage(Properties.Resources.Tank_Selecting, new RectangleF(Rect.X - 100.0f, Rect.Y - 12.0f, 64.0f, 64.0f), new RectangleF(currentFrame, 0.0f, 64.0f, 64.0f), GraphicsUnit.Pixel);
+                g.DrawImage(Properties.Resources.Tank_Selecting, new RectangleF(Rect.X - 100.0f, Rect.Y - 18.0f, 64.0f, 64.0f), new RectangleF(currentFrame, 0.0f, 64.0f, 64.0f), GraphicsUnit.Pixel);
             }
         }
 
         private void OnSpriteTimer(object sender, EventArgs e)
         {
-            GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 100.0f, Rect.Y - 12.0f, 64.0f, 64.0f)));
+            GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 100.0f, Rect.Y - 18.0f, 64.0f, 64.0f)));
         }
     }
 }

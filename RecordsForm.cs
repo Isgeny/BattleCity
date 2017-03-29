@@ -15,7 +15,7 @@ namespace BattleCity
 
         public RecordsForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
-            btnMainMenu = new SelectButton(GUIForm, new RectangleF(270.0f, 790.0f, 0.0f, 0.0f), "MAIN MENU", true);
+            btnMainMenu = new SelectButton(GUIForm, new RectangleF(360.0f, 840.0f, 0.0f, 0.0f), "MAIN MENU", true);
 
             records = new SortedDictionary<int, string>(new ReverseComparer<int>(Comparer<int>.Default));
             LoadRecordsFromFile();
@@ -30,18 +30,18 @@ namespace BattleCity
         {
             Graphics g = e.Graphics;
             g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(new Point(), GUIForm.Size));
-            g.DrawImageUnscaled(Properties.Resources.Records, new Point(80, 30));
-            g.DrawString("POS", MyFont.GetFont(24), new SolidBrush(Color.Gray), new PointF(170.0f, 190.0f));
-            g.DrawString("NAME", MyFont.GetFont(24), new SolidBrush(Color.Gray), new PointF(350.0f, 190.0f));
-            g.DrawString("POINTS", MyFont.GetFont(24), new SolidBrush(Color.Gray), new PointF(650.0f, 190.0f));
+            g.DrawImageUnscaled(Properties.Resources.Records, 80, 30);
+            g.DrawString("POS", MyFont.GetFont(19), new SolidBrush(Color.Gray), new PointF(170.0f, 190.0f));
+            g.DrawString("NAME", MyFont.GetFont(19), new SolidBrush(Color.Gray), new PointF(350.0f, 190.0f));
+            g.DrawString("POINTS", MyFont.GetFont(19), new SolidBrush(Color.Gray), new PointF(650.0f, 190.0f));
 
             float y = 250.0f;
             int i = 1;
             foreach(KeyValuePair<int, string> rec in records)
             {
-                g.DrawString(i.ToString() + '.', MyFont.GetFont(20), new SolidBrush(Color.White), new PointF(170.0f, y));
-                g.DrawString(rec.Value, MyFont.GetFont(20), new SolidBrush(Color.White), new PointF(350.0f, y));
-                g.DrawString(rec.Key.ToString(), MyFont.GetFont(20), new SolidBrush(Color.White), new PointF(650.0f, y));
+                g.DrawString(i.ToString() + '.', MyFont.GetFont(19), new SolidBrush(Color.White), new PointF(170.0f, y));
+                g.DrawString(rec.Value, MyFont.GetFont(19), new SolidBrush(Color.White), new PointF(350.0f, y));
+                g.DrawString(rec.Key.ToString(), MyFont.GetFont(19), new SolidBrush(Color.White), new PointF(650.0f, y));
                 y += 50;
                 i++;
             }
@@ -109,6 +109,11 @@ namespace BattleCity
                     sw.WriteLine("");
                 }
             }
+        }
+
+        public int GetHighestRecord()
+        {
+            return records.Keys.First();
         }
     }
 }

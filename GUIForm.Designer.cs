@@ -39,7 +39,7 @@
             this.KeyPreview = true;
             this.Name = "GUIForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "BattleCity";
+            this.Text = "Battle City";
             this.ResumeLayout(false);
 
         }

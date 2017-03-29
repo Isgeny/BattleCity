@@ -14,7 +14,7 @@ namespace BattleCity
         {
             base.OnPaint(sender, e);
             Graphics g = e.Graphics;
-            g.DrawString(Text, new Font(MyFont.GetFont(28), FontStyle.Regular), new SolidBrush(Color.White), new PointF(Rect.X, Rect.Y));
+            g.DrawString(Text, MyFont.GetFont(19), new SolidBrush(Color.White), new PointF(Rect.X, Rect.Y));
         }
 
         protected override void OnKeyDown(object sender, KeyEventArgs e)

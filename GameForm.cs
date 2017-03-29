@@ -29,6 +29,16 @@ namespace BattleCity
             get { return field; }
         }
 
+        public PlayerTank P1Tank
+        {
+            get { return p1Tank; }
+        }
+
+        public PlayerTank P2Tank
+        {
+            get { return p2Tank; }
+        }
+
         private void OnPaint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;

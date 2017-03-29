@@ -15,11 +15,11 @@ namespace BattleCity
             position = 0;
 
             optionsObjs = new List<GUIObject>();
-            optionsObjs.Add(new OptionButton(GUIForm, new RectangleF(160.0f, 390.0f, 620.0f, 28.0f), "FRIENDLY FIRE", Properties.Settings.Default.FriendlyFire, true));
-            optionsObjs.Add(new OptionButton(GUIForm, new RectangleF(160.0f, 470.0f, 620.0f, 28.0f), "AI USE BONUS", Properties.Settings.Default.AIUseBonus));
-            optionsObjs.Add(new NameBox(GUIForm, new RectangleF(160.0f, 550.0f, 360.0f, 41.0f), Properties.Settings.Default.P1Name, "P1 NAME:"));
-            optionsObjs.Add(new NameBox(GUIForm, new RectangleF(160.0f, 630.0f, 360.0f, 41.0f), Properties.Settings.Default.P2Name, "P2 NAME:"));
-            optionsObjs.Add(new SelectButton(GUIForm, new RectangleF(310.0f, 790.0f, 0.0f, 0.0f), "MAIN MENU"));
+            optionsObjs.Add(new OptionButton(GUIForm, new RectangleF(260.0f, 440.0f, 400.0f, 28.0f), "FRIENDLY FIRE", Properties.Settings.Default.FriendlyFire, true));
+            optionsObjs.Add(new OptionButton(GUIForm, new RectangleF(260.0f, 520.0f, 400.0f, 28.0f), "AI USE BONUS", Properties.Settings.Default.AIUseBonus));
+            optionsObjs.Add(new NameBox(GUIForm, new RectangleF(260.0f, 600.0f, 250.0f, 41.0f), Properties.Settings.Default.P1Name, "P1 NAME:"));
+            optionsObjs.Add(new NameBox(GUIForm, new RectangleF(260.0f, 680.0f, 250.0f, 41.0f), Properties.Settings.Default.P2Name, "P2 NAME:"));
+            optionsObjs.Add(new SelectButton(GUIForm, new RectangleF(360.0f, 840.0f, 0.0f, 0.0f), "MAIN MENU"));
         }
 
         public override void Subscribe()
@@ -56,7 +56,7 @@ namespace BattleCity
         {
             Graphics g = e.Graphics;
             g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(new Point(), GUIForm.Size));
-            g.DrawImage(Properties.Resources.Options, 80, 30);
+            g.DrawImageUnscaled(Properties.Resources.Options, 80, 30);
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)

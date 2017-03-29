@@ -10,6 +10,7 @@ namespace BattleCity
     {
         public SecondPlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
+            Points = 777777;
         }
 
         protected override void Respawn()
