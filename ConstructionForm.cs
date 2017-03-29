@@ -21,6 +21,13 @@ namespace BattleCity
         public ConstructionForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
             blocks = new int[BLOCKS_COUNT, BLOCKS_COUNT];
+            blocks[12, 6] = 14;
+            blocks[12, 5] = 5;
+            blocks[11, 5] = 15;
+            blocks[11, 6] = 4;
+            blocks[11, 7] = 16;
+            blocks[12, 7] = 3;
+
             activeBlock = 1;
             iPos = 0;
             jPos = 0;
@@ -73,6 +80,8 @@ namespace BattleCity
         {
             if(e.Button == MouseButtons.Left)
                 PlaceBlock();
+            else if(e.Button == MouseButtons.Right)
+                RemoveBlock();
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
@@ -180,7 +189,11 @@ namespace BattleCity
             dict[11] = "wwww";
             dict[12] = "ssss";
             dict[13] = "iiii";
+            dict[14] = "eeee";
+            dict[15] = "eeeb";
+            dict[16] = "eebe";
 
+            blocks[12, 6] = 14;
             string[,] obs = new string[OBST_COUNT, OBST_COUNT];
             for(int i = 0; i < BLOCKS_COUNT; i++)
                 for(int j = 0; j < BLOCKS_COUNT; j++)
