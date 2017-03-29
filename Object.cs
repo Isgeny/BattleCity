@@ -95,6 +95,30 @@ namespace BattleCity
             guiForm.MouseClick -= OnMouseClick;
         }
 
+        protected virtual void OnMouseMove(object sender, MouseEventArgs e) { }
+
+        public virtual void SubscribeToMouseMove()
+        {
+            guiForm.MouseMove += OnMouseMove;
+        }
+
+        public virtual void UnsubscribeFromMouseMove()
+        {
+            guiForm.MouseMove -= OnMouseMove;
+        }
+
+        protected virtual void OnMouseWheel(object sender, MouseEventArgs e) { }
+
+        public virtual void SubscribeToMouseWheel()
+        {
+            guiForm.MouseWheel += OnMouseWheel;
+        }
+
+        public virtual void UnsubscribeFromMouseWheel()
+        {
+            guiForm.MouseWheel -= OnMouseWheel;
+        }
+
         public event EventHandler Destroy;
 
         public void InvokeDestroy()

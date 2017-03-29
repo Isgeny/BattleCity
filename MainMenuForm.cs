@@ -94,12 +94,14 @@ namespace BattleCity
 
         private void OnBtn2PlayerClick(object sender, EventArgs e)
         {
-            throw new System.NotImplementedException();
+            Unsubscribe();
+            GameManager.ActiveForm = GameManager.Game;
         }
 
         private void OnBtnConstructionClicked(object sender, EventArgs e)
         {
-            throw new System.NotImplementedException();
+            Unsubscribe();
+            GameManager.ActiveForm = GameManager.Construction;
         }
 
         private void OnBtnOptionsClicked(object sender, EventArgs e)
@@ -116,6 +118,7 @@ namespace BattleCity
 
         private void OnBtnExitClicked(object sender, EventArgs e)
         {
+            Unsubscribe();
             GUIForm.Close();
         }
 

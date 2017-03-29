@@ -17,11 +17,11 @@ namespace BattleCity
 
         public GameManager(GUIForm guiForm)
         {
-            mainMenu    = new MainMenuForm(guiForm, this);
-            game        = new GameForm(guiForm, this, 1);
-
-            options     = new OptionsForm(guiForm, this);
-            records     = new RecordsForm(guiForm, this);
+            mainMenu        = new MainMenuForm(guiForm, this);
+            game            = new GameForm(guiForm, this, 1);
+            construction    = new ConstructionForm(guiForm, this);
+            options         = new OptionsForm(guiForm, this);
+            records         = new RecordsForm(guiForm, this);
 
             ActiveForm = mainMenu;
         }
