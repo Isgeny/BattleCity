@@ -73,9 +73,17 @@ namespace BattleCity
 
         protected override void OnCheckPosition(object sender, RectEventArgs e)
         {
-            if(Rect.IntersectsWith(e.Rect) && sender is Tank)
+            if(Rect.IntersectsWith(e.Rect))
             {
-                InvokeDestroy();
+                if(sender is Tank)
+                {
+                    InvokeDestroy();
+                }
+                else if(sender is Shell)
+                {
+                    InvokeDestroy();
+                    ((Shell)sender).InvokeDestroy();
+                }
             }
         }
 
@@ -95,12 +103,11 @@ namespace BattleCity
             }
         }
 
-        public override void SubscribeToCheckPosition(Object creator)
+        public override void SubscribeToCheckPosition(Object obj)
         {
-            if(this.creator != creator)
-            {
-                base.SubscribeToCheckPosition(creator);
-            }
+            if(obj is Tank && creator == obj)
+                return;
+            base.SubscribeToCheckPosition(obj);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace BattleCity
         private Field field;
         private PlayerTank p1Tank;
         private PlayerTank p2Tank;
+        private List<Shell> shells;
 
         private PlayerTanksManager pTanksManager;
         private CompTanksManager cTanksManager;
@@ -22,6 +23,8 @@ namespace BattleCity
 
             p1Tank = new FirstPlayerTank(GUIForm, new RectangleF(320.0f, 832.0f, 64.0f, 64.0f));
             p2Tank = new SecondPlayerTank(GUIForm, new RectangleF(576.0f, 832.0f, 64.0f, 64.0f));
+
+            shells = new List<Shell>();
         }
 
         public Field Field
@@ -115,6 +118,22 @@ namespace BattleCity
             s.SubscribeToCheckPosition(p1Tank);
             s.SubscribeToCheckPosition(p2Tank);
             s.SubscribeToPaint();
+            s.Destroy += OnShellDestroy;
+            SubscribeShellToShells(s);
+            shells.Add(s);
+        }
+
+        private void SubscribeShellToShells(Shell s)
+        {
+            foreach(Shell shell in shells)
+            {
+                s.SubscribeToCheckPosition(shell);
+            }
+        }
+
+        private void OnShellDestroy(object sender, EventArgs e)
+        {
+            shells.Remove((Shell)sender);
         }
 
         private void OnObstacleDestroyed(object sender, EventArgs e)
