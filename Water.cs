@@ -1,18 +1,12 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace BattleCity
 {
     public class Water : Object
     {
-        private Timer spriteTimer;
-
         public Water(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
-            spriteTimer = new Timer();
-            spriteTimer.Interval = 1500;
-            spriteTimer.Tick += OnSpriteTimer;
         }
 
         protected override void OnPaint(object sender, PaintEventArgs e)
@@ -21,26 +15,8 @@ namespace BattleCity
             if(Rect.IntersectsWith(clipRect))
             {
                 Graphics g = e.Graphics;
-                float currentFrame = (DateTime.Now.Millisecond % 1000 > 500) ? 0.0f : 32.0f;
-                g.DrawImage(Properties.Resources.Tile_2, Rect, new RectangleF(currentFrame, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
+                g.DrawImage(Properties.Resources.Tile_2, Rect);
             }
-        }
-
-        private void OnSpriteTimer(object sender, EventArgs e)
-        {
-            GUIForm.Invalidate(new Region(Rect));
-        }
-
-        public override void SubscribeToPaint()
-        {
-            base.SubscribeToPaint();
-            spriteTimer.Start();
-        }
-
-        public override void UnsubscribeFromPaint()
-        {
-            base.UnsubscribeFromPaint();
-            spriteTimer.Stop();
         }
 
         protected override void OnCheckPosition(object sender, RectEventArgs e)

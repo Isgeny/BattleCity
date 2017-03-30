@@ -18,7 +18,7 @@ namespace BattleCity
         public GameForm(GUIForm guiForm, GameManager gameManager, int players) : base(guiForm, gameManager)
         {
             field = new Field(guiForm, new RectangleF(64.0f, 64.0f, 832.0f, 832.0f));
-            field.LoadStage(39);
+            field.LoadStage(35);
 
             p1Tank = new FirstPlayerTank(GUIForm, new RectangleF(320.0f, 832.0f, 64.0f, 64.0f));
             p2Tank = new SecondPlayerTank(GUIForm, new RectangleF(576.0f, 832.0f, 64.0f, 64.0f));

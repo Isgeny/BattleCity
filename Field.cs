@@ -15,7 +15,7 @@ namespace BattleCity
 
         public Field(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
-            stage = 39;
+            stage = 1;
             obstacles = new List<Object>();
         }
 
@@ -39,6 +39,7 @@ namespace BattleCity
 
         public void LoadStage(int stage)
         {
+            this.stage = stage;
             string s = Properties.Resources.ResourceManager.GetString("Stage_" + stage.ToString());
             int i = 0, j = 0;
             for(int c = 0; c < s.Length; c++)

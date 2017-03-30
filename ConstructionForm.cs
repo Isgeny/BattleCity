@@ -21,13 +21,6 @@ namespace BattleCity
         public ConstructionForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
             blocks = new int[BLOCKS_COUNT, BLOCKS_COUNT];
-            blocks[12, 6] = 14;
-            blocks[12, 5] = 5;
-            blocks[11, 5] = 15;
-            blocks[11, 6] = 4;
-            blocks[11, 7] = 16;
-            blocks[12, 7] = 3;
-
             activeBlock = 1;
             iPos = 0;
             jPos = 0;
@@ -41,6 +34,7 @@ namespace BattleCity
             GUIForm.MouseWheel += OnMouseWheel;
             GUIForm.KeyDown += OnKeyDown;
 
+            CleanField();
             GUIForm.Invalidate();
         }
 
@@ -112,6 +106,19 @@ namespace BattleCity
         private void RemoveBlock()
         {
             blocks[iPos, jPos] = 0;
+        }
+
+        private void CleanField()
+        {
+            for(int i = 0; i < BLOCKS_COUNT; i++)
+                for(int j = 0; j < BLOCKS_COUNT; j++)
+                    blocks[i, j] = 0;
+            blocks[12, 6] = 14;
+            blocks[12, 5] = 5;
+            blocks[11, 5] = 15;
+            blocks[11, 6] = 4;
+            blocks[11, 7] = 16;
+            blocks[12, 7] = 3;
         }
 
         private static bool InsideField(Point p)
