@@ -30,7 +30,7 @@ namespace BattleCity
             throw new System.NotImplementedException();
         }
 
-        public void SubscribeToBonus(Bonus bonus)
+        public void SubscribeToBonus(/*Bonus bonus*/)
         {
             throw new System.NotImplementedException();
         }

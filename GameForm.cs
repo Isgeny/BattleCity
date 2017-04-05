@@ -14,7 +14,7 @@ namespace BattleCity
 
         private PlayerTanksManager pTanksManager;
         private CompTanksManager cTanksManager;
-        private Bonus bonus;
+        //private Bonus bonus;
 
         public GameForm(GUIForm guiForm, GameManager gameManager, int players) : base(guiForm, gameManager)
         {
