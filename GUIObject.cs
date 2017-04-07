@@ -6,44 +6,50 @@ namespace BattleCity
 {
     public abstract class GUIObject : Object
     {
-        private string text;
-        private bool selected;
-        private Timer spriteTimer;
+        private string _text;
+        private bool _selected;
+        private Timer _spriteTimer;
 
         public event EventHandler Clicked;
 
         public GUIObject(GUIForm guiForm, RectangleF rect, string text, bool selected = false) : base(guiForm, rect)
         {
-            this.text = text;
+            _text = text;
 
-            spriteTimer = new Timer();
-            spriteTimer.Interval = 24;
-            spriteTimer.Tick += OnSpriteTimer;
+            _spriteTimer = new Timer();
+            _spriteTimer.Interval = 24;
+            _spriteTimer.Tick += OnSpriteTimer;
             Selected = selected;
         }
 
         public string Text
         {
-            get { return text; }
-            set { text = value; }
+            get { return _text; }
+            set { _text = value; }
         }
 
         public virtual bool Selected
         {
-            get { return selected; }
+            get { return _selected; }
             set
             {
-                selected = value;
+                _selected = value;
                 if(Selected)
-                {
-                    spriteTimer.Start();
-                }
+                    _spriteTimer.Start();
                 else
-                {
-                    spriteTimer.Stop();
-                }
+                    _spriteTimer.Stop();
                 GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 100.0f, Rect.Y - 18.0f, 64.0f, 64.0f)));
             }
+        }
+
+        public override void Subscribe()
+        {
+            GUIForm.Paint += OnPaint;
+        }
+
+        public override void Unsubscribe()
+        {
+            GUIForm.Paint -= OnPaint;
         }
 
         protected void InvokeClicked(EventArgs e)
@@ -51,7 +57,7 @@ namespace BattleCity
             Clicked?.Invoke(this, e);
         }
 
-        protected override void OnPaint(object sender, PaintEventArgs e)
+        protected virtual void OnPaint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
             if(Selected)

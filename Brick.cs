@@ -5,20 +5,32 @@ namespace BattleCity
 {
     public class Brick : Object
     {
-        private RectangleF cuttedRect;
+        private RectangleF _cuttedRect;
 
         public Brick(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
-            cuttedRect = new RectangleF(0.0f, 0.0f, rect.Width, rect.Height);
+            _cuttedRect = new RectangleF(0.0f, 0.0f, rect.Width, rect.Height);
         }
 
-        protected override void OnPaint(object sender, PaintEventArgs e)
+        public override void Subscribe()
+        {
+            GUIForm.Paint += OnPaint;
+            Destroyed += OnDestroyed;
+        }
+
+        public override void Unsubscribe()
+        {
+            GUIForm.Paint -= OnPaint;
+            Destroyed -= OnDestroyed;
+        }
+
+        private void OnPaint(object sender, PaintEventArgs e)
         {
             RectangleF clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))
             {
                 Graphics g = e.Graphics;
-                g.DrawImage(Properties.Resources.Tile_0, Rect.X, Rect.Y, cuttedRect, GraphicsUnit.Pixel);
+                g.DrawImage(Properties.Resources.Tile_0, Rect.X, Rect.Y, _cuttedRect, GraphicsUnit.Pixel);
             }
         }
 
@@ -33,7 +45,7 @@ namespace BattleCity
                 else if(sender is Shell)
                 {
                     Shell s = sender as Shell;
-                    s.InvokeDestroy();
+                    s.InvokeDestroyed();
                     int creatorStars = s.Creator.Stars;
                     if(creatorStars >= 0 && creatorStars <= 2)
                     {
@@ -41,31 +53,31 @@ namespace BattleCity
                         switch(s.Direction)
                         {
                             case Direction.Up:
-                                cuttedRect = new RectangleF(cuttedRect.X, cuttedRect.Y, cuttedRect.Width, cuttedRect.Height - 16.0f);
+                                _cuttedRect = new RectangleF(_cuttedRect.X, _cuttedRect.Y, _cuttedRect.Width, _cuttedRect.Height - 16.0f);
                                 Rect = new RectangleF(Rect.X, Rect.Y, Rect.Width, Rect.Height - 16.0f);
                                 break;
                             case Direction.Left:
-                                cuttedRect = new RectangleF(cuttedRect.X, cuttedRect.Y, cuttedRect.Width - 16.0f, cuttedRect.Height);
+                                _cuttedRect = new RectangleF(_cuttedRect.X, _cuttedRect.Y, _cuttedRect.Width - 16.0f, _cuttedRect.Height);
                                 Rect = new RectangleF(Rect.X, Rect.Y, Rect.Width - 16.0f, Rect.Height);
                                 break;
                             case Direction.Down:
-                                cuttedRect = new RectangleF(cuttedRect.X, cuttedRect.Y + 16.0f, cuttedRect.Width, cuttedRect.Height);
+                                _cuttedRect = new RectangleF(_cuttedRect.X, _cuttedRect.Y + 16.0f, _cuttedRect.Width, _cuttedRect.Height);
                                 Rect = new RectangleF(Rect.X, Rect.Y + 16.0f, Rect.Width, Rect.Height);
                                 break;
                             case Direction.Right:
-                                cuttedRect = new RectangleF(cuttedRect.X + 16.0f, cuttedRect.Y, cuttedRect.Width, cuttedRect.Height);
+                                _cuttedRect = new RectangleF(_cuttedRect.X + 16.0f, _cuttedRect.Y, _cuttedRect.Width, _cuttedRect.Height);
                                 Rect = new RectangleF(Rect.X + 16.0f, Rect.Y, Rect.Width, Rect.Height);
                                 break;
                         }
-                        if(Rect.IsEmpty || cuttedRect.X > 31.0f || cuttedRect.Y > 31.0f)
+                        if(Rect.IsEmpty || _cuttedRect.X > 31.0f || _cuttedRect.Y > 31.0f)
                         {
-                            InvokeDestroy();
+                            InvokeDestroyed();
                         }
                         GUIForm.Invalidate(new Region(oldRect));
                     }
                     else if(creatorStars == 3)
                     {
-                        InvokeDestroy();
+                        InvokeDestroyed();
                     }
                 }
             }

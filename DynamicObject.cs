@@ -6,54 +6,54 @@ namespace BattleCity
 {
     public abstract class DynamicObject : Object
     {
-        private Timer moveTimer;
-        private float dx;
-        private float dy;
-        private Direction direction;
+        private Timer _moveTimer;
+        private float _dx;
+        private float _dy;
+        private Direction _direction;
 
         public DynamicObject(GUIForm guiForm, RectangleF rect, Direction direction) : base(guiForm, rect)
         {
-            moveTimer = new Timer();
-            moveTimer.Interval = 15;
-            dx = 0.0f;
-            dy = 0.0f;
-            this.direction = direction;
+            _moveTimer = new Timer();
+            _moveTimer.Interval = 15;
+            _dx = 0.0f;
+            _dy = 0.0f;
+            _direction = direction;
         }
 
         public Timer MoveTimer
         {
-            get { return moveTimer; }
-            set { moveTimer = value; }
+            get { return _moveTimer; }
+            set { _moveTimer = value; }
         }
 
         public float Dx
         {
-            get { return dx; }
-            set { dx = value; }
+            get { return _dx; }
+            set { _dx = value; }
         }
 
         public float Dy
         {
-            get { return dy; }
-            set { dy = value; }
+            get { return _dy; }
+            set { _dy = value; }
         }
 
         public Direction Direction
         {
-            get { return direction; }
-            set { direction = value; }
+            get { return _direction; }
+            set { _direction = value; }
         }
 
         public virtual void Move()
         {
-            Rect = new RectangleF(Rect.X + dx, Rect.Y + dy, Rect.Width, Rect.Height);
+            Rect = new RectangleF(Rect.X + _dx, Rect.Y + _dy, Rect.Width, Rect.Height);
             GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 8.0f, Rect.Y - 8.0f, Rect.Width + 16.0f, Rect.Height + 16.0f)));
         }
 
         public virtual void StopMoving()
         {
-            dx = 0.0f;
-            dy = 0.0f;
+            _dx = 0.0f;
+            _dy = 0.0f;
         }
     }
 }

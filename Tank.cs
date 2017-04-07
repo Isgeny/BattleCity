@@ -1,78 +1,117 @@
 ﻿using System;
 using System.Drawing;
+using System.Resources;
 using System.Windows.Forms;
 
 namespace BattleCity
 {
     public abstract class Tank : DynamicObject
     {
-        private int hp;
-        private int lives;
-        private int stars;
-        private bool immortal;
-        private bool amphibian;
-        private bool gun;
-        private int ammo;
-        private int points;
+        private int _hp;
+        private int _lives;
+        private int _stars;
+        private bool _immortal;
+        private bool _amphibian;
+        private bool _gun;
+        private int _ammo;
+        private int _points;
 
         public Tank(GUIForm guiForm, RectangleF rect, Direction direction) : base(guiForm, rect, Direction.Up)
         {
-            hp = 1;
-            lives = 1;
-            stars = 0;
-            immortal = false;
-            amphibian = false;
-            gun = false;
-            ammo = 1;
-            points = 0;
+            _hp = 1;
+            _lives = 1;
+            _stars = 0;
+            _immortal = false;
+            _amphibian = false;
+            _gun = false;
+            _ammo = 1;
+            _points = 0;
         }
 
         public int HP
         {
-            get { return hp; }
-            set { hp = value; }
+            get { return _hp; }
+            set { _hp = value; }
         }
 
         public int Lives
         {
-            get { return lives; }
-            set { lives = value; }
+            get { return _lives; }
+            set { _lives = value; }
         }
 
         public int Stars
         {
-            get { return stars; }
-            set { stars = value; }
+            get { return _stars; }
+            set { _stars = value; }
         }
 
         public bool Immortal
         {
-            get { return immortal; }
-            set { immortal = value; }
+            get { return _immortal; }
+            set { _immortal = value; }
         }
 
         public bool Amphibian
         {
-            get { return amphibian; }
-            set { amphibian = value; }
+            get { return _amphibian; }
+            set { _amphibian = value; }
         }
 
         public bool Gun
         {
-            get { return gun; }
-            set { gun = value; }
+            get { return _gun; }
+            set { _gun = value; }
         }
 
         public int Ammo
         {
-            get { return ammo; }
-            set { ammo = value; }
+            get { return _ammo; }
+            set { _ammo = value; }
         }
 
         public int Points
         {
-            get { return points; }
-            set { points = value; }
+            get { return _points; }
+            set { _points = value; }
+        }
+
+        public override void Subscribe()
+        {
+            GUIForm.Paint += OnPaint;
+        }
+
+        public override void Unsubscribe()
+        {
+            GUIForm.Paint -= OnPaint;
+        }
+
+        private void OnPaint(object sender, PaintEventArgs e)
+        {
+            RectangleF clipRect = e.ClipRectangle;
+            if(Rect.IntersectsWith(clipRect))
+            {
+                Graphics g = e.Graphics;
+                float currentFrame = ((Rect.X + Rect.Y) % 8 < 4) ? 0.0f : 64.0f;
+                Bitmap bmp = GetCurrentSprite();
+
+                g.DrawImage(bmp, Rect, new RectangleF(currentFrame, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
+
+                if(Amphibian)
+                {
+                    g.DrawImage(Properties.Resources.Ship_Shield, Rect.X, Rect.Y);
+                }
+            }
+        }
+
+        protected abstract void Respawn();
+
+        private Bitmap GetCurrentSprite()
+        {
+            ResourceManager rm = Properties.Resources.ResourceManager;
+            string filename = GetType().Name + "_" + Stars + "_" + (int)Direction;
+            Bitmap bmp = (Bitmap)rm.GetObject(filename);
+            return bmp;
         }
 
         protected void Turn(Direction direction)
@@ -117,27 +156,18 @@ namespace BattleCity
             Direction = direction;
         }
 
-        protected abstract void Respawn();
-
         protected void Die()
         {
-            lives--;
-            if(lives < 0)
+            _lives--;
+            if(_lives < 0)
             {
-                InvokeDestroyed(new EventArgs());
+                InvokeDestroyed();
             }
         }
 
         public bool IsAlive()
         {
-            return (lives >= 0) ? true : false;
-        }
-
-        public event EventHandler Destroyed;
-
-        protected void InvokeDestroyed(EventArgs e)
-        {
-            Destroyed?.Invoke(this, e);
+            return (_lives >= 0) ? true : false;
         }
 
         public event ShellEventHandler Shoot;

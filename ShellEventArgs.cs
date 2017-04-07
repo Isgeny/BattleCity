@@ -1,20 +1,20 @@
 ﻿namespace BattleCity
 {
-    public delegate void ShellEventHandler(object sender, BattleCity.ShellEventArgs e);
+    public delegate void ShellEventHandler(object sender, ShellEventArgs e);
 
     public class ShellEventArgs
     {
-        private Shell shell;
+        private Shell _shell;
 
         public ShellEventArgs(Shell shell)
         {
-            this.shell = shell;
+            _shell = shell;
         }
 
         public Shell Shell
         {
-            get { return shell; }
-            set { shell = value; }
+            get { return _shell; }
+            set { _shell = value; }
         }
     }
 }

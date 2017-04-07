@@ -6,17 +6,17 @@ namespace BattleCity
 
     public class RectEventArgs
     {
-        private RectangleF rect;
+        private RectangleF _rect;
 
         public RectEventArgs(RectangleF rect)
         {
-            this.rect = rect;
+            this._rect = rect;
         }
 
         public RectangleF Rect
         {
-            get { return rect; }
-            set { rect = value; }
+            get { return _rect; }
+            set { _rect = value; }
         }
     }
 }

@@ -5,30 +5,32 @@ namespace BattleCity
 {
     public class HQ : Object
     {
-        private bool destroyed;
+        private bool _destroyed;
 
         public HQ(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
-            destroyed = false;
+            _destroyed = false;
         }
 
-        public bool Destroyed
+        public override void Subscribe()
         {
-            get { return destroyed; }
-            set
-            {
-                destroyed = value;
-                GUIForm.Invalidate(new Region(Rect));
-            }
+            GUIForm.Paint += OnPaint;
+            Destroyed += OnDestroyed;
         }
 
-        protected override void OnPaint(object sender, PaintEventArgs e)
+        public override void Unsubscribe()
+        {
+            GUIForm.Paint -= OnPaint;
+            Destroyed -= OnDestroyed;
+        }
+
+        private void OnPaint(object sender, PaintEventArgs e)
         {
             RectangleF clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))
             {
                 Graphics g = e.Graphics;
-                float currentFrame = (!destroyed) ? 0.0f : 64.0f;
+                float currentFrame = (!_destroyed) ? 0.0f : 64.0f;
                 g.DrawImage(Properties.Resources.Tile_5, Rect, new RectangleF(currentFrame, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
             }
         }
@@ -44,8 +46,9 @@ namespace BattleCity
                 else if(sender is Shell)
                 {
                     Shell s = sender as Shell;
-                    s.InvokeDestroy();
-                    Destroyed = true;
+                    s.InvokeDestroyed();
+                    _destroyed = true;
+                    InvokeDestroyed();
                 }
             }
         }

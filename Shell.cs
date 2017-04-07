@@ -7,12 +7,11 @@ namespace BattleCity
 {
     public class Shell : DynamicObject
     {
-        private int power;
-        private Tank creator;
+        private Tank _creator;
 
         public Shell(GUIForm guiForm, Tank creator) : base(guiForm, new RectangleF(), creator.Direction)
         {
-            this.creator = creator;
+            _creator = creator;
             MoveTimer.Tick += OnMoveTimer;
             MoveTimer.Start();
 
@@ -47,18 +46,25 @@ namespace BattleCity
             }
         }
 
-        public int Power
+        public override void Subscribe()
         {
-            get { return power; }
+            GUIForm.Paint += OnPaint;
+            Destroyed += OnDestroyed;
+        }
+
+        public override void Unsubscribe()
+        {
+            GUIForm.Paint -= OnPaint;
+            Destroyed -= OnDestroyed;
         }
 
         public Tank Creator
         {
-            get { return creator; }
-            set { creator = value; }
+            get { return _creator; }
+            set { _creator = value; }
         }
 
-        protected override void OnPaint(object sender, PaintEventArgs e)
+        private void OnPaint(object sender, PaintEventArgs e)
         {
             RectangleF clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))
@@ -77,12 +83,12 @@ namespace BattleCity
             {
                 if(sender is Tank)
                 {
-                    InvokeDestroy();
+                    InvokeDestroyed();
                 }
                 else if(sender is Shell)
                 {
-                    InvokeDestroy();
-                    ((Shell)sender).InvokeDestroy();
+                    InvokeDestroyed();
+                    ((Shell)sender).InvokeDestroyed();
                 }
             }
         }
@@ -93,21 +99,29 @@ namespace BattleCity
             Move();
         }
 
-        protected override void OnDestroy(object sender, EventArgs e)
+        protected override void OnDestroyed(object sender, EventArgs e)
         {
-            base.OnDestroy(sender, e);
+            base.OnDestroyed(sender, e);
             if(MoveTimer.Enabled)
             {
+                Unsubscribe();
                 MoveTimer.Stop();
-                creator.Ammo++;
+                _creator.Ammo++;
             }
         }
 
         public override void SubscribeToCheckPosition(Object obj)
         {
-            if(obj is Tank && creator == obj)
+            if(obj is Tank && _creator == obj)
                 return;
             base.SubscribeToCheckPosition(obj);
+        }
+
+        public override void UnsubscribeFromCheckPosition(Object obj)
+        {
+            if(obj is Tank && _creator == obj)
+                return;
+            base.UnsubscribeFromCheckPosition(obj);
         }
     }
 }

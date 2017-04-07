@@ -13,38 +13,37 @@ namespace BattleCity
         private const int BLOCKS_COUNT = 13;
         private const int OBST_SZ = 32;
         private const int OBST_COUNT = 26;
-        private int[,] blocks;
-        private int activeBlock;
-        private int iPos;
-        private int jPos;
-   
+        private int[,] _blocks;
+        private int _activeBlock;
+        private int _iPos;
+        private int _jPos;
+
         public ConstructionForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
-            blocks = new int[BLOCKS_COUNT, BLOCKS_COUNT];
-            activeBlock = 1;
-            iPos = 0;
-            jPos = 0;
+            _blocks = new int[BLOCKS_COUNT, BLOCKS_COUNT];
+            _activeBlock = 1;
+            _iPos = 0;
+            _jPos = 0;
         }
 
         public override void Subscribe()
         {
+            base.Subscribe();
             GUIForm.Paint += OnPaint;
             GUIForm.MouseClick += OnMouseClick;
             GUIForm.MouseMove += OnMouseMove;
             GUIForm.MouseWheel += OnMouseWheel;
-            GUIForm.KeyDown += OnKeyDown;
 
             CleanField();
-            GUIForm.Invalidate();
         }
 
         public override void Unsubscribe()
         {
+            base.Unsubscribe();
             GUIForm.Paint -= OnPaint;
             GUIForm.MouseClick -= OnMouseClick;
             GUIForm.MouseMove -= OnMouseMove;
             GUIForm.MouseWheel -= OnMouseWheel;
-            GUIForm.KeyDown -= OnKeyDown;
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
@@ -57,10 +56,10 @@ namespace BattleCity
 
             for(int i = 0; i < BLOCKS_COUNT; i++)
                 for(int j = 0; j < BLOCKS_COUNT; j++)
-                    if(blocks[i, j] != 0)
-                        g.DrawImageUnscaled(GetBlockImage(blocks[i, j]), new Point(j * BLOCK_SZ + BLOCK_SZ, i * BLOCK_SZ + BLOCK_SZ));
+                    if(_blocks[i, j] != 0)
+                        g.DrawImageUnscaled(GetBlockImage(_blocks[i, j]), new Point(j * BLOCK_SZ + BLOCK_SZ, i * BLOCK_SZ + BLOCK_SZ));
 
-            g.DrawImageUnscaled(GetBlockImage(activeBlock), new Point(jPos * BLOCK_SZ + BLOCK_SZ, iPos * BLOCK_SZ + BLOCK_SZ));
+            g.DrawImageUnscaled(GetBlockImage(_activeBlock), new Point(_jPos * BLOCK_SZ + BLOCK_SZ, _iPos * BLOCK_SZ + BLOCK_SZ));
         }
 
         private Bitmap GetBlockImage(int value)
@@ -94,31 +93,31 @@ namespace BattleCity
         private void ChangePosition(Point p)
         {
             Point newP = XYtoIJ(RoundMousePos(p));
-            iPos = newP.Y;
-            jPos = newP.X;
+            _iPos = newP.Y;
+            _jPos = newP.X;
         }
 
         private void PlaceBlock()
         {
-            blocks[iPos, jPos] = activeBlock;
+            _blocks[_iPos, _jPos] = _activeBlock;
         }
 
         private void RemoveBlock()
         {
-            blocks[iPos, jPos] = 0;
+            _blocks[_iPos, _jPos] = 0;
         }
 
         private void CleanField()
         {
             for(int i = 0; i < BLOCKS_COUNT; i++)
                 for(int j = 0; j < BLOCKS_COUNT; j++)
-                    blocks[i, j] = 0;
-            blocks[12, 6] = 14;
-            blocks[12, 5] = 5;
-            blocks[11, 5] = 15;
-            blocks[11, 6] = 4;
-            blocks[11, 7] = 16;
-            blocks[12, 7] = 3;
+                    _blocks[i, j] = 0;
+            _blocks[12, 6] = 14;
+            _blocks[12, 5] = 5;
+            _blocks[11, 5] = 15;
+            _blocks[11, 6] = 4;
+            _blocks[11, 7] = 16;
+            _blocks[12, 7] = 3;
         }
 
         private static bool InsideField(Point p)
@@ -129,13 +128,13 @@ namespace BattleCity
         private void OnMouseWheel(object sender, MouseEventArgs e)
         {
             if(e.Delta < 1)
-                activeBlock = (activeBlock < 13) ? ++activeBlock : 1;
+                _activeBlock = (_activeBlock < 13) ? ++_activeBlock : 1;
             else
-                activeBlock = (activeBlock != 1) ? --activeBlock : 13;
+                _activeBlock = (_activeBlock != 1) ? --_activeBlock : 13;
             GUIForm.Invalidate();
         }
 
-        private void OnKeyDown(object sender, KeyEventArgs e)
+        protected override void OnKeyDown(object sender, KeyEventArgs e)
         {
             if(e.KeyCode == Keys.S)
                 SaveToFile();
@@ -143,7 +142,7 @@ namespace BattleCity
             {
                 ConvertBlocksToList();
                 Unsubscribe();
-                GameManager.ActiveForm = GameManager.MainMenu;
+                GameManager.SetMainMenuForm();
             }
         }
 
@@ -155,7 +154,7 @@ namespace BattleCity
                 for(int j = 0; j < OBST_COUNT; j++)
                 {
                     RectangleF rect = new RectangleF(j * OBST_SZ, i * OBST_SZ, 32.0f, 32.0f);
-                    switch(s[i,j])
+                    switch(s[i, j])
                     {
                         case "b":
                             list.Add(new Brick(GUIForm, rect));
@@ -200,15 +199,15 @@ namespace BattleCity
             dict[15] = "eeeb";
             dict[16] = "eebe";
 
-            blocks[12, 6] = 14;
+            _blocks[12, 6] = 14;
             string[,] obs = new string[OBST_COUNT, OBST_COUNT];
             for(int i = 0; i < BLOCKS_COUNT; i++)
                 for(int j = 0; j < BLOCKS_COUNT; j++)
                 {
-                    obs[i * 2, j * 2]           = dict[ blocks[i, j] ][0].ToString();
-                    obs[i * 2, j * 2 + 1]       = dict[ blocks[i, j] ][1].ToString();
-                    obs[i * 2 + 1, j * 2]       = dict[ blocks[i, j] ][2].ToString();
-                    obs[i * 2 + 1, j * 2 + 1]   = dict[ blocks[i, j] ][3].ToString();
+                    obs[i * 2, j * 2] = dict[_blocks[i, j]][0].ToString();
+                    obs[i * 2, j * 2 + 1] = dict[_blocks[i, j]][1].ToString();
+                    obs[i * 2 + 1, j * 2] = dict[_blocks[i, j]][2].ToString();
+                    obs[i * 2 + 1, j * 2 + 1] = dict[_blocks[i, j]][3].ToString();
                 }
             return obs;
         }
@@ -222,7 +221,7 @@ namespace BattleCity
         }
 
         public static Point RoundMousePos(Point p)
-        { 
+        {
             return new Point(p.X / BLOCK_SZ * BLOCK_SZ, p.Y / BLOCK_SZ * BLOCK_SZ);
         }
 

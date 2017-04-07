@@ -7,39 +7,75 @@ namespace BattleCity
 {
     public class GameForm : AbstractForm
     {
-        private Field field;
-        private PlayerTank p1Tank;
-        private PlayerTank p2Tank;
+        private Field _field;
+        private PlayerTank _p1Tank;
+        private PlayerTank _p2Tank;
         private List<Shell> shells;
 
-        private PlayerTanksManager pTanksManager;
-        private CompTanksManager cTanksManager;
-        //private Bonus bonus;
+        //private PlayerTanksManager pTanksManager;
+        //private CompTanksManager cTanksManager;
+        ////private Bonus bonus;
 
-        public GameForm(GUIForm guiForm, GameManager gameManager, int players) : base(guiForm, gameManager)
+        public GameForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
-            field = new Field(guiForm, new RectangleF(64.0f, 64.0f, 832.0f, 832.0f));
-            field.LoadStage(35);
+            _field = new Field(guiForm, new RectangleF(64.0f, 64.0f, 832.0f, 832.0f));
+            _field.LoadStage(1);
 
-            p1Tank = new FirstPlayerTank(GUIForm, new RectangleF(320.0f, 832.0f, 64.0f, 64.0f));
-            p2Tank = new SecondPlayerTank(GUIForm, new RectangleF(576.0f, 832.0f, 64.0f, 64.0f));
+            _p1Tank = new FirstPlayerTank(GUIForm, new RectangleF(320.0f, 832.0f, 64.0f, 64.0f));
+            _p2Tank = new SecondPlayerTank(GUIForm, new RectangleF(576.0f, 832.0f, 64.0f, 64.0f));
 
             shells = new List<Shell>();
         }
 
         public Field Field
         {
-            get { return field; }
+            get { return _field; }
         }
 
         public PlayerTank P1Tank
         {
-            get { return p1Tank; }
+            get { return _p1Tank; }
         }
 
         public PlayerTank P2Tank
         {
-            get { return p2Tank; }
+            get { return _p2Tank; }
+        }
+
+        public override void Subscribe()
+        {
+            GUIForm.Paint += OnPaint;
+
+            _field.Subscribe();
+            _field.SubscribeToCheckPosition(_p1Tank);
+            _field.SubscribeToCheckPosition(_p2Tank);
+            _field.ObstacleDestroyed += OnObstacleDestroyed;
+
+            _p1Tank.Subscribe();
+            _p1Tank.SubscribeToCheckPosition(_p2Tank);
+            _p1Tank.Shoot += OnShoot;
+
+            _p2Tank.Subscribe();
+            _p2Tank.SubscribeToCheckPosition(_p1Tank);
+            _p2Tank.Shoot += OnShoot;
+        }
+
+        public override void Unsubscribe()
+        {
+            GUIForm.Paint -= OnPaint;
+
+            _field.Unsubscribe();
+            _field.UnsubscribeFromCheckPosition(_p1Tank);
+            _field.UnsubscribeFromCheckPosition(_p2Tank);
+            _field.ObstacleDestroyed -= OnObstacleDestroyed;
+
+            _p1Tank.Unsubscribe();
+            _p1Tank.UnsubscribeFromCheckPosition(_p2Tank);
+            _p1Tank.Shoot -= OnShoot;
+
+            _p2Tank.Unsubscribe();
+            _p2Tank.UnsubscribeFromCheckPosition(_p1Tank);
+            _p2Tank.Shoot -= OnShoot;
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
@@ -52,73 +88,25 @@ namespace BattleCity
             string name = "";
             name += Properties.Settings.Default.P1Name[0];
             name += Properties.Settings.Default.P1Name[1];
-            g.DrawString(p1Tank.Lives.ToString(), MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(940.0f, 626.0f));
+            g.DrawString(_p1Tank.Lives.ToString(), MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(940.0f, 626.0f));
             g.DrawString(name, MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(910.0f, 585.0f));
 
             g.DrawImageUnscaled(Properties.Resources.Player_Icon, new Point(910, 732));
-            g.DrawString(p2Tank.Lives.ToString(), MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(940.0f, 732.0f));
+            g.DrawString(_p2Tank.Lives.ToString(), MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(940.0f, 732.0f));
             name = "";
             name += Properties.Settings.Default.P2Name[0];
             name += Properties.Settings.Default.P2Name[1];
             g.DrawString(name, MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(910.0f, 690.0f));
         }
 
-        public override void Subscribe()
-        {
-            GUIForm.Paint += OnPaint;
-
-            field.SubscribeToPaint();
-            field.SubscribeToCheckPosition(p1Tank);
-            field.SubscribeToCheckPosition(p2Tank);
-            field.SubscribeToObstaclesDestroy();
-            field.ObstacleDestroyed += OnObstacleDestroyed;
-
-            p1Tank.SubscribeToPaint();
-            p1Tank.SubscribeToCheckPosition(p2Tank);
-            p1Tank.SubscribeToKeyDown();
-            p1Tank.SubscribeToKeyUp();
-            p1Tank.Shoot += OnShoot;
-
-            p2Tank.SubscribeToPaint();
-            p2Tank.SubscribeToCheckPosition(p1Tank);
-            p2Tank.SubscribeToKeyDown();
-            p2Tank.SubscribeToKeyUp();
-            p2Tank.Shoot += OnShoot;
-
-            GUIForm.Invalidate();
-        }
-
-        public override void Unsubscribe()
-        {
-            GUIForm.Paint -= OnPaint;
-
-            field.UnsubscribeFromPaint();
-            field.UnsubscribeFromCheckPosition(p1Tank);
-            field.UnsubscribeFromCheckPosition(p2Tank);
-            field.UnsubscribeFromObstaclesDestroy();
-            field.ObstacleDestroyed -= OnObstacleDestroyed;
-
-            p1Tank.UnsubscribeFromPaint();
-            p1Tank.UnsubscribeFromCheckPosition(p2Tank);
-            p1Tank.UnsubscribeFromKeyDown();
-            p1Tank.UnsubscribeFromKeyUp();
-            p1Tank.Shoot -= OnShoot;
-
-            p2Tank.UnsubscribeFromPaint();
-            p2Tank.UnsubscribeFromCheckPosition(p1Tank);
-            p2Tank.UnsubscribeFromKeyDown();
-            p2Tank.UnsubscribeFromKeyUp();
-            p2Tank.Shoot -= OnShoot;
-        }
-
         private void OnShoot(object sender, ShellEventArgs e)
         {
             Shell s = e.Shell;
-            field.SubscribeToCheckPosition(s);
-            s.SubscribeToCheckPosition(p1Tank);
-            s.SubscribeToCheckPosition(p2Tank);
-            s.SubscribeToPaint();
-            s.Destroy += OnShellDestroy;
+            _field.SubscribeToCheckPosition(s);
+            s.Subscribe();
+            s.SubscribeToCheckPosition(_p1Tank);
+            s.SubscribeToCheckPosition(_p2Tank);
+            s.Destroyed += OnShellDestroyed;
             SubscribeShellToShells(s);
             shells.Add(s);
         }
@@ -126,12 +114,10 @@ namespace BattleCity
         private void SubscribeShellToShells(Shell s)
         {
             foreach(Shell shell in shells)
-            {
                 s.SubscribeToCheckPosition(shell);
-            }
         }
 
-        private void OnShellDestroy(object sender, EventArgs e)
+        private void OnShellDestroyed(object sender, EventArgs e)
         {
             shells.Remove((Shell)sender);
         }
@@ -139,8 +125,8 @@ namespace BattleCity
         private void OnObstacleDestroyed(object sender, EventArgs e)
         {
             Object o = sender as Object;
-            o.UnsubscribeFromCheckPosition(p1Tank);
-            o.UnsubscribeFromCheckPosition(p2Tank);
+            o.UnsubscribeFromCheckPosition(_p1Tank);
+            o.UnsubscribeFromCheckPosition(_p2Tank);
         }
     }
 }

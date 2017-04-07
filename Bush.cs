@@ -10,7 +10,19 @@ namespace BattleCity
         {
         }
 
-        protected override void OnPaint(object sender, PaintEventArgs e)
+        public override void Subscribe()
+        {
+            GUIForm.Paint += OnPaint;
+            Destroyed += OnDestroyed;
+        }
+
+        public override void Unsubscribe()
+        {
+            GUIForm.Paint -= OnPaint;
+            Destroyed -= OnDestroyed;
+        }
+
+        private void OnPaint(object sender, PaintEventArgs e)
         {
             RectangleF clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))
@@ -29,18 +41,18 @@ namespace BattleCity
                     Shell s = sender as Shell;
                     if(s.Creator.Gun)
                     {
-                        InvokeDestroy();
+                        InvokeDestroyed();
                     }
                     else
                     {
-                        UnsubscribeFromPaint();
-                        SubscribeToPaint();
+                        GUIForm.Paint -= OnPaint;
+                        GUIForm.Paint += OnPaint;
                     }
                 }
                 else if(sender is Tank)
                 {
-                    UnsubscribeFromPaint();
-                    SubscribeToPaint();
+                    GUIForm.Paint -= OnPaint;
+                    GUIForm.Paint += OnPaint;
                 }
             }
         }

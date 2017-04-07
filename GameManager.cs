@@ -8,57 +8,72 @@ namespace BattleCity
 {
     public class GameManager
     {
-        private AbstractForm activeForm;
-        private MainMenuForm mainMenu;
-        private GameForm game;
-        private ConstructionForm construction;
-        private OptionsForm options;
-        private RecordsForm records;      
+        private GUIForm _guiForm;
+        private AbstractForm _activeForm;
+        private MainMenuForm _mainMenu;
+        private GameForm _game;
+        private ConstructionForm _construction;
+        private OptionsForm _options;
+        private RecordsForm _records;      
 
         public GameManager(GUIForm guiForm)
         {
-            mainMenu        = new MainMenuForm(guiForm, this);
-            game            = new GameForm(guiForm, this, 1);
-            construction    = new ConstructionForm(guiForm, this);
-            options         = new OptionsForm(guiForm, this);
-            records         = new RecordsForm(guiForm, this);
+            _guiForm = guiForm;
+            _mainMenu        = new MainMenuForm(guiForm, this);
+            _game            = new GameForm(guiForm, this);
+            _construction    = new ConstructionForm(guiForm, this);
+            _options         = new OptionsForm(guiForm, this);
+            _records         = new RecordsForm(guiForm, this);
 
-            ActiveForm = mainMenu;
+            _activeForm = _mainMenu;
+            SetMainMenuForm();
         }
 
         public AbstractForm ActiveForm
         {
-            get { return activeForm; }
+            get { return _activeForm; }
             set
             {
-                activeForm = value;
-                activeForm.Subscribe();
+                _activeForm.Unsubscribe();
+                _activeForm = value;
+                _activeForm.Subscribe();
+                _guiForm.Invalidate();
             }
         }
 
-        public MainMenuForm MainMenu
+        public void SetMainMenuForm()
         {
-            get { return mainMenu; }
+            ActiveForm = _mainMenu;
+        }
+
+        public void SetGameForm()
+        {
+            ActiveForm = _game;
+        }
+
+        public void SetConstructionForm()
+        {
+            ActiveForm = _construction;
+        }
+
+        public void SetOptionsForm()
+        {
+            ActiveForm = _options;
+        }
+
+        public void SetRecordsForm()
+        {
+            ActiveForm = _records;
         }
 
         public GameForm Game
         {
-            get { return game; }
-        }
-
-        public ConstructionForm Construction
-        {
-            get { return construction; }
-        }
-
-        public OptionsForm Options
-        {
-            get { return options; }
+            get { return _game; }
         }
 
         public RecordsForm Records
         {
-            get { return records; }
+            get { return _records; }
         }
     }
 }

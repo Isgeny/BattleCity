@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Resources;
 
 namespace BattleCity
 {
@@ -10,36 +9,19 @@ namespace BattleCity
     {
         public SecondPlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
         {
-            Points = 777777;
+            Points = 777;
         }
 
-        protected override void Respawn()
+        public override void Subscribe()
         {
-            RectangleF newRect = new RectangleF(576.0f, 832.0f, Rect.Width, Rect.Height);
-            Rect = newRect;
+            base.Subscribe();
+            GUIForm.KeyDown += OnKeyDown;
         }
 
-        protected override void OnPaint(object sender, PaintEventArgs e)
+        public override void Unsubscribe()
         {
-            RectangleF clipRect = e.ClipRectangle;
-            if(Rect.IntersectsWith(clipRect))
-            {
-                Graphics g = e.Graphics;
-                float currentFrame = ((Rect.X + Rect.Y) % 8 < 4) ? 0.0f : 64.0f;
-                Bitmap bmp = GetCurrentSprite();
-
-                if(OnIce && IceTicks != 27)
-                {
-                    currentFrame = 0.0f;
-                }
-
-                g.DrawImage(bmp, Rect, new RectangleF(currentFrame, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
-
-                if(Amphibian)
-                {
-                    g.DrawImage(Properties.Resources.Ship_Shield, Rect.X, Rect.Y);
-                }
-            }
+            base.Unsubscribe();
+            GUIForm.KeyDown -= OnKeyDown;
         }
 
         protected override void OnMoveTimerTick(object sender, EventArgs e)
@@ -80,15 +62,7 @@ namespace BattleCity
             base.OnMoveTimerTick(sender, e);
         }
 
-        protected override Bitmap GetCurrentSprite()
-        {
-            ResourceManager rm = Properties.Resources.ResourceManager;
-            string filename = "P2_" + Stars + "_" + (int)Direction;
-            Bitmap bmp = (Bitmap)rm.GetObject(filename);
-            return bmp;
-        }
-
-        protected override void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        private void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if(e.KeyCode == Keys.Space && Ammo > 0 && !ShootPressed)
             {
@@ -97,6 +71,12 @@ namespace BattleCity
                 InvokeShoot(new ShellEventArgs(shell));
                 ShootPressed = true;
             }
+        }
+
+        protected override void Respawn()
+        {
+            RectangleF newRect = new RectangleF(576.0f, 832.0f, Rect.Width, Rect.Height);
+            Rect = newRect;
         }
     }
 }

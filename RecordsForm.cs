@@ -10,20 +10,38 @@ namespace BattleCity
 {
     public class RecordsForm : AbstractForm
     {
-        private SortedDictionary<int, string> records;
-        private GUIObject btnMainMenu;
+        private SortedDictionary<int, string> _records;
 
         public RecordsForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
-            btnMainMenu = new SelectButton(GUIForm, new RectangleF(360.0f, 840.0f, 0.0f, 0.0f), "MAIN MENU", true);
+            GUIObjs.AddLast(new SelectButton(GUIForm, new RectangleF(360.0f, 840.0f, 0.0f, 0.0f), "MAIN MENU", true));
+            CurrentGUIObj = GUIObjs.Last;
 
-            records = new SortedDictionary<int, string>(new ReverseComparer<int>(Comparer<int>.Default));
+            _records = new SortedDictionary<int, string>(new ReverseComparer<int>(Comparer<int>.Default));
             LoadRecordsFromFile();
         }
 
         ~RecordsForm()
         {
             WriteRecordsToFile();
+        }
+
+        public override void Subscribe()
+        {
+            base.Subscribe();
+            GUIForm.Paint += OnPaint;
+
+            GUIObjs.Last.Value.Subscribe();
+            GUIObjs.Last.Value.Clicked += OnBtnMainMenuClicked;
+        }
+
+        public override void Unsubscribe()
+        {
+            base.Unsubscribe();
+            GUIForm.Paint -= OnPaint;
+
+            GUIObjs.Last.Value.Unsubscribe();
+            GUIObjs.Last.Value.Clicked -= OnBtnMainMenuClicked;
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
@@ -37,7 +55,7 @@ namespace BattleCity
 
             float y = 250.0f;
             int i = 1;
-            foreach(KeyValuePair<int, string> rec in records)
+            foreach(KeyValuePair<int, string> rec in _records)
             {
                 g.DrawString(i.ToString() + '.', MyFont.GetFont(19), new SolidBrush(Color.White), new PointF(170.0f, y));
                 g.DrawString(rec.Value, MyFont.GetFont(19), new SolidBrush(Color.White), new PointF(350.0f, y));
@@ -47,39 +65,16 @@ namespace BattleCity
             }
         }
 
-        public override void Subscribe()
-        {
-            GUIForm.Paint += OnPaint;
-
-            btnMainMenu.SubscribeToPaint();
-            btnMainMenu.SubscribeToKeyDown();
-            btnMainMenu.Clicked += OnBtnMainMenuClicked;
-
-            GUIForm.Invalidate();
-        }
-
-        public override void Unsubscribe()
-        {
-            GUIForm.Paint -= OnPaint;
-
-            btnMainMenu.UnsubscribeFromPaint();
-            btnMainMenu.UnsubscribeFromKeyDown();
-            btnMainMenu.Clicked -= OnBtnMainMenuClicked;
-        }
-
         private void OnBtnMainMenuClicked(object sender, EventArgs e)
         {
-            Unsubscribe();
-            GameManager.ActiveForm = GameManager.MainMenu;
+            GameManager.SetMainMenuForm();
         }
 
         public void AddRecord(string name, int points)
         {
-            records.Add(points, name);
-            if(records.Count > 10)
-            {
-                records.Remove(records.Keys.Last());
-            }
+            _records.Add(points, name);
+            if(_records.Count > 10)
+                _records.Remove(_records.Keys.Last());
         }
 
         private void LoadRecordsFromFile()
@@ -92,7 +87,7 @@ namespace BattleCity
                     string[] record = currentString.Split(new char[] { ' ' });
                     string name = record[0];
                     int points = Convert.ToInt32(record[1]);
-                    records.Add(points, name);
+                    _records.Add(points, name);
                 }
             }
         }
@@ -101,7 +96,7 @@ namespace BattleCity
         {
             using(StreamWriter sw = new StreamWriter("Records.txt"))
             {
-                foreach(KeyValuePair<int, string> rec in records)
+                foreach(KeyValuePair<int, string> rec in _records)
                 {
                     sw.Write(rec.Value);
                     sw.Write(" ");
@@ -113,7 +108,7 @@ namespace BattleCity
 
         public int GetHighestRecord()
         {
-            return records.Keys.First();
+            return _records.Keys.First();
         }
     }
 }

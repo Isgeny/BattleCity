@@ -10,6 +10,18 @@ namespace BattleCity
         {
         }
 
+        public override void Subscribe()
+        {
+            base.Subscribe();
+            GUIForm.KeyDown += OnKeyDown;
+        }
+
+        public override void Unsubscribe()
+        {
+            base.Unsubscribe();
+            GUIForm.KeyDown -= OnKeyDown;
+        }
+
         protected override void OnPaint(object sender, PaintEventArgs e)
         {
             base.OnPaint(sender, e);
@@ -17,12 +29,10 @@ namespace BattleCity
             g.DrawString(Text, MyFont.GetFont(19), new SolidBrush(Color.White), new PointF(Rect.X, Rect.Y));
         }
 
-        protected override void OnKeyDown(object sender, KeyEventArgs e)
+        private void OnKeyDown(object sender, KeyEventArgs e)
         {
             if(Selected && e.KeyCode == Keys.Enter)
-            {
                 InvokeClicked(new EventArgs());
-            }
         }
     }
 }

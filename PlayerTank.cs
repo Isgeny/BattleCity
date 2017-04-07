@@ -6,47 +6,47 @@ namespace BattleCity
 {
     public abstract class PlayerTank : Tank
     {
-        private int iceTicks;
-        private bool onIce;
-        private bool shootPressed;
+        private int _iceTicks;
+        private bool _onIce;
+        private bool _shootPressed;
 
         public PlayerTank(GUIForm guiForm, RectangleF rect) : base(guiForm, rect, Direction.Up)
         {
-            iceTicks = 28;
-            onIce = false;
-            shootPressed = false;
+            _iceTicks = 28;
+            _onIce = false;
+            _shootPressed = false;
         }
 
         public int IceTicks
         {
-            get { return iceTicks; }
-            set { iceTicks = value; }
+            get { return _iceTicks; }
+            set { _iceTicks = value; }
         }
 
         public bool OnIce
         {
-            get { return onIce; }
-            set { onIce = value; }
+            get { return _onIce; }
+            set { _onIce = value; }
         }
 
         public bool ShootPressed
         {
-            get { return shootPressed; }
-            set { shootPressed = value; }
+            get { return _shootPressed; }
+            set { _shootPressed = value; }
         }
 
-        public override void SubscribeToPaint()
+        public override void Subscribe()
         {
-            base.SubscribeToPaint();
-
+            base.Subscribe();
+            GUIForm.KeyUp += OnKeyUp;
             MoveTimer.Tick += OnMoveTimerTick;
             MoveTimer.Start();
         }
 
-        public override void UnsubscribeFromPaint()
+        public override void Unsubscribe()
         {
-            base.UnsubscribeFromPaint();
-
+            base.Unsubscribe();
+            GUIForm.KeyUp -= OnKeyUp;
             MoveTimer.Tick -= OnMoveTimerTick;
             MoveTimer.Stop();
         }
@@ -54,10 +54,10 @@ namespace BattleCity
         protected virtual void OnMoveTimerTick(object sender, EventArgs e)
         {
             Turn(Direction);
-            if(iceTicks != 0)
+            if(_iceTicks != 0)
             {
-                iceTicks--;
-                if(onIce)
+                _iceTicks--;
+                if(_onIce)
                 {
                     switch(Direction)
                     {
@@ -78,14 +78,12 @@ namespace BattleCity
                             Dy = 0.0f;
                             break;
                     }
-                    onIce = false;
+                    _onIce = false;
                 }
             }
             InvokeCheckPosition(new RectEventArgs(new RectangleF(Rect.X + Dx, Rect.Y + Dy, Rect.Width, Rect.Height)));
             Move();
         }
-
-        protected abstract Bitmap GetCurrentSprite();
 
         protected override void OnCheckPosition(object sender, RectEventArgs e)
         {
@@ -98,9 +96,9 @@ namespace BattleCity
             }
         }
 
-        protected override void OnKeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        private void OnKeyUp(object sender, KeyEventArgs e)
         {
-            shootPressed = false;
+            _shootPressed = false;
         }
     }
 }

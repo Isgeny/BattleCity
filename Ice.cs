@@ -9,7 +9,17 @@ namespace BattleCity
         {
         }
 
-        protected override void OnPaint(object sender, PaintEventArgs e)
+        public override void Subscribe()
+        {
+            GUIForm.Paint += OnPaint;
+        }
+
+        public override void Unsubscribe()
+        {
+            GUIForm.Paint -= OnPaint;
+        }
+
+        private void OnPaint(object sender, PaintEventArgs e)
         {
             RectangleF clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))

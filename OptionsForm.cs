@@ -7,49 +7,39 @@ namespace BattleCity
 {
     public class OptionsForm : AbstractForm
     {
-        private int position;
-        private List<GUIObject> optionsObjs;
-
         public OptionsForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
-            position = 0;
+            GUIObjs.AddLast(new OptionButton(GUIForm, new RectangleF(260.0f, 440.0f, 400.0f, 28.0f), "FRIENDLY FIRE", Properties.Settings.Default.FriendlyFire, true));
+            GUIObjs.AddLast(new OptionButton(GUIForm, new RectangleF(260.0f, 520.0f, 400.0f, 28.0f), "AI USE BONUS", Properties.Settings.Default.AIUseBonus));
+            GUIObjs.AddLast(new NameBox(GUIForm, new RectangleF(260.0f, 600.0f, 250.0f, 41.0f), Properties.Settings.Default.P1Name, "P1 NAME:"));
+            GUIObjs.AddLast(new NameBox(GUIForm, new RectangleF(260.0f, 680.0f, 250.0f, 41.0f), Properties.Settings.Default.P2Name, "P2 NAME:"));
+            GUIObjs.AddLast(new SelectButton(GUIForm, new RectangleF(360.0f, 840.0f, 0.0f, 0.0f), "MAIN MENU"));
 
-            optionsObjs = new List<GUIObject>();
-            optionsObjs.Add(new OptionButton(GUIForm, new RectangleF(260.0f, 440.0f, 400.0f, 28.0f), "FRIENDLY FIRE", Properties.Settings.Default.FriendlyFire, true));
-            optionsObjs.Add(new OptionButton(GUIForm, new RectangleF(260.0f, 520.0f, 400.0f, 28.0f), "AI USE BONUS", Properties.Settings.Default.AIUseBonus));
-            optionsObjs.Add(new NameBox(GUIForm, new RectangleF(260.0f, 600.0f, 250.0f, 41.0f), Properties.Settings.Default.P1Name, "P1 NAME:"));
-            optionsObjs.Add(new NameBox(GUIForm, new RectangleF(260.0f, 680.0f, 250.0f, 41.0f), Properties.Settings.Default.P2Name, "P2 NAME:"));
-            optionsObjs.Add(new SelectButton(GUIForm, new RectangleF(360.0f, 840.0f, 0.0f, 0.0f), "MAIN MENU"));
+            CurrentGUIObj = GUIObjs.First;
         }
 
         public override void Subscribe()
         {
+            base.Subscribe();
             GUIForm.Paint += OnPaint;
-            GUIForm.KeyDown += OnKeyDown;
 
-            foreach(GUIObject obj in optionsObjs)
-            {
-                obj.SubscribeToPaint();
-                obj.SubscribeToKeyDown();
-            }
+            foreach(GUIObject option in GUIObjs)
+                option.Subscribe();
 
-            optionsObjs[4].Clicked += OnBtnMainMenuClicked;
+            GUIObjs.Last.Value.Clicked += OnBtnMainMenuClicked;
 
             GUIForm.Invalidate();
         }
 
         public override void Unsubscribe()
         {
+            base.Unsubscribe();
             GUIForm.Paint -= OnPaint;
-            GUIForm.KeyDown -= OnKeyDown;
 
-            foreach(GUIObject obj in optionsObjs)
-            {
-                obj.UnsubscribeFromPaint();
-                obj.UnsubscribeFromKeyDown();
-            }
+            foreach(GUIObject option in GUIObjs)
+                option.Unsubscribe();
 
-            optionsObjs[4].Clicked -= OnBtnMainMenuClicked;
+            GUIObjs.Last.Value.Clicked -= OnBtnMainMenuClicked;
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
@@ -59,31 +49,18 @@ namespace BattleCity
             g.DrawImageUnscaled(Properties.Resources.Options, 80, 30);
         }
 
-        private void OnKeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.KeyCode == Keys.Down)
-            {
-                optionsObjs[position].Selected = false;
-                position = ++position % 5;
-                optionsObjs[position].Selected = true;
-            }
-            else if(e.KeyCode == Keys.Up)
-            {
-                optionsObjs[position].Selected = false;
-                position = (position - 1 < 0) ? 4 : --position;
-                optionsObjs[position].Selected = true;
-            }
-        }
-
         private void OnBtnMainMenuClicked(object sender, EventArgs e)
         {
-            Unsubscribe();
-            Properties.Settings.Default.FriendlyFire = ((OptionButton)optionsObjs[0]).Enabled;
-            Properties.Settings.Default.AIUseBonus = ((OptionButton)optionsObjs[1]).Enabled;
-            Properties.Settings.Default.P1Name = optionsObjs[2].Text;
-            Properties.Settings.Default.P2Name = optionsObjs[3].Text;
+            LinkedListNode<GUIObject> option = GUIObjs.First;
+            Properties.Settings.Default.FriendlyFire = ((OptionButton)option.Value).Enabled;
+            option = option.Next;
+            Properties.Settings.Default.AIUseBonus = ((OptionButton)option.Value).Enabled;
+            option = option.Next;
+            Properties.Settings.Default.P1Name = option.Value.Text;
+            option = option.Next;
+            Properties.Settings.Default.P2Name = option.Value.Text;
             Properties.Settings.Default.Save();
-            GameManager.ActiveForm = GameManager.MainMenu;
+            GameManager.SetMainMenuForm();
         }
     }
 }

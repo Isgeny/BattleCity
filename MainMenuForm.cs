@@ -7,75 +7,60 @@ namespace BattleCity
 {
     public class MainMenuForm : AbstractForm
     {
-        private int position;
-        private List<GUIObject> btns;
-        private GUIObject btn1Player;
-        private GUIObject btn2Player;
-        private GUIObject btnConstruction;
-        private GUIObject btnOptions;
-        private GUIObject btnRecords;
-        private GUIObject btnExit;
-
         public MainMenuForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
-            position = 0;
+            GUIObjs.AddLast(new SelectButton(GUIForm, new RectangleF(360.0f, 440.0f, 0.0f, 0.0f), "1 PLAYER", true));
+            GUIObjs.AddLast(new SelectButton(GUIForm, new RectangleF(360.0f, 520.0f, 0.0f, 0.0f), "2 PLAYER"));
+            GUIObjs.AddLast(new SelectButton(GUIForm, new RectangleF(360.0f, 600.0f, 0.0f, 0.0f), "CONSTRUCTION"));
+            GUIObjs.AddLast(new SelectButton(GUIForm, new RectangleF(360.0f, 680.0f, 0.0f, 0.0f), "OPTIONS"));
+            GUIObjs.AddLast(new SelectButton(GUIForm, new RectangleF(360.0f, 760.0f, 0.0f, 0.0f), "RECORDS"));
+            GUIObjs.AddLast(new SelectButton(GUIForm, new RectangleF(360.0f, 840.0f, 0.0f, 0.0f), "EXIT"));
 
-            btn1Player        = new SelectButton(GUIForm, new RectangleF(360.0f, 440.0f, 0.0f, 0.0f), "1 PLAYER", true);
-            btn2Player        = new SelectButton(GUIForm, new RectangleF(360.0f, 520.0f, 0.0f, 0.0f), "2 PLAYER");
-            btnConstruction   = new SelectButton(GUIForm, new RectangleF(360.0f, 600.0f, 0.0f, 0.0f), "CONSTRUCTION");
-            btnOptions        = new SelectButton(GUIForm, new RectangleF(360.0f, 680.0f, 0.0f, 0.0f), "OPTIONS");
-            btnRecords        = new SelectButton(GUIForm, new RectangleF(360.0f, 760.0f, 0.0f, 0.0f), "RECORDS");
-            btnExit           = new SelectButton(GUIForm, new RectangleF(360.0f, 840.0f, 0.0f, 0.0f), "EXIT");
-
-            btns = new List<GUIObject>();
-            btns.Add(btn1Player);
-            btns.Add(btn2Player);
-            btns.Add(btnConstruction);
-            btns.Add(btnOptions);
-            btns.Add(btnRecords);
-            btns.Add(btnExit);
-
-            guiForm.Invalidate();
+            CurrentGUIObj = GUIObjs.First;
         }
 
         public override void Subscribe()
         {
+            base.Subscribe();
             GUIForm.Paint += OnPaint;
-            GUIForm.KeyDown += OnKeyDown;
 
-            foreach(GUIObject btn in btns)
-            {
-                btn.SubscribeToPaint();
-                btn.SubscribeToKeyDown();
-            }
+            foreach(GUIObject obj in GUIObjs)
+                obj.Subscribe();
 
-            btn1Player.Clicked      += OnBtn1PlayerClick;
-            btn2Player.Clicked      += OnBtn2PlayerClick;
-            btnConstruction.Clicked += OnBtnConstructionClicked;
-            btnOptions.Clicked      += OnBtnOptionsClicked;
-            btnRecords.Clicked      += OnBtnRecords;
-            btnExit.Clicked         += OnBtnExitClicked;
-
-            GUIForm.Invalidate();
+            LinkedListNode<GUIObject> btn = GUIObjs.First;
+            btn.Value.Clicked += OnBtn1PlayerClick;
+            btn = btn.Next;
+            btn.Value.Clicked += OnBtn2PlayerClick;
+            btn = btn.Next;
+            btn.Value.Clicked += OnBtnConstructionClicked;
+            btn = btn.Next;
+            btn.Value.Clicked += OnBtnOptionsClicked;
+            btn = btn.Next;
+            btn.Value.Clicked += OnBtnRecords;
+            btn = btn.Next;
+            btn.Value.Clicked += OnBtnExitClicked;
         }
 
         public override void Unsubscribe()
         {
+            base.Unsubscribe();
             GUIForm.Paint -= OnPaint;
-            GUIForm.KeyDown -= OnKeyDown;
 
-            foreach(GUIObject btn in btns)
-            {
-                btn.UnsubscribeFromPaint();
-                btn.UnsubscribeFromKeyDown();
-            }
+            foreach(GUIObject obj in GUIObjs)
+                obj.Unsubscribe();
 
-            btn1Player.Clicked      -= OnBtn1PlayerClick;
-            btn2Player.Clicked      -= OnBtn2PlayerClick;
-            btnConstruction.Clicked -= OnBtnConstructionClicked;
-            btnOptions.Clicked      -= OnBtnOptionsClicked;
-            btnRecords.Clicked      -= OnBtnRecords;
-            btnExit.Clicked         -= OnBtnExitClicked;
+            LinkedListNode<GUIObject> btn = GUIObjs.First;
+            btn.Value.Clicked -= OnBtn1PlayerClick;
+            btn = btn.Next;
+            btn.Value.Clicked -= OnBtn2PlayerClick;
+            btn = btn.Next;
+            btn.Value.Clicked -= OnBtnConstructionClicked;
+            btn = btn.Next;
+            btn.Value.Clicked -= OnBtnOptionsClicked;
+            btn = btn.Next;
+            btn.Value.Clicked -= OnBtnRecords;
+            btn = btn.Next;
+            btn.Value.Clicked -= OnBtnExitClicked;
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
@@ -93,54 +78,32 @@ namespace BattleCity
 
         private void OnBtn1PlayerClick(object sender, EventArgs e)
         {
-            Unsubscribe();
-            GameManager.ActiveForm = GameManager.Game;
+            GameManager.SetGameForm();
         }
 
         private void OnBtn2PlayerClick(object sender, EventArgs e)
         {
-            Unsubscribe();
-            GameManager.ActiveForm = GameManager.Game;
+            GameManager.SetGameForm();
         }
 
         private void OnBtnConstructionClicked(object sender, EventArgs e)
         {
-            Unsubscribe();
-            GameManager.ActiveForm = GameManager.Construction;
+            GameManager.SetConstructionForm();
         }
 
         private void OnBtnOptionsClicked(object sender, EventArgs e)
         {
-            Unsubscribe();
-            GameManager.ActiveForm = GameManager.Options;
+            GameManager.SetOptionsForm();
         }
 
         private void OnBtnRecords(object sender, EventArgs e)
         {
-            Unsubscribe();
-            GameManager.ActiveForm = GameManager.Records;
+            GameManager.SetRecordsForm();
         }
 
         private void OnBtnExitClicked(object sender, EventArgs e)
         {
-            Unsubscribe();
             GUIForm.Close();
         }
-
-        private void OnKeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.KeyCode == Keys.Down)
-            {
-                btns[position].Selected = false;
-                position = ++position % 6;
-                btns[position].Selected = true;
-            }
-            else if(e.KeyCode == Keys.Up)
-            {
-                btns[position].Selected = false;
-                position = (position - 1 < 0) ? 5 : --position;
-                btns[position].Selected = true;
-            }
-        }   
     }
 }
