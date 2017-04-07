@@ -1,55 +1,57 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Resources;
 
 namespace BattleCity
 {
-    public class Bonus : Object
+    public abstract class Bonus : Object
     {
-        private BonusType bonusType;
+        public event EventHandler PlayerTook;
+        public event EventHandler CompTook;
 
-        public event EventHandler PlayersBomb;
-        public event EventHandler PlayersWatch;
-        public event EventHandler PlayersShowel;
-        public event EventHandler CompsBomb;
-        public event EventHandler CompsShowel;
-        public event EventHandler CompsWatch;
-
-        public Bonus(GUIForm guiForm, RectangleF rect, BonusType bonusType) : base(guiForm, rect)
+        public Bonus(GUIForm guiForm) : base(guiForm, new RectangleF())
         {
-            throw new System.NotImplementedException();
+            MoveToNewPosition();
         }
 
-        public BonusType BonusType
+        public override void Subscribe()
         {
-            get
+            GUIForm.Paint += OnPaint;
+        }
+
+        public override void Unsubscribe()
+        {
+            GUIForm.Paint -= OnPaint;
+        }
+
+        private void OnPaint(object sender, PaintEventArgs e)
+        {
+            RectangleF clipRect = e.ClipRectangle;
+            if(Rect.IntersectsWith(clipRect))
             {
-                throw new System.NotImplementedException();
+                Graphics g = e.Graphics;
+                ResourceManager rm = Properties.Resources.ResourceManager;
+                string filename = "Bonus_" + GetType().Name;
+                Bitmap bmp = (Bitmap)rm.GetObject(filename);
+                g.DrawImage(bmp, Rect, new RectangleF(0.0f, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
             }
-
-            set
-            {
-            }
         }
 
-        protected override void OnPaint(object sender, PaintEventArgs e)
+        private void MoveToNewPosition()
         {
-            throw new System.NotImplementedException();
+            Random rand = new Random();
+            Rect = new RectangleF(rand.Next(26)*32.0f, rand.Next(26)*32.0f, 64.0f, 64.0f);
         }
 
-        private void Generate()
+        protected void InvokePlayerTook()
         {
-            throw new System.NotImplementedException();
+            PlayerTook.Invoke(this, new EventArgs());
         }
 
-        private void OnBonusTankShoot(object sender, EventArgs e)
+        protected void InvokeCompTook()
         {
-            throw new System.NotImplementedException();
-        }
-
-        public void SubscribeToBonusTank(CompTank tank)
-        {
-            throw new System.NotImplementedException();
-        }
+            CompTook.Invoke(this, new EventArgs());
+        }  
     }
 }
