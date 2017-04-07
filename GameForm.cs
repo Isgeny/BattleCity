@@ -13,9 +13,6 @@ namespace BattleCity
         private List<Shell> _shells;
         private BonusManager _bonusManager;
 
-        //private PlayerTanksManager pTanksManager;
-        //private CompTanksManager cTanksManager;
-
         public GameForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
             _field = new Field(guiForm, new RectangleF(64.0f, 64.0f, 832.0f, 832.0f));
