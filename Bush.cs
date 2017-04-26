@@ -4,9 +4,9 @@ using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public class Bush : Object
+    public class Bush : GraphicsObject
     {
-        public Bush(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
+        public Bush(GUIForm guiForm, Rectangle rect) : base(guiForm, rect)
         {
         }
 
@@ -24,7 +24,7 @@ namespace BattleCity
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            RectangleF clipRect = e.ClipRectangle;
+            Rectangle clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))
             {
                 Graphics g = e.Graphics;
@@ -40,9 +40,7 @@ namespace BattleCity
                 {
                     Shell s = sender as Shell;
                     if(s.Creator.Gun)
-                    {
                         InvokeDestroyed();
-                    }
                     else
                     {
                         GUIForm.Paint -= OnPaint;

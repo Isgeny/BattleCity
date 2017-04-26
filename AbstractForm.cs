@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using System.Collections.Generic;
 
 namespace BattleCity
@@ -10,7 +9,7 @@ namespace BattleCity
         private LinkedList<GUIObject> _GUIObjs;
         private LinkedListNode<GUIObject> _currentGUIObj;
 
-        public AbstractForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, new RectangleF(0.0f, 0.0f, 1024.0f, 960.0f))
+        public AbstractForm(GUIForm guiForm, GameManager gameManager) : base(guiForm)
         {
             _gameManager = gameManager;
             _GUIObjs = new LinkedList<GUIObject>();

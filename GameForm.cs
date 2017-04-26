@@ -1,29 +1,25 @@
 ﻿using System;
 using System.Drawing;
-using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace BattleCity
 {
     public class GameForm : AbstractForm
     {
         private Field _field;
-        private PlayerTank _p1Tank;
-        private PlayerTank _p2Tank;
+        private PlayersManager _playersManager;
+        private CompsManager _compsManager;
         private List<Shell> _shells;
         private BonusManager _bonusManager;
 
         public GameForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
-            _field = new Field(guiForm, new RectangleF(64.0f, 64.0f, 832.0f, 832.0f));
-            _field.LoadStage(1);
-
-            _p1Tank = new FirstPlayerTank(GUIForm, new RectangleF(320.0f, 832.0f, 64.0f, 64.0f));
-            _p2Tank = new SecondPlayerTank(GUIForm, new RectangleF(576.0f, 832.0f, 64.0f, 64.0f));
-
-            _shells = new List<Shell>();
-
-            _bonusManager = new BonusManager(guiForm);
+            _bonusManager = new BonusManager(guiForm, this);
+            _field          = new Field(guiForm, new Rectangle(64, 64, 832, 832), this, _bonusManager);
+            _playersManager = new PlayersManager(guiForm, this, _bonusManager);
+            _compsManager   = new CompsManager(guiForm, this, _bonusManager);
+            _shells         = new List<Shell>();
         }
 
         public Field Field
@@ -31,14 +27,19 @@ namespace BattleCity
             get { return _field; }
         }
 
-        public PlayerTank P1Tank
+        public PlayersManager PlayerManager
         {
-            get { return _p1Tank; }
+            get { return _playersManager; }
         }
 
-        public PlayerTank P2Tank
+        public CompsManager CompsManager
         {
-            get { return _p2Tank; }
+            get { return _compsManager; }
+        }
+
+        public List<Shell> Shells
+        {
+            get { return _shells; }
         }
 
         public override void Subscribe()
@@ -46,17 +47,15 @@ namespace BattleCity
             GUIForm.Paint += OnPaint;
 
             _field.Subscribe();
-            _field.SubscribeToCheckPosition(_p1Tank);
-            _field.SubscribeToCheckPosition(_p2Tank);
-            _field.ObstacleDestroyed += OnObstacleDestroyed;
+            _field.HQDestroyed += OnHQDestroyed;
 
-            _p1Tank.Subscribe();
-            _p1Tank.SubscribeToCheckPosition(_p2Tank);
-            _p1Tank.Shoot += OnShoot;
+            _playersManager.Subscribe();
+            _playersManager.TankShoot += OnShoot;
+            _playersManager.TanksDestroyed += OnPlayerTanksDestroyed;
 
-            _p2Tank.Subscribe();
-            _p2Tank.SubscribeToCheckPosition(_p1Tank);
-            _p2Tank.Shoot += OnShoot;
+            _compsManager.Subscribe();
+            _compsManager.TankShoot += OnShoot;
+            _compsManager.TanksDestroyed += OnCompTanksDestroyed;
         }
 
         public override void Unsubscribe()
@@ -64,68 +63,88 @@ namespace BattleCity
             GUIForm.Paint -= OnPaint;
 
             _field.Unsubscribe();
-            _field.UnsubscribeFromCheckPosition(_p1Tank);
-            _field.UnsubscribeFromCheckPosition(_p2Tank);
-            _field.ObstacleDestroyed -= OnObstacleDestroyed;
+            _field.HQDestroyed -= OnHQDestroyed;
 
-            _p1Tank.Unsubscribe();
-            _p1Tank.UnsubscribeFromCheckPosition(_p2Tank);
-            _p1Tank.Shoot -= OnShoot;
+            _playersManager.Unsubscribe();
+            _playersManager.TankShoot -= OnShoot;
+            _playersManager.TanksDestroyed -= OnPlayerTanksDestroyed;
 
-            _p2Tank.Unsubscribe();
-            _p2Tank.UnsubscribeFromCheckPosition(_p1Tank);
-            _p2Tank.Shoot -= OnShoot;
+            _compsManager.Unsubscribe();
+            _compsManager.TankShoot -= OnShoot;
+            _compsManager.TanksDestroyed -= OnCompTanksDestroyed;
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-            g.FillRectangle(new SolidBrush(Color.FromArgb(102, 102, 102)), new Rectangle(0, 0, 1024, 960));
-            g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(64, 64, 832, 832));
-
-            g.DrawImageUnscaled(Properties.Resources.Player_Icon, new Point(910, 626));
-            string name = "";
-            name += Properties.Settings.Default.P1Name[0];
-            name += Properties.Settings.Default.P1Name[1];
-            g.DrawString(_p1Tank.Lives.ToString(), MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(940.0f, 626.0f));
-            g.DrawString(name, MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(910.0f, 585.0f));
-
-            g.DrawImageUnscaled(Properties.Resources.Player_Icon, new Point(910, 732));
-            g.DrawString(_p2Tank.Lives.ToString(), MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(940.0f, 732.0f));
-            name = "";
-            name += Properties.Settings.Default.P2Name[0];
-            name += Properties.Settings.Default.P2Name[1];
-            g.DrawString(name, MyFont.GetFont(22), new SolidBrush(Color.Black), new PointF(910.0f, 690.0f));
+            g.FillRectangle(new SolidBrush(Color.FromArgb(102, 102, 102)), 0, 0, 1024, 960);
+            g.FillRectangle(Brushes.Black, 64, 64, 832, 832);
         }
 
         private void OnShoot(object sender, ShellEventArgs e)
         {
             Shell s = e.Shell;
-            _field.SubscribeToCheckPosition(s);
             s.Subscribe();
-            s.SubscribeToCheckPosition(_p1Tank);
-            s.SubscribeToCheckPosition(_p2Tank);
-            s.Destroyed += OnShellDestroyed;
-            SubscribeShellToShells(s);
-            _shells.Add(s);
-        }
-
-        private void SubscribeShellToShells(Shell s)
-        {
+            s.Destroyed     += OnShellDestroyed;
+            s.CheckPosition += _field.GetCheckPositionListener();
+            foreach(GraphicsObject obstacle in _field.Obstacles)
+                s.CheckPosition += obstacle.GetCheckPositionListener();
             foreach(Shell shell in _shells)
-                s.SubscribeToCheckPosition(shell);
+                shell.CheckPosition += s.GetCheckPositionListener();
+            _shells.Add(s);
         }
 
         private void OnShellDestroyed(object sender, EventArgs e)
         {
-            _shells.Remove((Shell)sender);
+            Shell s = sender as Shell;
+            s.Destroyed -= OnShellDestroyed;
+            s.CheckPosition -= _field.GetCheckPositionListener();
+            foreach(GraphicsObject obstacle in _field.Obstacles)
+                s.CheckPosition -= obstacle.GetCheckPositionListener();
+            foreach(Shell shell in _shells)
+                shell.CheckPosition -= s.GetCheckPositionListener();
+            _shells.Remove(s);
         }
 
-        private void OnObstacleDestroyed(object sender, EventArgs e)
+        private void OnHQDestroyed(object sender, EventArgs e)
         {
-            Object o = sender as Object;
-            o.UnsubscribeFromCheckPosition(_p1Tank);
-            o.UnsubscribeFromCheckPosition(_p2Tank);
+            Timer gameOverTimer = new Timer();
+            gameOverTimer.Interval = 5000;
+            gameOverTimer.Tick += OnGameOverTimer;
+            gameOverTimer.Start();
+        }
+
+        private void OnPlayerTanksDestroyed(object sender, EventArgs e)
+        {
+            Timer gameOverTimer = new Timer();
+            gameOverTimer.Interval = 5000;
+            gameOverTimer.Tick += OnGameOverTimer;
+            gameOverTimer.Start();
+        }
+        private void OnCompTanksDestroyed(object sender, EventArgs e)
+        {
+            GameManager.SetStageNumberForm();
+        }
+
+        public void Initialize()
+        {
+            _field.InitializeField();
+            _playersManager.InitializeTanks();
+            _compsManager.InitializeTanks();
+        }
+
+        public void SetPlayers(int players)
+        {
+            _playersManager.SetPlayers(players);
+            Initialize();
+        }
+
+        private void OnGameOverTimer(object sender, EventArgs e)
+        {
+            Timer gameOverTimer = sender as Timer;
+            gameOverTimer.Stop();
+            gameOverTimer.Tick -= OnGameOverTimer;
+            GameManager.SetGameOverForm();
         }
     }
 }

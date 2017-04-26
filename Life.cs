@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace BattleCity
+﻿namespace BattleCity
 {
     public class Life : Bonus
     {
@@ -10,12 +8,12 @@ namespace BattleCity
 
         protected override void OnCheckPosition(object sender, RectEventArgs e)
         {
-            if(Rect.IntersectsWith(e.Rect) && sender is Tank)
-            {
-                ((Tank)sender).Lives++;
-                Unsubscribe();
-                GUIForm.Invalidate(new Region(Rect));
-            }
+            base.OnCheckPosition(sender, e);
+            if(Rect.IntersectsWith(e.Rect))
+                if(sender is PlayerTank)
+                    ((Tank)sender).Lives++;
+                else if(sender is CompTank)
+                    ((Tank)sender).HP++;
         }
     }
 }

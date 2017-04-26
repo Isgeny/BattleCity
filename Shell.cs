@@ -2,48 +2,54 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Resources;
+using System.Collections.Generic;
 
 namespace BattleCity
 {
     public class Shell : DynamicObject
     {
         private Tank _creator;
+        private Timer _explosionTimer;
+        private int _explosionFrame;
 
-        public Shell(GUIForm guiForm, Tank creator) : base(guiForm, new RectangleF(), creator.Direction)
+        public Shell(GUIForm guiForm, Tank creator) : base(guiForm, new Rectangle(), creator.Direction)
         {
             _creator = creator;
             MoveTimer.Tick += OnMoveTimer;
             MoveTimer.Start();
 
-            float speed = 7.0f;
-            if(creator is PlayerTank && creator.Stars >= 1)
-            {
-                speed = 10.0f;
-            }
+            int speed = 7;
+            if(creator is PlayerTank && creator.Stars >= 1 || creator is CompTank && creator.Stars == 2)
+                speed = 10;
 
             switch(Direction)
             {
                 case Direction.Up:
-                    Dx = 0.0f;
+                    Dx = 0;
                     Dy = -speed;
-                    Rect = new RectangleF(creator.Rect.X + 22.0f, creator.Rect.Y - 6.0f, 16.0f, 16.0f);
+                    Rect = new Rectangle(creator.Rect.X + 22, creator.Rect.Y - 6, 16, 16);
                     break;
                 case Direction.Left:
                     Dx = -speed;
-                    Dy = 0.0f;
-                    Rect = new RectangleF(creator.Rect.X - 6.0f, creator.Rect.Y + 22.0f, 16.0f, 16.0f);
+                    Dy = 0;
+                    Rect = new Rectangle(creator.Rect.X - 6, creator.Rect.Y + 22, 16, 16);
                     break;
                 case Direction.Down:
-                    Dx = 0.0f;
+                    Dx = 0;
                     Dy = speed;
-                    Rect = new RectangleF(creator.Rect.X + 22.0f, creator.Rect.Y + 50.0f, 16.0f, 16.0f);
+                    Rect = new Rectangle(creator.Rect.X + 22, creator.Rect.Y + 50, 16, 16);
                     break;
                 case Direction.Right:
                     Dx = speed;
-                    Dy = 0.0f;
-                    Rect = new RectangleF(creator.Rect.X + 50.0f, creator.Rect.Y + 22.0f, 16.0f, 16.0f);
+                    Dy = 0;
+                    Rect = new Rectangle(creator.Rect.X + 50, creator.Rect.Y + 22, 16, 16);
                     break;
             }
+
+            _explosionTimer = new Timer();
+            _explosionTimer.Interval = 50;
+            _explosionTimer.Tick += OnExplosionTimer;
+            _explosionFrame = 0;
         }
 
         public override void Subscribe()
@@ -66,62 +72,74 @@ namespace BattleCity
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            RectangleF clipRect = e.ClipRectangle;
+            Rectangle clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))
             {
                 Graphics g = e.Graphics;
-                ResourceManager rm = Properties.Resources.ResourceManager;
-                string filename = "Shell_" + (int)Direction;
-                Bitmap bmp = (Bitmap)rm.GetObject(filename);
-                g.DrawImage(bmp, Rect, new RectangleF(0.0f, 0.0f, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
-            }
+                if(!_explosionTimer.Enabled)
+                {
+                    ResourceManager rm = Properties.Resources.ResourceManager;
+                    string filename = "Shell_" + (int)Direction;
+                    Bitmap bmp = (Bitmap)rm.GetObject(filename);
+                    g.DrawImage(bmp, Rect, new Rectangle(0, 0, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
+                }
+                else
+                    g.DrawImage(Properties.Resources.Bullet_Explosion, new Rectangle(Rect.X - 20, Rect.Y - 20, 64, 64), new Rectangle(_explosionFrame, 0, 64, 64), GraphicsUnit.Pixel);
+            }   
         }
 
         protected override void OnCheckPosition(object sender, RectEventArgs e)
         {
             if(Rect.IntersectsWith(e.Rect))
             {
-                if(sender is Tank)
+                if(sender is Shell)
                 {
+                    var shell = sender as Shell;
+                    InvokeDestroyed();
+                    shell.InvokeDestroyed();
+                }
+                else if(sender is PlayerTank && _creator is CompTank || sender is CompTank && _creator is PlayerTank || sender is PlayerTank && _creator is PlayerTank && Properties.Settings.Default.FriendlyFire)
+                {
+                    if(sender is CompTank && ((CompTank)sender).IsBonus && !((CompTank)sender).Immortal)
+                    {
+                        ((CompTank)sender).InvokeBonusShoot();
+                        ((CompTank)sender).IsBonus = false;
+                    }
+                    ((Tank)sender).HP--;
                     InvokeDestroyed();
                 }
-                else if(sender is Shell)
-                {
+                else if(sender is Tank)
                     InvokeDestroyed();
-                    ((Shell)sender).InvokeDestroyed();
-                }
             }
         }
 
         private void OnMoveTimer(object sender, EventArgs e)
         {
-            InvokeCheckPosition(new RectEventArgs(new RectangleF(Rect.X + Dx, Rect.Y + Dy, Rect.Width, Rect.Height)));
+            InvokeCheckPosition(new RectEventArgs(new Rectangle(Rect.X + Dx, Rect.Y + Dy, Rect.Width, Rect.Height)));
             Move();
         }
 
         protected override void OnDestroyed(object sender, EventArgs e)
         {
             base.OnDestroyed(sender, e);
+            _explosionTimer.Start();
             if(MoveTimer.Enabled)
             {
-                Unsubscribe();
                 MoveTimer.Stop();
                 _creator.Ammo++;
             }
         }
 
-        public override void SubscribeToCheckPosition(Object obj)
+        private void OnExplosionTimer(object sender, EventArgs e)
         {
-            if(obj is Tank && _creator == obj)
-                return;
-            base.SubscribeToCheckPosition(obj);
-        }
-
-        public override void UnsubscribeFromCheckPosition(Object obj)
-        {
-            if(obj is Tank && _creator == obj)
-                return;
-            base.UnsubscribeFromCheckPosition(obj);
+            _explosionFrame = _explosionFrame + 64;
+            if(_explosionFrame == 192)
+            {
+                _explosionTimer.Stop();
+                _explosionTimer.Tick -= OnExplosionTimer;
+                Unsubscribe();
+            }
+            GUIForm.Invalidate(Rectangle.Inflate(Rect, 64, 64));
         }
     }
 }

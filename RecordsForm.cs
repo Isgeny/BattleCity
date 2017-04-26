@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
@@ -10,14 +9,13 @@ namespace BattleCity
 {
     public class RecordsForm : AbstractForm
     {
-        private SortedDictionary<int, string> _records;
+        private List<RecordNode> _records;
 
         public RecordsForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
-            GUIObjs.AddLast(new SelectButton(GUIForm, new RectangleF(360.0f, 840.0f, 0.0f, 0.0f), "MAIN MENU", true));
+            GUIObjs.AddLast(new SelectButton(GUIForm, new Rectangle(360, 840, 0, 0), "MAIN MENU", true));
             CurrentGUIObj = GUIObjs.Last;
-
-            _records = new SortedDictionary<int, string>(new ReverseComparer<int>(Comparer<int>.Default));
+            _records = new List<RecordNode>();
             LoadRecordsFromFile();
         }
 
@@ -49,17 +47,17 @@ namespace BattleCity
             Graphics g = e.Graphics;
             g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(new Point(), GUIForm.Size));
             g.DrawImageUnscaled(Properties.Resources.Records, 80, 30);
-            g.DrawString("POS", MyFont.GetFont(19), new SolidBrush(Color.Gray), new PointF(170.0f, 190.0f));
-            g.DrawString("NAME", MyFont.GetFont(19), new SolidBrush(Color.Gray), new PointF(350.0f, 190.0f));
-            g.DrawString("POINTS", MyFont.GetFont(19), new SolidBrush(Color.Gray), new PointF(650.0f, 190.0f));
+            g.DrawString("POS", MyFont.GetFont(19), new SolidBrush(Color.Gray), 170, 190);
+            g.DrawString("NAME", MyFont.GetFont(19), new SolidBrush(Color.Gray), 350, 190);
+            g.DrawString("POINTS", MyFont.GetFont(19), new SolidBrush(Color.Gray), 650, 190);
 
-            float y = 250.0f;
+            int y = 250;
             int i = 1;
-            foreach(KeyValuePair<int, string> rec in _records)
+            foreach(RecordNode record in _records)
             {
-                g.DrawString(i.ToString() + '.', MyFont.GetFont(19), new SolidBrush(Color.White), new PointF(170.0f, y));
-                g.DrawString(rec.Value, MyFont.GetFont(19), new SolidBrush(Color.White), new PointF(350.0f, y));
-                g.DrawString(rec.Key.ToString(), MyFont.GetFont(19), new SolidBrush(Color.White), new PointF(650.0f, y));
+                g.DrawString(i.ToString() + '.', MyFont.GetFont(19), new SolidBrush(Color.White), 170, y);
+                g.DrawString(record.name, MyFont.GetFont(19), new SolidBrush(Color.White), 350, y);
+                g.DrawString(record.points.ToString(), MyFont.GetFont(19), new SolidBrush(Color.White), 650, y);
                 y += 50;
                 i++;
             }
@@ -72,9 +70,12 @@ namespace BattleCity
 
         public void AddRecord(string name, int points)
         {
-            _records.Add(points, name);
-            if(_records.Count > 10)
-                _records.Remove(_records.Keys.Last());
+            _records.Add(new RecordNode(name, points));
+            _records.Sort(new RecordsComparer());
+
+            int records = _records.Count;
+            if(records > 10)
+                _records.RemoveAt(records - 1);
         }
 
         private void LoadRecordsFromFile()
@@ -87,7 +88,7 @@ namespace BattleCity
                     string[] record = currentString.Split(new char[] { ' ' });
                     string name = record[0];
                     int points = Convert.ToInt32(record[1]);
-                    _records.Add(points, name);
+                    AddRecord(name, points);
                 }
             }
         }
@@ -96,11 +97,11 @@ namespace BattleCity
         {
             using(StreamWriter sw = new StreamWriter("Records.txt"))
             {
-                foreach(KeyValuePair<int, string> rec in _records)
+                foreach(RecordNode record in _records)
                 {
-                    sw.Write(rec.Value);
+                    sw.Write(record.name);
                     sw.Write(" ");
-                    sw.Write(rec.Key);
+                    sw.Write(record.points);
                     sw.WriteLine("");
                 }
             }
@@ -108,7 +109,32 @@ namespace BattleCity
 
         public int GetHighestRecord()
         {
-            return _records.Keys.First();
+            return _records[0].points;
+        }
+
+        private struct RecordNode
+        {
+            public string name;
+            public int points;
+
+            public RecordNode(string name, int points)
+            {
+                this.name = name;
+                this.points = points;
+            }
+        }
+
+        private class RecordsComparer : IComparer<RecordNode>
+        {
+            public int Compare(RecordNode x, RecordNode y)
+            {
+                int compareRecord = 0;
+                if(x.points < y.points)
+                    compareRecord = 1;
+                else if(x.points > y.points)
+                    compareRecord = -1;
+                return compareRecord;
+            }
         }
     }
 }

@@ -3,9 +3,9 @@ using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public class Ice : Object
+    public class Ice : GraphicsObject
     {
-        public Ice(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
+        public Ice(GUIForm guiForm, Rectangle rect) : base(guiForm, rect)
         {
         }
 
@@ -21,7 +21,7 @@ namespace BattleCity
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            RectangleF clipRect = e.ClipRectangle;
+            Rectangle clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))
             {
                 Graphics g = e.Graphics;

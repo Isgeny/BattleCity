@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
-using System.Windows.Forms;
-
-namespace BattleCity
+﻿namespace BattleCity
 {
     public class GameManager
     {
@@ -12,6 +6,8 @@ namespace BattleCity
         private AbstractForm _activeForm;
         private MainMenuForm _mainMenu;
         private GameForm _game;
+        private StageNumberForm _stageNumber;
+        private GameOverForm _gameOver;
         private ConstructionForm _construction;
         private OptionsForm _options;
         private RecordsForm _records;      
@@ -21,6 +17,8 @@ namespace BattleCity
             _guiForm = guiForm;
             _mainMenu        = new MainMenuForm(guiForm, this);
             _game            = new GameForm(guiForm, this);
+            _stageNumber     = new StageNumberForm(guiForm, this);
+            _gameOver        = new GameOverForm(guiForm, this);
             _construction    = new ConstructionForm(guiForm, this);
             _options         = new OptionsForm(guiForm, this);
             _records         = new RecordsForm(guiForm, this);
@@ -48,7 +46,17 @@ namespace BattleCity
 
         public void SetGameForm()
         {
-            ActiveForm = _game;
+            ActiveForm = _game; 
+        }
+
+        public void SetStageNumberForm()
+        {
+            ActiveForm = _stageNumber;
+        }
+
+        public void SetGameOverForm()
+        {
+            ActiveForm = _gameOver;
         }
 
         public void SetConstructionForm()

@@ -8,7 +8,7 @@ namespace BattleCity
     {
         private string _hintText;
 
-        public NameBox(GUIForm guiForm, RectangleF rect, string text, string hintText, bool selected = false) : base(guiForm, rect, text, selected)
+        public NameBox(GUIForm guiForm, Rectangle rect, string text, string hintText, bool selected = false) : base(guiForm, rect, text, selected)
         {
             _hintText = hintText;
         }
@@ -29,8 +29,8 @@ namespace BattleCity
         {
             base.OnPaint(sender, e);
             Graphics g = e.Graphics;
-            g.DrawString(_hintText, new Font(MyFont.GetFont(19), FontStyle.Regular), new SolidBrush(Color.White), new PointF(Rect.X, Rect.Y));
-            g.DrawString(Text, new Font(MyFont.GetFont(19), FontStyle.Regular), new SolidBrush(Color.Gray), new PointF(Rect.Right + 30.0f, Rect.Y));
+            g.DrawString(_hintText, MyFont.GetFont(19), Brushes.White, Rect.X, Rect.Y);
+            g.DrawString(Text, MyFont.GetFont(19), Brushes.Gray, Rect.Right + 30, Rect.Y);
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
@@ -41,7 +41,7 @@ namespace BattleCity
                     Text += Char.ToUpper((char)e.KeyCode);
                 else if(Text.Length > 0 && e.KeyCode == Keys.Back)
                     Text = Text.Remove(Text.Length - 1);
-                GUIForm.Invalidate(new Region(new RectangleF(Rect.X, Rect.Y, 800.0f, 41.0f)));
+                GUIForm.Invalidate(new Rectangle(Rect.X, Rect.Y, 800, 41));
             }
         }
     }

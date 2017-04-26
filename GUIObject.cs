@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public abstract class GUIObject : Object
+    public abstract class GUIObject : GraphicsObject
     {
         private string _text;
         private bool _selected;
@@ -12,7 +12,7 @@ namespace BattleCity
 
         public event EventHandler Clicked;
 
-        public GUIObject(GUIForm guiForm, RectangleF rect, string text, bool selected = false) : base(guiForm, rect)
+        public GUIObject(GUIForm guiForm, Rectangle rect, string text, bool selected = false) : base(guiForm, rect)
         {
             _text = text;
 
@@ -38,7 +38,8 @@ namespace BattleCity
                     _spriteTimer.Start();
                 else
                     _spriteTimer.Stop();
-                GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 100.0f, Rect.Y - 18.0f, 64.0f, 64.0f)));
+                GUIForm.Invalidate(new Rectangle(Rect.X - 100, Rect.Y - 18, 64, 64));
+                
             }
         }
 
@@ -62,14 +63,14 @@ namespace BattleCity
             Graphics g = e.Graphics;
             if(Selected)
             {
-                float currentFrame = (DateTime.Now.Millisecond % 24 < 13) ? 0.0f : 64.0f;
-                g.DrawImage(Properties.Resources.Tank_Selecting, new RectangleF(Rect.X - 100.0f, Rect.Y - 18.0f, 64.0f, 64.0f), new RectangleF(currentFrame, 0.0f, 64.0f, 64.0f), GraphicsUnit.Pixel);
+                int currentFrame = (DateTime.Now.Millisecond % 24 < 13) ? 0 : 64;
+                g.DrawImage(Properties.Resources.Tank_Selecting, new Rectangle(Rect.X - 100, Rect.Y - 18, 64, 64), new Rectangle(currentFrame, 0, 64, 64), GraphicsUnit.Pixel);
             }
         }
 
         private void OnSpriteTimer(object sender, EventArgs e)
         {
-            GUIForm.Invalidate(new Region(new RectangleF(Rect.X - 100.0f, Rect.Y - 18.0f, 64.0f, 64.0f)));
+            GUIForm.Invalidate(new Rectangle(Rect.X - 100, Rect.Y - 18, 64, 64));
         }
     }
 }

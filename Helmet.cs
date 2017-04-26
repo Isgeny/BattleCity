@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace BattleCity
+﻿namespace BattleCity
 {
     public class Helmet : Bonus
     {
@@ -10,12 +8,9 @@ namespace BattleCity
 
         protected override void OnCheckPosition(object sender, RectEventArgs e)
         {
+            base.OnCheckPosition(sender, e);
             if(Rect.IntersectsWith(e.Rect) && sender is Tank)
-            {
                 ((Tank)sender).Immortal = true;
-                Unsubscribe();
-                GUIForm.Invalidate(new Region(Rect));
-            }
         }
     }
 }

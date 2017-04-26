@@ -4,9 +4,9 @@ using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public class Concrete : Object
+    public class Concrete : GraphicsObject
     {
-        public Concrete(GUIForm guiForm, RectangleF rect) : base(guiForm, rect)
+        public Concrete(GUIForm guiForm, Rectangle rect) : base(guiForm, rect)
         {
         }
 
@@ -24,7 +24,7 @@ namespace BattleCity
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            RectangleF clipRect = e.ClipRectangle;
+            Rectangle clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))
             {
                 Graphics g = e.Graphics;
@@ -36,18 +36,17 @@ namespace BattleCity
         {
             if(Rect.IntersectsWith(e.Rect))
             {
-                if(sender is Tank)
-                {
-                    ((Tank)sender).StopMoving();
-                }
+                if(sender is PlayerTank)
+                    ((PlayerTank)sender).StopMoving();
+                else if(sender is CompTank)
+                    ((CompTank)sender).StopMoving();
                 else if(sender is Shell)
                 {
                     Shell s = sender as Shell;
                     s.InvokeDestroyed();
-                    if(s.Creator.Stars == 3)
-                    {
+                    Tank creator = s.Creator;
+                    if(creator is PlayerTank && creator.Stars == 3 || creator is CompTank && creator.Gun)
                         InvokeDestroyed();
-                    }
                 }
             }
         }

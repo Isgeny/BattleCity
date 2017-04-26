@@ -9,11 +9,11 @@ namespace BattleCity
     {
         public OptionsForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
         {
-            GUIObjs.AddLast(new OptionButton(GUIForm, new RectangleF(260.0f, 440.0f, 400.0f, 28.0f), "FRIENDLY FIRE", Properties.Settings.Default.FriendlyFire, true));
-            GUIObjs.AddLast(new OptionButton(GUIForm, new RectangleF(260.0f, 520.0f, 400.0f, 28.0f), "AI USE BONUS", Properties.Settings.Default.AIUseBonus));
-            GUIObjs.AddLast(new NameBox(GUIForm, new RectangleF(260.0f, 600.0f, 250.0f, 41.0f), Properties.Settings.Default.P1Name, "P1 NAME:"));
-            GUIObjs.AddLast(new NameBox(GUIForm, new RectangleF(260.0f, 680.0f, 250.0f, 41.0f), Properties.Settings.Default.P2Name, "P2 NAME:"));
-            GUIObjs.AddLast(new SelectButton(GUIForm, new RectangleF(360.0f, 840.0f, 0.0f, 0.0f), "MAIN MENU"));
+            GUIObjs.AddLast(new OptionButton(GUIForm, new Rectangle(260, 440, 400, 28), "FRIENDLY FIRE", Properties.Settings.Default.FriendlyFire, true));
+            GUIObjs.AddLast(new OptionButton(GUIForm, new Rectangle(260, 520, 400, 28), "AI USE BONUS", Properties.Settings.Default.AIUseBonus));
+            GUIObjs.AddLast(new NameBox(GUIForm, new Rectangle(260, 600, 250, 41), Properties.Settings.Default.P1Name, "P1 NAME:"));
+            GUIObjs.AddLast(new NameBox(GUIForm, new Rectangle(260, 680, 250, 41), Properties.Settings.Default.P2Name, "P2 NAME:"));
+            GUIObjs.AddLast(new SelectButton(GUIForm, new Rectangle(360, 840, 0, 0), "MAIN MENU"));
 
             CurrentGUIObj = GUIObjs.First;
         }

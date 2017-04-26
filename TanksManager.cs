@@ -1,36 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-//namespace BattleCity
-//{
-//    public class TanksManager
-//    {
-//        private System.Collections.Generic.List<BattleCity.Tank> tanks;
-//        public event EventHandler TanksDefeated;
+namespace BattleCity
+{
+    public abstract class TanksManager : Object
+    {
+        private GameForm _gameForm;
+        private List<Tank> _tanks;
+        private int _aliveTanks;
 
-//        public TanksManager(GUIForm guiForm)
-//        {
-//            throw new System.NotImplementedException();
-//        }
+        public event ShellEventHandler TankShoot;
+        public event EventHandler TanksDestroyed;
 
-//        public Tank Tanks
-//        {
-//            get => default(Tank);
-//            set
-//            {
-//            }
-//        }
+        public TanksManager(GUIForm guiForm, GameForm gameForm) : base(guiForm)
+        {
+            _gameForm = gameForm;
+            Tanks = new List<Tank>();
+        }
 
-//        protected void OnTanksDefeated(EventArgs e)
-//        {
-//            throw new System.NotImplementedException();
-//        }
+        public List<Tank> Tanks
+        {
+            get { return _tanks; }
+            set { _tanks = value; }
+        }
 
-//        public int TankCount()
-//        {
-//            throw new System.NotImplementedException();
-//        }
-//    }
-//}
+        public GameForm GameForm
+        {
+            get { return _gameForm; }
+        }
+
+        public int AliveTanks
+        {
+            get { return _aliveTanks; }
+            set { _aliveTanks = value; }
+        }
+
+        public int CountTanks()
+        {
+            return _tanks.Count;
+        }
+
+        protected void InvokeTankShoot(ShellEventArgs e)
+        {
+            TankShoot?.Invoke(this, e);
+        }
+
+        protected void InvokeTanksDestroyed(EventArgs e)
+        {
+            TanksDestroyed?.Invoke(this, e);
+        }
+
+        public virtual void InitializeTanks()
+        {
+            foreach(Tank tank in Tanks)
+                tank.InitializeTank();
+        }
+    }
+}

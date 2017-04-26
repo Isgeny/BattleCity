@@ -12,3 +12,4 @@ ClassDiagram.cd
 *.resx
 .vs/
 /Font
+/packages

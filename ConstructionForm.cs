@@ -51,8 +51,8 @@ namespace BattleCity
             Graphics g = e.Graphics;
             g.FillRectangle(new SolidBrush(Color.FromArgb(102, 102, 102)), new Rectangle(0, 0, 1024, 960));
             g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(64, 64, 832, 832));
-            g.DrawString("ESC-MAIN MENU", MyFont.GetFont(14), new SolidBrush(Color.Black), new PointF(5.0f, 10.0f));
-            g.DrawString("LMB-PLACE    WHEEL⬆⬇-CHOOSE    RMB-REMOVE", MyFont.GetFont(14), new SolidBrush(Color.Black), new PointF(5.0f, 930.0f));
+            g.DrawString("ESC-MAIN MENU", MyFont.GetFont(14), new SolidBrush(Color.Black), new Point(5, 10));
+            g.DrawString("LMB-PLACE    WHEEL⬆⬇-CHOOSE    RMB-REMOVE", MyFont.GetFont(14), new SolidBrush(Color.Black), new Point(5, 930));
 
             for(int i = 0; i < BLOCKS_COUNT; i++)
                 for(int j = 0; j < BLOCKS_COUNT; j++)
@@ -153,7 +153,7 @@ namespace BattleCity
             for(int i = 0; i < OBST_COUNT; i++)
                 for(int j = 0; j < OBST_COUNT; j++)
                 {
-                    RectangleF rect = new RectangleF(j * OBST_SZ, i * OBST_SZ, 32.0f, 32.0f);
+                    Rectangle rect = new Rectangle(j * OBST_SZ, i * OBST_SZ, 32, 32);
                     switch(s[i, j])
                     {
                         case "b":
