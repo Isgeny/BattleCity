@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace BattleCity
 {
-    public class OptionsForm : AbstractForm
+    public class OptionsForm : MenuForm
     {
-        public OptionsForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
-        {
-            GUIObjs.AddLast(new OptionButton(GUIForm, new Rectangle(260, 440, 400, 28), "FRIENDLY FIRE", Properties.Settings.Default.FriendlyFire, true));
-            GUIObjs.AddLast(new OptionButton(GUIForm, new Rectangle(260, 520, 400, 28), "AI USE BONUS", Properties.Settings.Default.AIUseBonus));
-            GUIObjs.AddLast(new NameBox(GUIForm, new Rectangle(260, 600, 250, 41), Properties.Settings.Default.P1Name, "P1 NAME:"));
-            GUIObjs.AddLast(new NameBox(GUIForm, new Rectangle(260, 680, 250, 41), Properties.Settings.Default.P2Name, "P2 NAME:"));
-            GUIObjs.AddLast(new SelectButton(GUIForm, new Rectangle(360, 840, 0, 0), "MAIN MENU"));
+        private GUIObject _btnFriendlyFire;
+        private GUIObject _btnAIUseBonus;
+        private GUIObject _nameBoxP1;
+        private GUIObject _nameBoxP2;
+        private GUIObject _btnMainMenu;
 
-            CurrentGUIObj = GUIObjs.First;
+        public OptionsForm(GUIForm guiForm, FormsManager formsManager) : base(guiForm, formsManager)
+        {
+            InitializeComponents();
         }
 
         public override void Subscribe()
@@ -23,12 +22,10 @@ namespace BattleCity
             base.Subscribe();
             GUIForm.Paint += OnPaint;
 
-            foreach(GUIObject option in GUIObjs)
-                option.Subscribe();
+            foreach(var component in Components)
+                component.Subscribe();
 
-            GUIObjs.Last.Value.Clicked += OnBtnMainMenuClicked;
-
-            GUIForm.Invalidate();
+            _btnMainMenu.Clicked += OnBtnMainMenuClicked;
         }
 
         public override void Unsubscribe()
@@ -36,31 +33,46 @@ namespace BattleCity
             base.Unsubscribe();
             GUIForm.Paint -= OnPaint;
 
-            foreach(GUIObject option in GUIObjs)
-                option.Unsubscribe();
+            foreach(var component in Components)
+                component.Unsubscribe();
 
-            GUIObjs.Last.Value.Clicked -= OnBtnMainMenuClicked;
+            _btnMainMenu.Clicked -= OnBtnMainMenuClicked;
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
             g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(new Point(), GUIForm.Size));
             g.DrawImageUnscaled(Properties.Resources.Options, 80, 30);
         }
 
         private void OnBtnMainMenuClicked(object sender, EventArgs e)
         {
-            LinkedListNode<GUIObject> option = GUIObjs.First;
-            Properties.Settings.Default.FriendlyFire = ((OptionButton)option.Value).Enabled;
-            option = option.Next;
-            Properties.Settings.Default.AIUseBonus = ((OptionButton)option.Value).Enabled;
-            option = option.Next;
-            Properties.Settings.Default.P1Name = option.Value.Text;
-            option = option.Next;
-            Properties.Settings.Default.P2Name = option.Value.Text;
+            Properties.Settings.Default.FriendlyFire = ((OptionButton)_btnFriendlyFire).Enabled;
+            Properties.Settings.Default.AIUseBonus = ((OptionButton)_btnAIUseBonus).Enabled;
+            Properties.Settings.Default.P1Name = _nameBoxP1.Text;
+            Properties.Settings.Default.P2Name = _nameBoxP2.Text;
             Properties.Settings.Default.Save();
-            GameManager.SetMainMenuForm();
+
+            FormsManager.SetMainMenuForm();
+        }
+
+        private void InitializeComponents()
+        {
+            _btnFriendlyFire    = new OptionButton(GUIForm, new Point(260, 440), "FRIENDLY FIRE", Properties.Settings.Default.FriendlyFire, true);
+            _btnAIUseBonus      = new OptionButton(GUIForm, new Point(260, 520), "AI USE BONUS", Properties.Settings.Default.AIUseBonus);
+            _nameBoxP1          = new TextEdit(GUIForm, new Point(260, 600), Properties.Settings.Default.P1Name, "P1 NAME:");
+            _nameBoxP2          = new TextEdit(GUIForm, new Point(260, 680), Properties.Settings.Default.P2Name, "P2 NAME:");
+            _btnMainMenu        = new SelectButton(GUIForm, new Point(360, 840), "MAIN MENU");
+
+
+            Components.AddLast(_btnFriendlyFire);
+            Components.AddLast(_btnAIUseBonus);
+            Components.AddLast(_nameBoxP1);
+            Components.AddLast(_nameBoxP2);
+            Components.AddLast(_btnMainMenu);
+
+            CurrentComponent = Components.First;
         }
     }
 }

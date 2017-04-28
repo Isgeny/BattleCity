@@ -6,15 +6,16 @@ namespace BattleCity
 {
     public class GameOverForm : AbstractForm
     {
-        public GameOverForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
+        public GameOverForm(GUIForm guiForm, FormsManager formsManager) : base(guiForm, formsManager)
         {
         }
 
         public override void Subscribe()
         {
+            base.Subscribe();
             GUIForm.Paint += OnPaint;
 
-            Timer gameFormTimer = new Timer();
+            var gameFormTimer = new Timer();
             gameFormTimer.Interval = 4000;
             gameFormTimer.Tick += OnGameFormTimer;
             gameFormTimer.Start();
@@ -22,22 +23,23 @@ namespace BattleCity
 
         public override void Unsubscribe()
         {
+            base.Unsubscribe();
             GUIForm.Paint -= OnPaint;
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
             g.FillRectangle(Brushes.Black, GUIForm.ClientRectangle);
             g.DrawImageUnscaled(Properties.Resources.Game_Over, 272, 319);
         }
 
         private void OnGameFormTimer(object sender, EventArgs e)
         {
-            Timer gameFormTimer = sender as Timer;
+            var gameFormTimer = sender as Timer;
             gameFormTimer.Stop();
             gameFormTimer.Tick -= OnGameFormTimer;
-            GameManager.SetMainMenuForm();
+            FormsManager.SetMainMenuForm();
         }
     }
 }

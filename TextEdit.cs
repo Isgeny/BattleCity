@@ -4,11 +4,11 @@ using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public class NameBox : GUIObject
+    public class TextEdit : GUIObject
     {
         private string _hintText;
 
-        public NameBox(GUIForm guiForm, Rectangle rect, string text, string hintText, bool selected = false) : base(guiForm, rect, text, selected)
+        public TextEdit(GUIForm guiForm, Point point, string text, string hintText, bool selected = false) : base(guiForm, point, text, selected)
         {
             _hintText = hintText;
         }
@@ -28,9 +28,9 @@ namespace BattleCity
         protected override void OnPaint(object sender, PaintEventArgs e)
         {
             base.OnPaint(sender, e);
-            Graphics g = e.Graphics;
-            g.DrawString(_hintText, MyFont.GetFont(19), Brushes.White, Rect.X, Rect.Y);
-            g.DrawString(Text, MyFont.GetFont(19), Brushes.Gray, Rect.Right + 30, Rect.Y);
+            var g = e.Graphics;
+            g.DrawString(_hintText, MyFont.GetFont(19), Brushes.White, Point);
+            g.DrawString(Text, MyFont.GetFont(19), Brushes.Gray, Point.X + 280, Point.Y);
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
@@ -41,7 +41,7 @@ namespace BattleCity
                     Text += Char.ToUpper((char)e.KeyCode);
                 else if(Text.Length > 0 && e.KeyCode == Keys.Back)
                     Text = Text.Remove(Text.Length - 1);
-                GUIForm.Invalidate(new Rectangle(Rect.X, Rect.Y, 800, 41));
+                GUIForm.Invalidate(new Rectangle(Point.X, Point.Y, 800, 41));
             }
         }
     }

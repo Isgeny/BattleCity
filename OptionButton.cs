@@ -7,7 +7,7 @@ namespace BattleCity
     {
         private bool _enabled;
 
-        public OptionButton(GUIForm guiForm, Rectangle rect, string text, bool enabled, bool selected = false) : base(guiForm, rect, text, selected)
+        public OptionButton(GUIForm guiForm, Point point, string text, bool enabled, bool selected = false) : base(guiForm, point, text, selected)
         {
             _enabled = enabled;
         }
@@ -18,7 +18,7 @@ namespace BattleCity
             set
             {
                 _enabled = value;
-                GUIForm.Invalidate(new Rectangle(Rect.Right + 50, Rect.Y, 150, 41));
+                GUIForm.Invalidate(new Rectangle(Point.X + 450 ,Point.Y, 150, 41));
             }
         }
 
@@ -37,10 +37,10 @@ namespace BattleCity
         protected override void OnPaint(object sender, PaintEventArgs e)
         {
             base.OnPaint(sender, e);
-            Graphics g = e.Graphics;
-            g.DrawString(Text, MyFont.GetFont(19), Brushes.White, Rect.X, Rect.Y);
+            var g = e.Graphics;
+            g.DrawString(Text, MyFont.GetFont(19), Brushes.White, Point);
             string str = (_enabled) ? "YES" : "NO";
-            g.DrawString(str, MyFont.GetFont(19), Brushes.Gray, Rect.Right + 50, Rect.Y);
+            g.DrawString(str, MyFont.GetFont(19), Brushes.Gray, Point.X + 450, Point.Y);
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)

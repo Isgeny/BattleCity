@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public class Brick : GraphicsObject
+    public class Brick : Obstacle
     {
         private Rectangle _cuttedRect;
 
@@ -12,72 +12,44 @@ namespace BattleCity
             _cuttedRect = new Rectangle(0, 0, rect.Width, rect.Height);
         }
 
-        public override void Subscribe()
+        protected override void OnPaint(object sender, PaintEventArgs e)
         {
-            GUIForm.Paint += OnPaint;
-            Destroyed += OnDestroyed;
-        }
-
-        public override void Unsubscribe()
-        {
-            GUIForm.Paint -= OnPaint;
-            Destroyed -= OnDestroyed;
-        }
-
-        private void OnPaint(object sender, PaintEventArgs e)
-        {
-            Rectangle clipRect = e.ClipRectangle;
+            var clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))
             {
-                Graphics g = e.Graphics;
-                g.DrawImage(Properties.Resources.Tile_0, Rect.X + _cuttedRect.X, Rect.Y + _cuttedRect.Y, _cuttedRect, GraphicsUnit.Pixel);
+                var g = e.Graphics;
+                g.DrawImage(Properties.Resources.Tile_Brick, Rect.X + _cuttedRect.X, Rect.Y + _cuttedRect.Y, _cuttedRect, GraphicsUnit.Pixel);
             }
         }
 
-        protected override void OnCheckPosition(object sender, RectEventArgs e)
+        protected override void ShellCollision(Shell shell)
         {
-            if(Rect.IntersectsWith(e.Rect))
+            base.ShellCollision(shell);
+            var creator = shell.Creator;
+            if(creator is PlayerTank && creator.Stars <= 2 || creator is CompTank)
             {
-                if(sender is PlayerTank)
+                switch(shell.Direction)
                 {
-                    ((PlayerTank)sender).StopMoving();
+                    case Direction.Up:
+                        _cuttedRect = new Rectangle(_cuttedRect.X, _cuttedRect.Y, _cuttedRect.Width, _cuttedRect.Height - 16);
+                        break;
+                    case Direction.Left:
+                        _cuttedRect = new Rectangle(_cuttedRect.X, _cuttedRect.Y, _cuttedRect.Width - 16, _cuttedRect.Height);
+                        break;
+                    case Direction.Down:
+                        _cuttedRect = new Rectangle(_cuttedRect.X, _cuttedRect.Y + 16, _cuttedRect.Width, _cuttedRect.Height);
+                        break;
+                    case Direction.Right:
+                        _cuttedRect = new Rectangle(_cuttedRect.X + 16, _cuttedRect.Y, _cuttedRect.Width, _cuttedRect.Height);
+                        break;
+                    default:
+                        break;
                 }
-                else if(sender is CompTank)
-                {
-                    ((CompTank)sender).StopMoving();
-                }
-                else if(sender is Shell)
-                {
-                    Shell s = sender as Shell;
-                    s.InvokeDestroyed();
-                    int creatorStars = s.Creator.Stars;
-                    Tank creator = s.Creator;
-                    Rectangle oldRect = Rect;
-                    if(creator is PlayerTank && creatorStars >= 0 && creatorStars <= 2 || creator is CompTank && creatorStars >= 0 && creatorStars <= 3)
-                    {
-                        switch(s.Direction)
-                        {
-                            case Direction.Up:
-                                _cuttedRect = new Rectangle(_cuttedRect.X, _cuttedRect.Y, _cuttedRect.Width, _cuttedRect.Height - 16);
-                                break;
-                            case Direction.Left:
-                                _cuttedRect = new Rectangle(_cuttedRect.X, _cuttedRect.Y, _cuttedRect.Width - 16, _cuttedRect.Height);
-                                break;
-                            case Direction.Down:
-                                _cuttedRect = new Rectangle(_cuttedRect.X, _cuttedRect.Y + 16, _cuttedRect.Width, _cuttedRect.Height);
-                                break;
-                            case Direction.Right:
-                                _cuttedRect = new Rectangle(_cuttedRect.X + 16, _cuttedRect.Y, _cuttedRect.Width, _cuttedRect.Height);
-                                break;
-                        }
-                        if(_cuttedRect.X >= 32 || _cuttedRect.Y >= 32 || _cuttedRect.Width <= 0 || _cuttedRect.Height <= 0)
-                            InvokeDestroyed();
-                    }
-                    else if(creator is PlayerTank && creatorStars == 3)
-                        InvokeDestroyed();
-                    GUIForm.Invalidate(oldRect);
-                }
+                if(_cuttedRect.X == _cuttedRect.Width || _cuttedRect.Y == _cuttedRect.Height)
+                    InvokeDestroyed();
             }
+            else if(creator is PlayerTank && creator.Stars == 3)
+                InvokeDestroyed();
         }
     }
 }

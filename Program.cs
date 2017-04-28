@@ -15,7 +15,7 @@ namespace BattleCity
             Application.SetCompatibleTextRenderingDefault(false);
 
             GUIForm guiForm = new GUIForm();
-            GameManager gameManager = new GameManager(guiForm);
+            FormsManager gameManager = new FormsManager(guiForm);
 
             Application.Run(guiForm);
         }

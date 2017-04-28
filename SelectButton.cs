@@ -6,7 +6,7 @@ namespace BattleCity
 {
     public class SelectButton : GUIObject
     {
-        public SelectButton(GUIForm guiForm, Rectangle rect, string text, bool selected = false) : base(guiForm, rect, text, selected)
+        public SelectButton(GUIForm guiForm, Point point, string text, bool selected = false) : base(guiForm, point, text, selected)
         {
         }
 
@@ -25,8 +25,8 @@ namespace BattleCity
         protected override void OnPaint(object sender, PaintEventArgs e)
         {
             base.OnPaint(sender, e);
-            Graphics g = e.Graphics;
-            g.DrawString(Text, MyFont.GetFont(19), Brushes.White, Rect.X, Rect.Y);
+            var g = e.Graphics;
+            g.DrawString(Text, MyFont.GetFont(19), Brushes.White, Point);
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)

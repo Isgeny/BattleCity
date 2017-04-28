@@ -4,28 +4,24 @@ using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public abstract class GUIObject : GraphicsObject
+    public abstract class GUIObject : Object
     {
-        private string _text;
+        protected Point Point { get; private set; }
+        public string Text { get; set; }
         private bool _selected;
         private Timer _spriteTimer;
 
         public event EventHandler Clicked;
 
-        public GUIObject(GUIForm guiForm, Rectangle rect, string text, bool selected = false) : base(guiForm, rect)
+        public GUIObject(GUIForm guiForm, Point point, string text, bool selected = false) : base(guiForm)
         {
-            _text = text;
+            Point = point;
+            Text = text;
 
             _spriteTimer = new Timer();
             _spriteTimer.Interval = 24;
             _spriteTimer.Tick += OnSpriteTimer;
             Selected = selected;
-        }
-
-        public string Text
-        {
-            get { return _text; }
-            set { _text = value; }
         }
 
         public virtual bool Selected
@@ -38,8 +34,7 @@ namespace BattleCity
                     _spriteTimer.Start();
                 else
                     _spriteTimer.Stop();
-                GUIForm.Invalidate(new Rectangle(Rect.X - 100, Rect.Y - 18, 64, 64));
-                
+                GUIForm.Invalidate(new Rectangle(Point.X - 100, Point.Y - 18, 64, 64));
             }
         }
 
@@ -60,17 +55,17 @@ namespace BattleCity
 
         protected virtual void OnPaint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
             if(Selected)
             {
                 int currentFrame = (DateTime.Now.Millisecond % 24 < 13) ? 0 : 64;
-                g.DrawImage(Properties.Resources.Tank_Selecting, new Rectangle(Rect.X - 100, Rect.Y - 18, 64, 64), new Rectangle(currentFrame, 0, 64, 64), GraphicsUnit.Pixel);
+                g.DrawImage(Properties.Resources.Tank_Selecting, new Rectangle(Point.X - 100, Point.Y - 18, 64, 64), new Rectangle(currentFrame, 0, 64, 64), GraphicsUnit.Pixel);
             }
         }
 
         private void OnSpriteTimer(object sender, EventArgs e)
         {
-            GUIForm.Invalidate(new Rectangle(Rect.X - 100, Rect.Y - 18, 64, 64));
+            GUIForm.Invalidate(new Rectangle(Point.X - 100, Point.Y - 18, 64, 64));
         }
     }
 }

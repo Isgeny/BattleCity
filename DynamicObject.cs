@@ -54,5 +54,29 @@ namespace BattleCity
             _dx = 0;
             _dy = 0;
         }
+
+        public event EventHandler Destroyed;
+
+        public void InvokeDestroyed()
+        {
+            Destroyed?.Invoke(this, new EventArgs());
+        }
+
+        public EventHandler GetDestroyedListener()
+        {
+            return OnDestroyed;
+        }
+
+        protected virtual void OnDestroyed(object sender, EventArgs e)
+        {
+            GUIForm.Invalidate(Rect);
+        }
+
+        public event RectEventHandler CheckPosition;
+
+        protected void InvokeCheckPosition(RectEventArgs e)
+        {
+            CheckPosition?.Invoke(this, e);
+        }
     }
 }

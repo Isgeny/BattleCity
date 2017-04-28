@@ -13,7 +13,7 @@ namespace BattleCity
         private List<Shell> _shells;
         private BonusManager _bonusManager;
 
-        public GameForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
+        public GameForm(GUIForm guiForm, FormsManager gameManager) : base(guiForm, gameManager)
         {
             _bonusManager = new BonusManager(guiForm, this);
             _field          = new Field(guiForm, new Rectangle(64, 64, 832, 832), this, _bonusManager);
@@ -44,6 +44,7 @@ namespace BattleCity
 
         public override void Subscribe()
         {
+            base.Subscribe();
             GUIForm.Paint += OnPaint;
 
             _field.Subscribe();
@@ -60,6 +61,7 @@ namespace BattleCity
 
         public override void Unsubscribe()
         {
+            base.Unsubscribe();
             GUIForm.Paint -= OnPaint;
 
             _field.Unsubscribe();
@@ -88,7 +90,8 @@ namespace BattleCity
             s.Destroyed     += OnShellDestroyed;
             s.CheckPosition += _field.GetCheckPositionListener();
             foreach(GraphicsObject obstacle in _field.Obstacles)
-                s.CheckPosition += obstacle.GetCheckPositionListener();
+                if(!(obstacle is Water) && !(obstacle is Ice))
+                    s.CheckPosition += obstacle.GetCheckPositionListener();
             foreach(Shell shell in _shells)
                 shell.CheckPosition += s.GetCheckPositionListener();
             _shells.Add(s);
@@ -100,7 +103,8 @@ namespace BattleCity
             s.Destroyed -= OnShellDestroyed;
             s.CheckPosition -= _field.GetCheckPositionListener();
             foreach(GraphicsObject obstacle in _field.Obstacles)
-                s.CheckPosition -= obstacle.GetCheckPositionListener();
+                if(!(obstacle is Water) && !(obstacle is Ice))
+                    s.CheckPosition -= obstacle.GetCheckPositionListener();
             foreach(Shell shell in _shells)
                 shell.CheckPosition -= s.GetCheckPositionListener();
             _shells.Remove(s);
@@ -123,7 +127,7 @@ namespace BattleCity
         }
         private void OnCompTanksDestroyed(object sender, EventArgs e)
         {
-            GameManager.SetStageNumberForm();
+            FormsManager.SetStageNumberForm();
         }
 
         public void Initialize()
@@ -144,7 +148,7 @@ namespace BattleCity
             Timer gameOverTimer = sender as Timer;
             gameOverTimer.Stop();
             gameOverTimer.Tick -= OnGameOverTimer;
-            GameManager.SetGameOverForm();
+            FormsManager.SetGameOverForm();
         }
     }
 }

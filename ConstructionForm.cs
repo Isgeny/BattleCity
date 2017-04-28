@@ -18,7 +18,7 @@ namespace BattleCity
         private int _iPos;
         private int _jPos;
 
-        public ConstructionForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
+        public ConstructionForm(GUIForm guiForm, FormsManager formsManager) : base(guiForm, formsManager)
         {
             _blocks = new int[BLOCKS_COUNT, BLOCKS_COUNT];
             _activeBlock = 1;
@@ -29,10 +29,11 @@ namespace BattleCity
         public override void Subscribe()
         {
             base.Subscribe();
-            GUIForm.Paint += OnPaint;
-            GUIForm.MouseClick += OnMouseClick;
-            GUIForm.MouseMove += OnMouseMove;
-            GUIForm.MouseWheel += OnMouseWheel;
+            GUIForm.Paint       += OnPaint;
+            GUIForm.KeyDown     += OnKeyDown;
+            GUIForm.MouseClick  += OnMouseClick;
+            GUIForm.MouseMove   += OnMouseMove;
+            GUIForm.MouseWheel  += OnMouseWheel;
 
             CleanField();
         }
@@ -40,26 +41,27 @@ namespace BattleCity
         public override void Unsubscribe()
         {
             base.Unsubscribe();
-            GUIForm.Paint -= OnPaint;
-            GUIForm.MouseClick -= OnMouseClick;
-            GUIForm.MouseMove -= OnMouseMove;
-            GUIForm.MouseWheel -= OnMouseWheel;
+            GUIForm.Paint       -= OnPaint;
+            GUIForm.KeyDown     -= OnKeyDown;
+            GUIForm.MouseClick  -= OnMouseClick;
+            GUIForm.MouseMove   -= OnMouseMove;
+            GUIForm.MouseWheel  -= OnMouseWheel;
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
-            g.FillRectangle(new SolidBrush(Color.FromArgb(102, 102, 102)), new Rectangle(0, 0, 1024, 960));
-            g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(64, 64, 832, 832));
-            g.DrawString("ESC-MAIN MENU", MyFont.GetFont(14), new SolidBrush(Color.Black), new Point(5, 10));
-            g.DrawString("LMB-PLACE    WHEEL⬆⬇-CHOOSE    RMB-REMOVE", MyFont.GetFont(14), new SolidBrush(Color.Black), new Point(5, 930));
+            var g = e.Graphics;
+            g.FillRectangle(new SolidBrush(Color.FromArgb(102, 102, 102)), 0, 0, 1024, 960);
+            g.FillRectangle(Brushes.Black, 64, 64, 832, 832);
+            g.DrawString("ESC-MAIN MENU", MyFont.GetFont(14), Brushes.Black, 5, 10);
+            g.DrawString("LMB-PLACE    WHEEL⬆⬇-CHOOSE    RMB-REMOVE", MyFont.GetFont(14), Brushes.Black, 5, 930);
 
             for(int i = 0; i < BLOCKS_COUNT; i++)
                 for(int j = 0; j < BLOCKS_COUNT; j++)
                     if(_blocks[i, j] != 0)
-                        g.DrawImageUnscaled(GetBlockImage(_blocks[i, j]), new Point(j * BLOCK_SZ + BLOCK_SZ, i * BLOCK_SZ + BLOCK_SZ));
+                        g.DrawImageUnscaled(GetBlockImage(_blocks[i, j]), j * BLOCK_SZ + BLOCK_SZ, i * BLOCK_SZ + BLOCK_SZ);
 
-            g.DrawImageUnscaled(GetBlockImage(_activeBlock), new Point(_jPos * BLOCK_SZ + BLOCK_SZ, _iPos * BLOCK_SZ + BLOCK_SZ));
+            g.DrawImageUnscaled(GetBlockImage(_activeBlock), _jPos * BLOCK_SZ + BLOCK_SZ, _iPos * BLOCK_SZ + BLOCK_SZ);
         }
 
         private Bitmap GetBlockImage(int value)
@@ -134,15 +136,13 @@ namespace BattleCity
             GUIForm.Invalidate();
         }
 
-        protected override void OnKeyDown(object sender, KeyEventArgs e)
+        private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.S)
-                SaveToFile();
-            else if(e.KeyCode == Keys.Escape)
+            if(e.KeyCode == Keys.Escape)
             {
                 ConvertBlocksToList();
                 Unsubscribe();
-                GameManager.SetMainMenuForm();
+                FormsManager.SetMainMenuForm();
             }
         }
 
@@ -212,15 +212,7 @@ namespace BattleCity
             return obs;
         }
 
-        private void SaveToFile()
-        {
-            string[,] obstacles = ConvertBlocksToStrings();
-            using(StreamWriter sw = new StreamWriter("Stage_" + DateTime.Now.ToFileTimeUtc().ToString() + ".txt"))
-                foreach(string s in obstacles)
-                    sw.Write(s);
-        }
-
-        public static Point RoundMousePos(Point p)
+        private static Point RoundMousePos(Point p)
         {
             return new Point(p.X / BLOCK_SZ * BLOCK_SZ, p.Y / BLOCK_SZ * BLOCK_SZ);
         }

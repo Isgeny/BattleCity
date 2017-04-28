@@ -1,58 +1,25 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
+﻿using System.Drawing;
 
 namespace BattleCity
 {
-    public class Bush : GraphicsObject
+    public class Bush : Obstacle
     {
         public Bush(GUIForm guiForm, Rectangle rect) : base(guiForm, rect)
         {
         }
 
-        public override void Subscribe()
-        {
-            GUIForm.Paint += OnPaint;
-            Destroyed += OnDestroyed;
-        }
-
-        public override void Unsubscribe()
+        protected override void TankCollision(Tank tank)
         {
             GUIForm.Paint -= OnPaint;
-            Destroyed -= OnDestroyed;
+            GUIForm.Paint += OnPaint;
         }
 
-        private void OnPaint(object sender, PaintEventArgs e)
+        protected override void ShellCollision(Shell shell)
         {
-            Rectangle clipRect = e.ClipRectangle;
-            if(Rect.IntersectsWith(clipRect))
-            {
-                Graphics g = e.Graphics;
-                g.DrawImage(Properties.Resources.Tile_3, Rect.X, Rect.Y);
-            }
-        }
-
-        protected override void OnCheckPosition(object sender, RectEventArgs e)
-        {
-            if(Rect.IntersectsWith(e.Rect))
-            {
-                if(sender is Shell)
-                {
-                    Shell s = sender as Shell;
-                    if(s.Creator.Gun)
-                        InvokeDestroyed();
-                    else
-                    {
-                        GUIForm.Paint -= OnPaint;
-                        GUIForm.Paint += OnPaint;
-                    }
-                }
-                else if(sender is Tank)
-                {
-                    GUIForm.Paint -= OnPaint;
-                    GUIForm.Paint += OnPaint;
-                }
-            }
+            GUIForm.Paint -= OnPaint;
+            GUIForm.Paint += OnPaint;
+            if(shell.Creator.Gun)
+                InvokeDestroyed();
         }
     }
 }

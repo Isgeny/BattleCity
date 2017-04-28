@@ -2,17 +2,11 @@
 {
     public abstract class Object
     {
-        private GUIForm _guiForm;
+        protected GUIForm GUIForm { get; set; }
 
         public Object(GUIForm guiForm)
         {
-            _guiForm = guiForm;
-        }
-
-        public GUIForm GUIForm
-        {
-            get { return _guiForm; }
-            set { _guiForm = value; }
+            GUIForm = guiForm;
         }
 
         public abstract void Subscribe();

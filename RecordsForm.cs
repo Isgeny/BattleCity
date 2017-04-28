@@ -7,16 +7,14 @@ using System.Collections.Generic;
 
 namespace BattleCity
 {
-    public class RecordsForm : AbstractForm
+    public class RecordsForm : MenuForm
     {
         private List<RecordNode> _records;
+        private GUIObject _btnMainMenu;
 
-        public RecordsForm(GUIForm guiForm, GameManager gameManager) : base(guiForm, gameManager)
+        public RecordsForm(GUIForm guiForm, FormsManager formsManager) : base(guiForm, formsManager)
         {
-            GUIObjs.AddLast(new SelectButton(GUIForm, new Rectangle(360, 840, 0, 0), "MAIN MENU", true));
-            CurrentGUIObj = GUIObjs.Last;
-            _records = new List<RecordNode>();
-            LoadRecordsFromFile();
+            InitializeComponents();
         }
 
         ~RecordsForm()
@@ -29,8 +27,8 @@ namespace BattleCity
             base.Subscribe();
             GUIForm.Paint += OnPaint;
 
-            GUIObjs.Last.Value.Subscribe();
-            GUIObjs.Last.Value.Clicked += OnBtnMainMenuClicked;
+            _btnMainMenu.Subscribe();
+            _btnMainMenu.Clicked += OnBtnMainMenuClicked;
         }
 
         public override void Unsubscribe()
@@ -38,26 +36,26 @@ namespace BattleCity
             base.Unsubscribe();
             GUIForm.Paint -= OnPaint;
 
-            GUIObjs.Last.Value.Unsubscribe();
-            GUIObjs.Last.Value.Clicked -= OnBtnMainMenuClicked;
+            _btnMainMenu.Unsubscribe();
+            _btnMainMenu.Clicked -= OnBtnMainMenuClicked;
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
-            g.FillRectangle(new SolidBrush(Color.Black), new Rectangle(new Point(), GUIForm.Size));
+            var g = e.Graphics;
+            g.FillRectangle(Brushes.Black, new Rectangle(new Point(), GUIForm.Size));
             g.DrawImageUnscaled(Properties.Resources.Records, 80, 30);
-            g.DrawString("POS", MyFont.GetFont(19), new SolidBrush(Color.Gray), 170, 190);
-            g.DrawString("NAME", MyFont.GetFont(19), new SolidBrush(Color.Gray), 350, 190);
-            g.DrawString("POINTS", MyFont.GetFont(19), new SolidBrush(Color.Gray), 650, 190);
+            g.DrawString("POS",     MyFont.GetFont(19), Brushes.Gray, 170, 190);
+            g.DrawString("NAME",    MyFont.GetFont(19), Brushes.Gray, 350, 190);
+            g.DrawString("POINTS",  MyFont.GetFont(19), Brushes.Gray, 650, 190);
 
             int y = 250;
             int i = 1;
             foreach(RecordNode record in _records)
             {
-                g.DrawString(i.ToString() + '.', MyFont.GetFont(19), new SolidBrush(Color.White), 170, y);
-                g.DrawString(record.name, MyFont.GetFont(19), new SolidBrush(Color.White), 350, y);
-                g.DrawString(record.points.ToString(), MyFont.GetFont(19), new SolidBrush(Color.White), 650, y);
+                g.DrawString(i.ToString() + '.',       MyFont.GetFont(19), Brushes.White, 170, y);
+                g.DrawString(record.name,              MyFont.GetFont(19), Brushes.White, 350, y);
+                g.DrawString(record.points.ToString(), MyFont.GetFont(19), Brushes.White, 650, y);
                 y += 50;
                 i++;
             }
@@ -65,7 +63,7 @@ namespace BattleCity
 
         private void OnBtnMainMenuClicked(object sender, EventArgs e)
         {
-            GameManager.SetMainMenuForm();
+            FormsManager.SetMainMenuForm();
         }
 
         public void AddRecord(string name, int points)
@@ -80,8 +78,7 @@ namespace BattleCity
 
         private void LoadRecordsFromFile()
         {
-            using(StreamReader sr = new StreamReader("Records.txt", Encoding.Default))
-            {
+            using(var sr = new StreamReader("Records.txt", Encoding.Default))
                 while(!sr.EndOfStream)
                 {
                     string currentString = sr.ReadLine();
@@ -90,13 +87,11 @@ namespace BattleCity
                     int points = Convert.ToInt32(record[1]);
                     AddRecord(name, points);
                 }
-            }
         }
 
         private void WriteRecordsToFile()
         {
-            using(StreamWriter sw = new StreamWriter("Records.txt"))
-            {
+            using(var sw = new StreamWriter("Records.txt"))
                 foreach(RecordNode record in _records)
                 {
                     sw.Write(record.name);
@@ -104,12 +99,20 @@ namespace BattleCity
                     sw.Write(record.points);
                     sw.WriteLine("");
                 }
-            }
         }
 
         public int GetHighestRecord()
         {
             return _records[0].points;
+        }
+
+        private void InitializeComponents()
+        {
+            _btnMainMenu = new SelectButton(GUIForm, new Point(360, 840), "MAIN MENU", true);
+            Components.AddLast(_btnMainMenu);
+            CurrentComponent = Components.Last;
+            _records = new List<RecordNode>();
+            LoadRecordsFromFile();
         }
 
         private struct RecordNode
