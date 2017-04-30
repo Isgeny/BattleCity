@@ -7,52 +7,35 @@ namespace BattleCity
     public abstract class DynamicObject : GraphicsObject
     {
         public Timer MoveTimer { get; set; }
-        private int _dx;
-        private int _dy;
-        private Direction _direction;
+        public int Speed { get; set; }
+        public int Dx { get; set; }
+        public int Dy { get; set; }
+        public Direction Direction { get; set; }
 
         public DynamicObject(GUIForm guiForm, Rectangle rect, Direction direction) : base(guiForm, rect)
         {
             MoveTimer = new Timer();
             MoveTimer.Interval = 15;
-            _dx = 0;
-            _dy = 0;
-            _direction = direction;
-        }
-
-        public int Dx
-        {
-            get { return _dx; }
-            set { _dx = value; }
-        }
-
-        public int Dy
-        {
-            get { return _dy; }
-            set { _dy = value; }
-        }
-
-        public Direction Direction
-        {
-            get { return _direction; }
-            set { _direction = value; }
+            Dx = 0;
+            Dy = 0;
+            Direction = direction;
         }
 
         public virtual void Move()
         {
-            if(_dx != 0 || _dy != 0)
+            if(Dx != 0 || Dy != 0)
             {
-                Rectangle oldRect = Rect;
-                Rect = new Rectangle(Rect.X + _dx, Rect.Y + _dy, Rect.Width, Rect.Height);
-                GUIForm.Invalidate(Rectangle.Ceiling(Rect));
-                GUIForm.Invalidate(Rectangle.Ceiling(oldRect));
+                var oldRect = Rect;
+                Rect = new Rectangle(Rect.X + Dx, Rect.Y + Dy, Rect.Width, Rect.Height);
+                GUIForm.Invalidate(Rect);
+                GUIForm.Invalidate(oldRect);
             }
         }
 
         public virtual void StopMoving()
         {
-            _dx = 0;
-            _dy = 0;
+            Dx = 0;
+            Dy = 0;
         }
 
         public event EventHandler Destroyed;
@@ -60,11 +43,6 @@ namespace BattleCity
         public void InvokeDestroyed()
         {
             Destroyed?.Invoke(this, new EventArgs());
-        }
-
-        public EventHandler GetDestroyedListener()
-        {
-            return OnDestroyed;
         }
 
         protected virtual void OnDestroyed(object sender, EventArgs e)

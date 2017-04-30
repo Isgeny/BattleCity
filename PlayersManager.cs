@@ -1,37 +1,24 @@
 ﻿using System;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace BattleCity
 {
     public class PlayersManager : TanksManager
     {
-        private BonusManager _bonusManager;
-        private Tank _tank1;
-        private Tank _tank2;
+        public Tank P1Tank { get; private set; }
+        public Tank P2Tank { get; private set; }
         private Timer _watchDelayTimer;
 
-        public PlayersManager(GUIForm guiForm, GameForm gameForm, BonusManager bonusManager) : base(guiForm, gameForm)
+        public PlayersManager(GUIForm guiForm, Field field) : base(guiForm, field)
         {
-            _tank1 = new FirstPlayerTank(guiForm);
-            _tank2 = new SecondPlayerTank(guiForm);
-            _tank1.InitializeTank();
-            _tank2.InitializeTank();
-            _bonusManager = bonusManager;
+            P1Tank = new FirstPlayerTank(guiForm);
+            P2Tank = new SecondPlayerTank(guiForm);
+            P1Tank.InitializeTank();
+            P2Tank.InitializeTank();
 
             _watchDelayTimer = new Timer();
             _watchDelayTimer.Interval = 10 * 1000;
             _watchDelayTimer.Tick += OnWatchDelayTimerTick;
-        }
-
-        public Tank P1Tank
-        {
-            get { return _tank1; }
-        }
-
-        public Tank P2Tank
-        {
-            get { return _tank2; }
         }
 
         public override void Subscribe()
@@ -46,10 +33,10 @@ namespace BattleCity
                         tank1.CheckPosition += tank2.GetCheckPositionListener();
             }
 
-            GameForm.CompsManager.TanksDestroyed += OnCompTanksDestroyed;
+            Field.CompsManager.TanksDestroyed += OnCompTanksDestroyed;
 
-            _bonusManager.CompTookBomb  += OnCompTookBomb;
-            _bonusManager.CompTookWatch += OnCompTookWatch;
+            Field.BonusManager.CompTookBomb  += OnCompTookBomb;
+            Field.BonusManager.CompTookWatch += OnCompTookWatch;
         }
 
         public override void Unsubscribe()
@@ -64,10 +51,10 @@ namespace BattleCity
                         tank1.CheckPosition -= tank2.GetCheckPositionListener();
             }
 
-            GameForm.CompsManager.TanksDestroyed -= OnCompTanksDestroyed;
+            Field.CompsManager.TanksDestroyed -= OnCompTanksDestroyed;
 
-            _bonusManager.CompTookBomb  -= OnCompTookBomb;
-            _bonusManager.CompTookWatch -= OnCompTookWatch;
+            Field.BonusManager.CompTookBomb  -= OnCompTookBomb;
+            Field.BonusManager.CompTookWatch -= OnCompTookWatch;
         }
 
         private void OnShoot(object sender, ShellEventArgs e)
@@ -77,7 +64,7 @@ namespace BattleCity
             foreach(Tank tank in Tanks)
                 if(tank != s.Creator)
                     tank.CheckPosition += s.GetCheckPositionListener();
-            foreach(Tank compTank in GameForm.CompsManager.Tanks)
+            foreach(Tank compTank in Field.CompsManager.Tanks)
                 compTank.CheckPosition += s.GetCheckPositionListener();
 
             InvokeTankShoot(e);
@@ -88,7 +75,7 @@ namespace BattleCity
             Shell s = sender as Shell;
             foreach(Tank tank in Tanks)
                 tank.CheckPosition -= s.GetCheckPositionListener();
-            foreach(Tank compTank in GameForm.CompsManager.Tanks)
+            foreach(Tank compTank in Field.CompsManager.Tanks)
                 compTank.CheckPosition -= s.GetCheckPositionListener();
         }
 
@@ -106,7 +93,20 @@ namespace BattleCity
                 }
             Tanks.Remove(destroyedTank);
             if(AliveTanks == 0)
-                InvokeTanksDestroyed(new EventArgs());
+            {
+                Timer timer = new Timer();
+                timer.Interval = 5000;
+                timer.Tick += OnTanksDestroyedTimer;
+                timer.Start();
+            }
+        }
+
+        private void OnTanksDestroyedTimer(object sender, EventArgs e)
+        {
+            Timer timer = sender as Timer;
+            timer.Stop();
+            timer.Tick -= OnTanksDestroyedTimer;
+            InvokeTanksDestroyed(new EventArgs());
         }
 
         private void OnCompTanksDestroyed(object sender, EventArgs e)
@@ -141,11 +141,11 @@ namespace BattleCity
         public void SetPlayers(int players)
         {
             Tanks.Clear();
-            Tanks.Add(_tank1);
+            Tanks.Add(P1Tank);
             AliveTanks = 1;
             if(players == 2)
             {
-                Tanks.Add(_tank2);
+                Tanks.Add(P2Tank);
                 AliveTanks = 2;
             }
         }

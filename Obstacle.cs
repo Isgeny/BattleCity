@@ -37,25 +37,6 @@ namespace BattleCity
             }
         }
 
-        protected override void OnCheckPosition(object sender, RectEventArgs e)
-        {
-            if(Rect.IntersectsWith(e.Rect))
-                if(sender is Tank)
-                    TankCollision(sender as Tank);
-                else if(sender is Shell)
-                    ShellCollision(sender as Shell);
-        }
-
-        protected virtual void TankCollision(Tank tank)
-        {
-            tank.StopMoving();
-        }
-
-        protected virtual void ShellCollision(Shell shell)
-        {
-            shell.InvokeDestroyed();
-        }
-
         protected virtual void OnDestroyed(object sender, EventArgs e)
         {
             GUIForm.Invalidate(Rect);

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Drawing;
-using System.Resources;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace BattleCity
 {
     public class CompsManager : TanksManager
     {
-        private BonusManager _bonusManager;
         private int _aliveTanks;
         private int _tanksOnField;
         private Timer _respawnTimer;
@@ -16,9 +13,8 @@ namespace BattleCity
         private int _maxTankOnField;
         private Timer _watchDelayTimer;
 
-        public CompsManager(GUIForm guiForm, GameForm gameForm, BonusManager bonusManager) : base(guiForm, gameForm)
+        public CompsManager(GUIForm guiForm, Field field) : base(guiForm, field)
         {
-            _bonusManager = bonusManager;
             for(int i = 0; i < 20; i++)
             {
                 bool isBonus = false;
@@ -26,7 +22,7 @@ namespace BattleCity
                     isBonus = true;
                 CompTank compTank = new CompTank(GUIForm, isBonus);
                 if(isBonus)
-                    compTank.BonusShoot += bonusManager.GetBonusTankShootedListener();
+                    compTank.BonusShoot += Field.BonusManager.GetBonusTankShootedListener();
                 Tanks.Add(compTank);
             }
             _respawnTimer = new Timer();
@@ -43,8 +39,8 @@ namespace BattleCity
             _respawnTimer.Tick += OnRespawnTimer;
             _respawnTimer.Start();
 
-            _bonusManager.PlayerTookBomb  += OnPlayerTookBomb;
-            _bonusManager.PlayerTookWatch += OnPlayerTookWatch;
+            Field.BonusManager.PlayerTookBomb  += OnPlayerTookBomb;
+            Field.BonusManager.PlayerTookWatch += OnPlayerTookWatch;
         }
 
         public override void Unsubscribe()
@@ -54,8 +50,8 @@ namespace BattleCity
             _respawnTimer.Tick -= OnRespawnTimer;
             _respawnTimer.Stop();
 
-            _bonusManager.PlayerTookBomb  -= OnPlayerTookBomb;
-            _bonusManager.PlayerTookWatch -= OnPlayerTookWatch;
+            Field.BonusManager.PlayerTookBomb  -= OnPlayerTookBomb;
+            Field.BonusManager.PlayerTookWatch -= OnPlayerTookWatch;
 
             foreach(Tank tank1 in Tanks)
             {
@@ -65,7 +61,7 @@ namespace BattleCity
                 foreach(Tank tank2 in Tanks)
                     if(tank1 != tank2)
                         tank1.CheckPosition -= tank2.GetCheckPositionListener();
-                foreach(Tank playerTank in GameForm.PlayerManager.Tanks)
+                foreach(Tank playerTank in Field.PlayersManager.Tanks)
                 {
                     playerTank.CheckPosition -= tank1.GetCheckPositionListener();
                     tank1.CheckPosition -= playerTank.GetCheckPositionListener();
@@ -104,7 +100,7 @@ namespace BattleCity
                     if(Tanks[_currentRespawnTank] != Tanks[i])
                         Tanks[i].CheckPosition += Tanks[_currentRespawnTank].GetCheckPositionListener();
 
-                foreach(Tank playerTank in GameForm.PlayerManager.Tanks)
+                foreach(Tank playerTank in Field.PlayersManager.Tanks)
                 {
                     playerTank.CheckPosition += Tanks[_currentRespawnTank].GetCheckPositionListener();
                     Tanks[_currentRespawnTank].CheckPosition += playerTank.GetCheckPositionListener();
@@ -122,7 +118,7 @@ namespace BattleCity
             for(int i = 0; i < _currentRespawnTank; i++)
                 if(Tanks[i].Rect.IntersectsWith(Rectangle.Inflate(tank.Rect, 32, 32)) && Tanks[i].IsAlive())
                     return true;
-            foreach(Tank playerTank in GameForm.PlayerManager.Tanks)
+            foreach(Tank playerTank in Field.PlayersManager.Tanks)
                 if(playerTank.Rect.IntersectsWith(Rectangle.Inflate(tank.Rect, 32, 32)) && playerTank.IsAlive())
                     return true;
             return false;
@@ -135,7 +131,7 @@ namespace BattleCity
             foreach(Tank tank in Tanks)
                 if(tank != s.Creator)
                     tank.CheckPosition += s.GetCheckPositionListener();
-            foreach(Tank playerTank in GameForm.PlayerManager.Tanks)
+            foreach(Tank playerTank in Field.PlayersManager.Tanks)
                 playerTank.CheckPosition += s.GetCheckPositionListener();
             InvokeTankShoot(e);
         }
@@ -145,7 +141,7 @@ namespace BattleCity
             Shell s = sender as Shell;
             foreach(Tank tank in Tanks)
                 tank.CheckPosition -= ((Shell)sender).GetCheckPositionListener();
-            foreach(Tank playerTank in GameForm.PlayerManager.Tanks)
+            foreach(Tank playerTank in Field.PlayersManager.Tanks)
                 playerTank.CheckPosition -= s.GetCheckPositionListener();
         }
 
@@ -164,7 +160,7 @@ namespace BattleCity
                     tank.CheckPosition -= compTank.GetCheckPositionListener();
                 }
 
-            foreach(Tank playerTank in GameForm.PlayerManager.Tanks)
+            foreach(Tank playerTank in Field.PlayersManager.Tanks)
             {
                 playerTank.CheckPosition -= tank.GetCheckPositionListener();
                 tank.CheckPosition -= playerTank.GetCheckPositionListener();
@@ -194,7 +190,7 @@ namespace BattleCity
                 foreach(Tank tank2 in Tanks)
                     if(tank1 != tank2)
                         tank1.CheckPosition -= tank2.GetCheckPositionListener();
-                foreach(Tank playerTank in GameForm.PlayerManager.Tanks)
+                foreach(Tank playerTank in Field.PlayersManager.Tanks)
                 {
                     playerTank.CheckPosition -= tank1.GetCheckPositionListener();
                     tank1.CheckPosition -= playerTank.GetCheckPositionListener();
@@ -231,12 +227,12 @@ namespace BattleCity
             _aliveTanks = 20;
             _tanksOnField = 0;
             _currentRespawnTank = 0;
-            _maxTankOnField = (GameForm.PlayerManager.CountTanks() == 1) ? 4 : 6;
+            _maxTankOnField = (Field.PlayersManager.CountTanks() == 1) ? 4 : 6;
         }
 
         private int TankRespawnTime()
         {
-            return ((190 - GameForm.Field.Stage * 4 - (GameForm.PlayerManager.CountTanks() - 1) * 20) / 60) * 1000;
+            return ((190 - Field.Stage * 4 - (Field.PlayersManager.CountTanks() - 1) * 20) / 60) * 1000;
         }
     }
 }

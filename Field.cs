@@ -7,49 +7,71 @@ namespace BattleCity
 {
     public class Field : GraphicsObject
     {
-        private BonusManager _bonusManager;
-        private GameForm _gameForm;
-        private Timer _showelDelayTimer;
         private int _stage;
+        private Timer _showelDelayTimer;
 
-        public List<Obstacle> Obstacles { get; private set; }
+        public List<Obstacle> Obstacles { get; set; }
+        public PlayersManager PlayersManager { get; private set; }
+        public CompsManager CompsManager { get; private set; }
+        public BonusManager BonusManager { get; private set; }
+        public List<Shell> Shells { get; private set; }
+        
+        public event EventHandler GameOver;
+        public event EventHandler NextStage;
 
-        public event EventHandler HQDestroyed;
-
-        public Field(GUIForm guiForm, Rectangle rect, GameForm gameForm, BonusManager bonusManager) : base(guiForm, rect)
+        public Field(GUIForm guiForm, Rectangle rect, GameForm gameForm) : base(guiForm, rect)
         {
-            _bonusManager = bonusManager;
-            _gameForm = gameForm;
+            Obstacles = new List<Obstacle>();
+            Stage = 1;
+            
             _showelDelayTimer = new Timer();
             _showelDelayTimer.Interval = 20 * 1000;
             _showelDelayTimer.Tick += OnShowelDelayTimerTick;
 
-            Obstacles = new List<Obstacle>();
-            Stage = 4;
+            BonusManager = new BonusManager(guiForm, this);
+            PlayersManager = new PlayersManager(guiForm, this);
+            CompsManager = new CompsManager(guiForm, this);
+            Shells = new List<Shell>();
         }
 
         public override void Subscribe()
         {
             GUIForm.Paint += OnPaint;
+
             SubscribeObstacles(Obstacles);
             SubscribeToPlayerTanks(Obstacles);
             SubscribeToCompTanks(Obstacles);
-            _gameForm.PlayerManager.TanksDestroyed  += OnPlayerTanksDestroyed;
-            _gameForm.CompsManager.TanksDestroyed   += OnCompTanksDestroyed;
-            _bonusManager.PlayerTookShowel          += OnPlayerTookShowel;
-            _bonusManager.CompTookShowel            += OnCompTookShowel;
+
+            PlayersManager.Subscribe();
+            PlayersManager.TankShoot       += OnShoot;
+            PlayersManager.TanksDestroyed  += OnPlayerTanksOrHQDestroyed;
+
+            CompsManager.Subscribe();
+            CompsManager.TankShoot         += OnShoot;
+            CompsManager.TanksDestroyed    += OnCompTanksDestroyed;
+
+            BonusManager.PlayerTookShowel  += OnPlayerTookShowel;
+            BonusManager.CompTookShowel    += OnCompTookShowel; 
         }
 
         public override void Unsubscribe()
         {
             GUIForm.Paint -= OnPaint;
+
             UnsubscribeObstacles(Obstacles);
             UnsubscribeFromPlayerTanks(Obstacles);
             UnsubscribeFromCompTanks(Obstacles);
-            _gameForm.PlayerManager.TanksDestroyed  -= OnPlayerTanksDestroyed;
-            _gameForm.CompsManager.TanksDestroyed   -= OnCompTanksDestroyed;
-            _bonusManager.PlayerTookShowel          -= OnPlayerTookShowel;
-            _bonusManager.CompTookShowel            -= OnCompTookShowel;
+
+            PlayersManager.Unsubscribe();
+            PlayersManager.TankShoot       -= OnShoot;
+            PlayersManager.TanksDestroyed  -= OnPlayerTanksOrHQDestroyed;
+
+            CompsManager.Unsubscribe();
+            CompsManager.TankShoot         -= OnShoot;
+            CompsManager.TanksDestroyed    -= OnCompTanksDestroyed;
+
+            BonusManager.PlayerTookShowel  -= OnPlayerTookShowel;
+            BonusManager.CompTookShowel    -= OnCompTookShowel;
         }
 
         public int Stage
@@ -58,6 +80,7 @@ namespace BattleCity
             private set
             {
                 _stage = value % 71;
+                LoadStage();
             }
         }
 
@@ -66,7 +89,10 @@ namespace BattleCity
             foreach(var obstacle in obstacles)
             {
                 obstacle.Subscribe();
-                obstacle.Destroyed += OnObstacleDestroyed;
+                if(obstacle is HQ)
+                    obstacle.Destroyed += OnPlayerTanksOrHQDestroyed;
+                else
+                    obstacle.Destroyed += OnObstacleDestroyed;
             }
         }
 
@@ -75,13 +101,16 @@ namespace BattleCity
             foreach(var obstacle in obstacles)
             {
                 obstacle.Unsubscribe();
-                obstacle.Destroyed -= OnObstacleDestroyed;
+                if(obstacle is HQ)
+                    obstacle.Destroyed -= OnPlayerTanksOrHQDestroyed;
+                else
+                    obstacle.Destroyed -= OnObstacleDestroyed;
             }
         }
 
         private void SubscribeToPlayerTanks(List<Obstacle> obstacles)
         {
-            foreach(var playerTank in _gameForm.PlayerManager.Tanks)
+            foreach(var playerTank in PlayersManager.Tanks)
             {
                 playerTank.CheckPosition            += OnCheckPosition;
                 playerTank.Destroyed                += OnPlayerTankDestroyed;
@@ -92,7 +121,7 @@ namespace BattleCity
 
         private void UnsubscribeFromPlayerTanks(List<Obstacle> obstacles)
         {
-            foreach(var playerTank in _gameForm.PlayerManager.Tanks)
+            foreach(var playerTank in PlayersManager.Tanks)
             {
                 playerTank.CheckPosition            -= OnCheckPosition;
                 playerTank.Destroyed                -= OnPlayerTankDestroyed;
@@ -103,7 +132,7 @@ namespace BattleCity
 
         private void SubscribeToCompTanks(List<Obstacle> obstacles)
         {
-            foreach(var compTank in _gameForm.CompsManager.Tanks)
+            foreach(var compTank in CompsManager.Tanks)
             {
                 compTank.CheckPosition              += OnCheckPosition;
                 compTank.Destroyed                  += OnCompTankDestroyed;
@@ -115,7 +144,7 @@ namespace BattleCity
 
         private void UnsubscribeFromCompTanks(List<Obstacle> obstacles)
         {
-            foreach(var compTank in _gameForm.CompsManager.Tanks)
+            foreach(var compTank in CompsManager.Tanks)
             {
                 compTank.CheckPosition              -= OnCheckPosition;
                 compTank.Destroyed                  -= OnCompTankDestroyed;
@@ -136,26 +165,21 @@ namespace BattleCity
         {
             if(!Rect.Contains(e.Rect))
                 if(sender is Tank)
-                    ((Tank)sender).StopMoving();
+                    TankCollision(sender as Tank);
                 else if(sender is Shell)
-                    ((Shell)sender).InvokeDestroyed();
+                    ShellCollision(sender as Shell);
         }
 
         private void OnObstacleDestroyed(object sender, EventArgs e)
         {
             var destroyedObstacle = sender as Obstacle;
-            foreach(Tank tank in _gameForm.PlayerManager.Tanks)
+            foreach(Tank tank in PlayersManager.Tanks)
                 tank.CheckPosition -= destroyedObstacle.GetCheckPositionListener();
-            foreach(Tank tank in _gameForm.CompsManager.Tanks)
+            foreach(Tank tank in CompsManager.Tanks)
                 tank.CheckPosition -= destroyedObstacle.GetCheckPositionListener();
-            foreach(Shell shell in _gameForm.Shells)
+            foreach(Shell shell in Shells)
                 shell.CheckPosition -= destroyedObstacle.GetCheckPositionListener();
             Obstacles.Remove(destroyedObstacle);
-            if(sender is HQ)
-            {
-                HQDestroyed?.Invoke(sender, e);
-                return;
-            }
             destroyedObstacle.Unsubscribe();   
         }
 
@@ -178,11 +202,6 @@ namespace BattleCity
                     compTank.CheckPosition  -= obstacle.GetCheckPositionListener();
         }
 
-        private void OnPlayerTanksDestroyed(object sender, EventArgs e)
-        {
-            Stage = 1;
-        }        
-
         private void OnCompTanksDestroyed(object sender, EventArgs e)
         {
             UnsubscribeObstacles(Obstacles);
@@ -190,11 +209,18 @@ namespace BattleCity
             UnsubscribeFromCompTanks(Obstacles);
 
             Stage++;
-            LoadStage();
 
-            SubscribeObstacles(Obstacles);
-            SubscribeToPlayerTanks(Obstacles);
-            SubscribeToCompTanks(Obstacles);
+            NextStage.Invoke(this, new EventArgs());
+        }
+
+        private void OnPlayerTanksOrHQDestroyed(object sender, EventArgs e)
+        {
+            UnsubscribeObstacles(Obstacles);
+            UnsubscribeFromPlayerTanks(Obstacles);
+            UnsubscribeFromCompTanks(Obstacles);
+            Stage = 1;
+
+            GameOver?.Invoke(sender, e);
         }
 
         private void OnPlayerTookShowel(object sender, EventArgs e)
@@ -319,7 +345,6 @@ namespace BattleCity
                 }
             }
             Obstacles.Add(new HQ(GUIForm, new Rectangle(FromMatrixPos(24, 12), new Size(64, 64))));
-            GUIForm.Invalidate(new Rectangle(0, 0, 1024, 960));
         }
 
         private Point FromMatrixPos(int i, int j)
@@ -327,9 +352,38 @@ namespace BattleCity
             return new Point(Rect.X + j * 32, Rect.Y + i * 32);
         }
 
-        public void InitializeField()
+        private void OnShoot(object sender, ShellEventArgs e)
         {
-            LoadStage();
+            var s = e.Shell;
+            s.Subscribe();
+            s.Destroyed     += OnShellDestroyed;
+            s.CheckPosition += OnCheckPosition;
+            foreach(var obstacle in Obstacles)
+                if(!(obstacle is Water) && !(obstacle is Ice))
+                    s.CheckPosition += obstacle.GetCheckPositionListener();
+            foreach(var shell in Shells)
+                shell.CheckPosition += s.GetCheckPositionListener();
+            Shells.Add(s);
+        }
+
+        private void OnShellDestroyed(object sender, EventArgs e)
+        {
+            var s = sender as Shell;
+            s.Destroyed     -= OnShellDestroyed;
+            s.CheckPosition -= OnCheckPosition;
+            foreach(var obstacle in Obstacles)
+                if(!(obstacle is Water) && !(obstacle is Ice))
+                    s.CheckPosition -= obstacle.GetCheckPositionListener();
+            foreach(var shell in Shells)
+                shell.CheckPosition -= s.GetCheckPositionListener();
+            Shells.Remove(s);
+        }
+
+        public void SetPlayers(int players)
+        {
+            PlayersManager.SetPlayers(players);
+            PlayersManager.InitializeTanks();
+            CompsManager.InitializeTanks();
         }
     }
 }

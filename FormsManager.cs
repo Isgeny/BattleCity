@@ -28,7 +28,7 @@
             Game            = new GameForm(guiForm, this);
             StageNumber     = new StageNumberForm(guiForm, this);
             GameOver        = new GameOverForm(guiForm, this);
-            Construction    = new ConstructionForm(guiForm, this);
+            Construction    = new ConstructionForm(guiForm, this, Game.Field);
             Options         = new OptionsForm(guiForm, this);
             Records         = new RecordsForm(guiForm, this);
 

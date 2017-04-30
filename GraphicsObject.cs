@@ -13,13 +13,26 @@ namespace BattleCity
 
         protected virtual void OnCheckPosition(object sender, RectEventArgs e)
         {
-            if(Rect.IntersectsWith(e.Rect) && sender is DynamicObject)
-                ((DynamicObject)sender).StopMoving();
+            if(Rect.IntersectsWith(e.Rect))
+                if(sender is Tank)
+                    TankCollision(sender as Tank);
+                else if(sender is Shell)
+                    ShellCollision(sender as Shell);
         }
 
         public RectEventHandler GetCheckPositionListener()
         {
             return OnCheckPosition;
+        }
+
+        protected virtual void TankCollision(Tank tank)
+        {
+            tank.StopMoving();
+        }
+
+        protected virtual void ShellCollision(Shell shell)
+        {
+            shell.InvokeDestroyed();
         }
     }
 }

@@ -35,12 +35,6 @@ namespace BattleCity
             }
         }
 
-        protected override void OnDestroyed(object sender, EventArgs e)
-        {
-            base.OnDestroyed(sender, e);
-            _explosionTimer.Start();
-        }
-
         private void OnExplosionTimer(object sender, EventArgs e)
         {
             _explosionFrame = _explosionFrame + 128;
@@ -56,6 +50,19 @@ namespace BattleCity
         {
             base.ShellCollision(shell);
             _destroyed = true;
+            _explosionTimer.Start();
+
+            var hqDestroyedtimer = new Timer();
+            hqDestroyedtimer.Interval = 5000;
+            hqDestroyedtimer.Start();
+            hqDestroyedtimer.Tick += OnHQDestroyedTimer;
+        }
+
+        private void OnHQDestroyedTimer(object sender, EventArgs e)
+        {
+            var hqDestroyedtimer = new Timer();
+            hqDestroyedtimer.Stop();
+            hqDestroyedtimer.Tick -= OnHQDestroyedTimer;
             InvokeDestroyed();
         }
     }

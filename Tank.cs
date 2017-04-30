@@ -12,10 +12,11 @@ namespace BattleCity
         private int _lives;
         private int _stars;
         private bool _immortal;
-        private bool _amphibian;
-        private bool _gun;
-        private int _ammo;
-        private int _points;
+
+        public bool Amphibian { get; set; }
+        public bool Gun { get; set; }
+        public int Ammo { get; set; }
+        public int Points { get; set; }
 
         public Timer ShotDelayTimer { get; set; }
 
@@ -63,6 +64,18 @@ namespace BattleCity
             _explosionFrame = 0;
         }
 
+        public override void Subscribe()
+        {
+            GUIForm.Paint += OnPaint;
+            Destroyed += OnDestroyed;
+        }
+
+        public override void Unsubscribe()
+        {
+            GUIForm.Paint -= OnPaint;
+            Destroyed -= OnDestroyed;
+        }
+
         public virtual int HP
         {
             get { return _hp; }
@@ -72,9 +85,7 @@ namespace BattleCity
                 {
                     _hp = value;
                     if(_hp == 0)
-                    {
                         Lives--;
-                    }
                 }
             }
         }
@@ -86,9 +97,7 @@ namespace BattleCity
             {
                 _lives = value;
                 if(_lives < 0)
-                {
                     InvokeDestroyed();
-                }
             }
         }
 
@@ -97,13 +106,11 @@ namespace BattleCity
             get { return _stars; }
             set
             {
-                _stars = value;
-                if(_stars == 4)
-                    _stars = 3;
+                _stars = (value == 4) ? 3 : value;
             }
         }
 
-        public bool Immortal
+        public virtual bool Immortal
         {
             get { return _immortal; }
             set
@@ -124,56 +131,16 @@ namespace BattleCity
             }
         }
 
-        public bool Amphibian
-        {
-            get { return _amphibian; }
-            set { _amphibian = value; }
-        }
-
-        public bool Gun
-        {
-            get { return _gun; }
-            set { _gun = value; }
-        }
-
-        public int Ammo
-        {
-            get { return _ammo; }
-            set { _ammo = value; }
-        }
-
-        public int Points
-        {
-            get { return _points; }
-            set { _points = value; }
-        }
-
-        public override void Subscribe()
-        {
-            GUIForm.Paint += OnPaint;
-            Destroyed += OnDestroyed;
-        }
-
-        public override void Unsubscribe()
-        {
-            GUIForm.Paint -= OnPaint;
-            Destroyed -= OnDestroyed;
-        }
-
         protected virtual void OnPaint(object sender, PaintEventArgs e)
         {
-            Rectangle clipRect = e.ClipRectangle;
+            var clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))
             {
-                Graphics g = e.Graphics;
+                var g = e.Graphics;
                 if(RespawnTimer.Enabled)
-                {
                     g.DrawImage(Properties.Resources.Tank_Respawn, Rect, new Rectangle(_respawnSpriteFrame, 0, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
-                }
                 else if(_explosionTimer.Enabled)
-                {
                     g.DrawImage(Properties.Resources.Tank_Death, new Rectangle(Rect.X - 32, Rect.Y - 32, 128, 128), new Rectangle(_explosionFrame, 0, 128, 128), GraphicsUnit.Pixel);
-                }
                 else
                 {
                     int currentFrame = GetCurrentSpriteFrame();

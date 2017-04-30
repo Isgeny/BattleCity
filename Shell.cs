@@ -1,48 +1,48 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Resources;
-using System.Collections.Generic;
 
 namespace BattleCity
 {
     public class Shell : DynamicObject
     {
-        private Tank _creator;
+        public Tank Creator { get; private set; }
         private Timer _explosionTimer;
         private int _explosionFrame;
 
         public Shell(GUIForm guiForm, Tank creator) : base(guiForm, new Rectangle(), creator.Direction)
         {
-            _creator = creator;
+            Creator = creator;
             MoveTimer.Tick += OnMoveTimer;
             MoveTimer.Start();
 
-            int speed = 7;
+            Speed = 7;
             if(creator is PlayerTank && creator.Stars >= 1 || creator is CompTank && creator.Stars == 2)
-                speed = 10;
+                Speed = 10;
 
             switch(Direction)
             {
                 case Direction.Up:
                     Dx = 0;
-                    Dy = -speed;
+                    Dy = -Speed;
                     Rect = new Rectangle(creator.Rect.X + 22, creator.Rect.Y - 6, 16, 16);
                     break;
                 case Direction.Left:
-                    Dx = -speed;
+                    Dx = -Speed;
                     Dy = 0;
                     Rect = new Rectangle(creator.Rect.X - 6, creator.Rect.Y + 22, 16, 16);
                     break;
                 case Direction.Down:
                     Dx = 0;
-                    Dy = speed;
+                    Dy = Speed;
                     Rect = new Rectangle(creator.Rect.X + 22, creator.Rect.Y + 50, 16, 16);
                     break;
                 case Direction.Right:
-                    Dx = speed;
+                    Dx = Speed;
                     Dy = 0;
                     Rect = new Rectangle(creator.Rect.X + 50, creator.Rect.Y + 22, 16, 16);
+                    break;
+                default:
                     break;
             }
 
@@ -54,63 +54,56 @@ namespace BattleCity
 
         public override void Subscribe()
         {
-            GUIForm.Paint += OnPaint;
-            Destroyed += OnDestroyed;
+            GUIForm.Paint   += OnPaint;
+            Destroyed       += OnDestroyed;
         }
 
         public override void Unsubscribe()
         {
-            GUIForm.Paint -= OnPaint;
-            Destroyed -= OnDestroyed;
-        }
-
-        public Tank Creator
-        {
-            get { return _creator; }
-            set { _creator = value; }
+            GUIForm.Paint   -= OnPaint;
+            Destroyed       -= OnDestroyed;
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            Rectangle clipRect = e.ClipRectangle;
+            var clipRect = e.ClipRectangle;
             if(Rect.IntersectsWith(clipRect))
             {
-                Graphics g = e.Graphics;
+                var g = e.Graphics;
                 if(!_explosionTimer.Enabled)
                 {
-                    ResourceManager rm = Properties.Resources.ResourceManager;
+                    var rm = Properties.Resources.ResourceManager;
                     string filename = "Shell_" + (int)Direction;
-                    Bitmap bmp = (Bitmap)rm.GetObject(filename);
-                    g.DrawImage(bmp, Rect, new Rectangle(0, 0, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
+                    var bmp = rm.GetObject(filename);
+                    g.DrawImageUnscaled(bmp as Bitmap, Rect);
                 }
                 else
                     g.DrawImage(Properties.Resources.Bullet_Explosion, new Rectangle(Rect.X - 20, Rect.Y - 20, 64, 64), new Rectangle(_explosionFrame, 0, 64, 64), GraphicsUnit.Pixel);
             }   
         }
 
-        protected override void OnCheckPosition(object sender, RectEventArgs e)
+        protected override void TankCollision(Tank tank)
         {
-            if(Rect.IntersectsWith(e.Rect))
+            if(tank is PlayerTank && Creator is CompTank || tank is CompTank && Creator is PlayerTank || tank is PlayerTank && Creator is PlayerTank && Properties.Settings.Default.FriendlyFire)
             {
-                if(sender is Shell)
+                if(tank is CompTank)
                 {
-                    var shell = sender as Shell;
-                    InvokeDestroyed();
-                    shell.InvokeDestroyed();
-                }
-                else if(sender is PlayerTank && _creator is CompTank || sender is CompTank && _creator is PlayerTank || sender is PlayerTank && _creator is PlayerTank && Properties.Settings.Default.FriendlyFire)
-                {
-                    if(sender is CompTank && ((CompTank)sender).IsBonus && !((CompTank)sender).Immortal)
+                    var compTank = tank as CompTank;
+                    if(compTank.IsBonus && !compTank.Immortal)
                     {
-                        ((CompTank)sender).InvokeBonusShoot();
-                        ((CompTank)sender).IsBonus = false;
+                        compTank.InvokeBonusShoot();
+                        compTank.IsBonus = false;
                     }
-                    ((Tank)sender).HP--;
-                    InvokeDestroyed();
                 }
-                else if(sender is Tank)
-                    InvokeDestroyed();
+                tank.HP--;
+                InvokeDestroyed();
             }
+        }
+
+        protected override void ShellCollision(Shell shell)
+        {
+            base.ShellCollision(shell);
+            InvokeDestroyed();
         }
 
         private void OnMoveTimer(object sender, EventArgs e)
@@ -126,7 +119,7 @@ namespace BattleCity
             if(MoveTimer.Enabled)
             {
                 MoveTimer.Stop();
-                _creator.Ammo++;
+                Creator.Ammo++;
             }
         }
 

@@ -5,7 +5,7 @@ namespace BattleCity
 {
     public class BonusManager : Object
     {
-        private GameForm _gameForm;
+        private Field _field;
         private List<Bonus> _bonuses;
         private Bonus _currentBonus;
 
@@ -16,10 +16,9 @@ namespace BattleCity
         public event EventHandler PlayerTookShowel;
         public event EventHandler CompTookShowel;
 
-        public BonusManager(GUIForm guiForm, GameForm gameForm) : base(guiForm)
+        public BonusManager(GUIForm guiForm, Field field) : base(guiForm)
         {
-            _gameForm = gameForm;
-
+            _field = field;
             _bonuses = new List<Bonus>();
 
             _bonuses.Add(new Life(guiForm));
@@ -51,9 +50,9 @@ namespace BattleCity
         {
             _currentBonus.Subscribe();
             _currentBonus.TimeUp            += OnBonusTimeUp;
-            foreach(Tank playerTank in _gameForm.PlayerManager.Tanks)
+            foreach(Tank playerTank in _field.PlayersManager.Tanks)
                 playerTank.CheckPosition    += _currentBonus.GetCheckPositionListener();
-            foreach(Tank compTank in _gameForm.CompsManager.Tanks)
+            foreach(Tank compTank in _field.CompsManager.Tanks)
                 compTank.CheckPosition      += _currentBonus.GetCheckPositionListener();
         }
 
@@ -61,9 +60,9 @@ namespace BattleCity
         {
             _currentBonus.Unsubscribe();
             _currentBonus.TimeUp            -= OnBonusTimeUp;
-            foreach(Tank playerTank in _gameForm.PlayerManager.Tanks)
+            foreach(Tank playerTank in _field.PlayersManager.Tanks)
                 playerTank.CheckPosition    -= _currentBonus.GetCheckPositionListener();
-            foreach(Tank compTank in _gameForm.CompsManager.Tanks)
+            foreach(Tank compTank in _field.CompsManager.Tanks)
                 compTank.CheckPosition      -= _currentBonus.GetCheckPositionListener();
         }
 

@@ -6,7 +6,6 @@ namespace BattleCity
 {
     public class CompTank : Tank
     {
-        private int _speed;
         public bool IsBonus { get; set; }
 
         public event EventHandler BonusShoot;
@@ -42,19 +41,19 @@ namespace BattleCity
                 {
                     case 0:
                         Points = 100;
-                        _speed = 2;
+                        Speed = 2;
                         break;
                     case 1:
                         Points = 200;
-                        _speed = 4;
+                        Speed = 4;
                         break;
                     case 2:
                         Points = 300;
-                        _speed = 2;
+                        Speed = 2;
                         break;
                     case 3:
                         Points = 400;
-                        _speed = 2;
+                        Speed = 2;
                         HP = 4;
                         break;
                     default:
@@ -135,18 +134,18 @@ namespace BattleCity
             {
                 case Direction.Up:
                     Dx = 0;
-                    Dy = -_speed;
+                    Dy = -Speed;
                     break;
                 case Direction.Left:
-                    Dx = -_speed;
+                    Dx = -Speed;
                     Dy = 0;
                     break;
                 case Direction.Down:
                     Dx = 0;
-                    Dy = _speed;
+                    Dy = Speed;
                     break;
                 case Direction.Right:
-                    Dx = _speed;
+                    Dx = Speed;
                     Dy = 0;
                     break;
                 default:
@@ -193,23 +192,23 @@ namespace BattleCity
                 case 1:
                     Stars = 0;
                     Points = 100;
-                    _speed = 2;
+                    Speed = 2;
                     break;
                 case 2:
                     Stars = 1;
                     Points = 200;
-                    _speed = 4;
+                    Speed = 4;
                     break;
                 case 3:
                     Stars = 2;
                     Points = 300;
-                    _speed = 2;
+                    Speed = 2;
                     break;
                 case 4:
                     HP = 4;
                     Stars = 3;
                     Points = 400;
-                    _speed = 2;
+                    Speed = 2;
                     break;
                 default:
                     break;

@@ -13,13 +13,15 @@ namespace BattleCity
         private const int BLOCKS_COUNT = 13;
         private const int OBST_SZ = 32;
         private const int OBST_COUNT = 26;
+        private Field _field;
         private int[,] _blocks;
         private int _activeBlock;
         private int _iPos;
         private int _jPos;
 
-        public ConstructionForm(GUIForm guiForm, FormsManager formsManager) : base(guiForm, formsManager)
+        public ConstructionForm(GUIForm guiForm, FormsManager formsManager, Field field) : base(guiForm, formsManager)
         {
+            _field = field;
             _blocks = new int[BLOCKS_COUNT, BLOCKS_COUNT];
             _activeBlock = 1;
             _iPos = 0;
@@ -140,20 +142,19 @@ namespace BattleCity
         {
             if(e.KeyCode == Keys.Escape)
             {
-                ConvertBlocksToList();
-                Unsubscribe();
+                _field.Obstacles = ConvertBlocksToList();
                 FormsManager.SetMainMenuForm();
             }
         }
 
-        private List<Object> ConvertBlocksToList()
+        private List<Obstacle> ConvertBlocksToList()
         {
-            List<Object> list = new List<Object>();
+            var list = new List<Obstacle>();
             string[,] s = ConvertBlocksToStrings();
             for(int i = 0; i < OBST_COUNT; i++)
                 for(int j = 0; j < OBST_COUNT; j++)
                 {
-                    Rectangle rect = new Rectangle(j * OBST_SZ, i * OBST_SZ, 32, 32);
+                    var rect = new Rectangle(j * OBST_SZ + 64, i * OBST_SZ + 64, 32, 32);
                     switch(s[i, j])
                     {
                         case "b":
@@ -170,6 +171,9 @@ namespace BattleCity
                             break;
                         case "i":
                             list.Add(new Ice(GUIForm, rect));
+                            break;
+                        case "h":
+                            list.Add(new HQ(GUIForm, new Rectangle(j * OBST_SZ + 64, i * OBST_SZ + 64, 64, 64)));
                             break;
                         default:
                             break;
@@ -195,7 +199,7 @@ namespace BattleCity
             dict[11] = "wwww";
             dict[12] = "ssss";
             dict[13] = "iiii";
-            dict[14] = "eeee";
+            dict[14] = "heee";
             dict[15] = "eeeb";
             dict[16] = "eebe";
 

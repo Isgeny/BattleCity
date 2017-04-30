@@ -120,17 +120,6 @@ namespace BattleCity
             Move();
         }
 
-        protected override void OnCheckPosition(object sender, RectEventArgs e)
-        {
-            if(Rect.IntersectsWith(e.Rect))
-            {
-                if(sender is Tank)
-                {
-                    ((Tank)sender).StopMoving();
-                }
-            }
-        }
-
         protected override void OnRespawnDelayTimer(object sender, EventArgs e)
         {
             base.OnRespawnDelayTimer(sender, e);

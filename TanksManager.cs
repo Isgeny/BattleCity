@@ -5,16 +5,16 @@ namespace BattleCity
 {
     public abstract class TanksManager : Object
     {
-        private GameForm _gameForm;
+        protected Field Field { get; private set; }
         private List<Tank> _tanks;
         private int _aliveTanks;
 
         public event ShellEventHandler TankShoot;
         public event EventHandler TanksDestroyed;
 
-        public TanksManager(GUIForm guiForm, GameForm gameForm) : base(guiForm)
+        public TanksManager(GUIForm guiForm, Field field) : base(guiForm)
         {
-            _gameForm = gameForm;
+            Field = field;
             Tanks = new List<Tank>();
         }
 
@@ -22,11 +22,6 @@ namespace BattleCity
         {
             get { return _tanks; }
             set { _tanks = value; }
-        }
-
-        public GameForm GameForm
-        {
-            get { return _gameForm; }
         }
 
         public int AliveTanks
