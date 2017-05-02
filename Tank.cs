@@ -28,8 +28,8 @@ namespace BattleCity
         private Timer _respawnDelayTimer;
         private int _respawnSpriteFrame;
 
-        private Timer _explosionTimer;
-        private int _explosionFrame;
+        protected Timer ExplosionTimer { get; set; }
+        protected int ExplosionFrame { get; set; }
 
         public event ShellEventHandler Shoot;
 
@@ -58,10 +58,10 @@ namespace BattleCity
             _respawnDelayTimer.Tick += OnRespawnDelayTimer;
             _respawnSpriteFrame = 0;
 
-            _explosionTimer = new Timer();
-            _explosionTimer.Interval = 100;
-            _explosionTimer.Tick += OnExplosionTimer;
-            _explosionFrame = 0;
+            ExplosionTimer = new Timer();
+            ExplosionTimer.Interval = 100;
+            ExplosionTimer.Tick += OnExplosionTimer;
+            ExplosionFrame = 0;
         }
 
         public override void Subscribe()
@@ -139,8 +139,8 @@ namespace BattleCity
                 var g = e.Graphics;
                 if(RespawnTimer.Enabled)
                     g.DrawImage(Properties.Resources.Tank_Respawn, Rect, new Rectangle(_respawnSpriteFrame, 0, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
-                else if(_explosionTimer.Enabled)
-                    g.DrawImage(Properties.Resources.Tank_Death, new Rectangle(Rect.X - 32, Rect.Y - 32, 128, 128), new Rectangle(_explosionFrame, 0, 128, 128), GraphicsUnit.Pixel);
+                else if(ExplosionTimer.Enabled)
+                    g.DrawImage(Properties.Resources.Tank_Death, new Rectangle(Rect.X - 32, Rect.Y - 32, 128, 128), new Rectangle(ExplosionFrame, 0, 128, 128), GraphicsUnit.Pixel);
                 else
                 {
                     int currentFrame = GetCurrentSpriteFrame();
@@ -159,8 +159,8 @@ namespace BattleCity
         protected override void OnDestroyed(object sender, EventArgs e)
         {
             base.OnDestroyed(sender, e);
-            _explosionFrame = 0;
-            _explosionTimer.Start();
+            ExplosionFrame = 0;
+            ExplosionTimer.Start();
             MoveTimer.Stop();
         }
 
@@ -196,13 +196,13 @@ namespace BattleCity
 
         private void OnExplosionTimer(object sender, EventArgs e)
         {
-            _explosionFrame = _explosionFrame + 128;
-            if(_explosionFrame % 1152 == 0)
+            ExplosionFrame = ExplosionFrame + 128;
+            if(ExplosionFrame % 1152 == 0)
             {
-                _explosionTimer.Stop();
-                Unsubscribe();
+                ExplosionTimer.Stop();
                 if(this is CompTank)
                 {
+                    Unsubscribe();
                     GUIForm.Invalidate(Rectangle.Inflate(Rect, 128, 128));
                     Respawn();
                 }

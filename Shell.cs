@@ -98,6 +98,8 @@ namespace BattleCity
                 tank.HP--;
                 InvokeDestroyed();
             }
+            else if(tank is CompTank && Creator is CompTank)
+                InvokeDestroyed(); ;
         }
 
         protected override void ShellCollision(Shell shell)

@@ -45,7 +45,8 @@ namespace BattleCity
                     base.HP = value;
                     if(base.HP == 0)
                     {
-                        ShowRespawnAnimation();
+                        if(Lives >= 0)
+                            ShowRespawnAnimation();
                         GUIForm.Invalidate(Rect);
                         Respawn();
                         Stars = 0;
