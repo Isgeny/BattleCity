@@ -72,17 +72,20 @@ namespace BattleCity
             {
                 TankTook.Invoke(this, new EventArgs());
 
+                _bonusTimer.Stop();
+                _flickerTimer.Stop();
                 if(tank is PlayerTank)
                 {
                     tank.Points += 500;
-                    _bonusTimer.Stop();
-                    _flickerTimer.Stop();
                     InvokePlayerTook(tank);
                     _pointsTimer.Start();
-                    GUIForm.Invalidate(Rect);
                 }
                 else if(tank is CompTank)
+                {
                     InvokeCompTook();
+                }
+                GUIForm.Invalidate(Rect);
+                GUIForm.Invalidate(tank.Rect);
             }
         }
 
