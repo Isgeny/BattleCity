@@ -10,11 +10,8 @@ namespace BattleCity
 
         protected override void TankCollision(Tank tank)
         {
-            if(tank is PlayerTank)
-            {
-                var playerTank = tank as PlayerTank;
-                playerTank.OnIce = true;
-            }
+            var playerTank = tank as PlayerTank;
+            playerTank.OnIce = true;
         }
     }
 }

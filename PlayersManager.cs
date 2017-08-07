@@ -1,144 +1,127 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace BattleCity
 {
     public class PlayersManager : TanksManager
     {
+        public Field Field { get; set; }
+        public List<Tank> Tanks { get; set; }
         public Tank P1Tank { get; private set; }
         public Tank P2Tank { get; private set; }
-        private Timer _watchDelayTimer;
+
+        private int _aliveTanks;
+        public int AliveTanks
+        {
+            get { return _aliveTanks; }
+            set
+            {
+                _aliveTanks = value;
+                if(_aliveTanks == 0)
+                {
+                    var tanksDestroyedDelayTimer = new Timer();
+                    tanksDestroyedDelayTimer.Interval = 5000;
+                    tanksDestroyedDelayTimer.Tick += OnTanksDestroyedDelayTimerTick;
+                    tanksDestroyedDelayTimer.Start();
+                }
+            }
+        }
+
+        public event ShellEventHandler TankShot;
+        public event EventHandler TanksDestroyed;
 
         public PlayersManager(GUIForm guiForm, Field field) : base(guiForm, field)
         {
+            Field = field;
+            Tanks = new List<Tank>();
+
             P1Tank = new FirstPlayerTank(guiForm);
             P2Tank = new SecondPlayerTank(guiForm);
-            P1Tank.InitializeTank();
-            P2Tank.InitializeTank();
-
-            _watchDelayTimer = new Timer();
-            _watchDelayTimer.Interval = 10 * 1000;
-            _watchDelayTimer.Tick += OnWatchDelayTimerTick;
         }
 
         public override void Subscribe()
         {
-            foreach(Tank tank1 in Tanks)
+            foreach(var tank1 in Tanks)
             {
                 tank1.Subscribe();
-                tank1.Shoot += OnShoot;
+                tank1.CheckPosition += Field.GetCheckPositionListener();
+                tank1.Shot += OnShot;
                 tank1.Destroyed += OnTankDestroyed;
-                foreach(Tank tank2 in Tanks)
+
+                foreach(var tank2 in Tanks)
                     if(tank1 != tank2)
                         tank1.CheckPosition += tank2.GetCheckPositionListener();
             }
-
-            Field.CompsManager.TanksDestroyed += OnCompTanksDestroyed;
-
-            Field.BonusManager.CompTookBomb  += OnCompTookBomb;
-            Field.BonusManager.CompTookWatch += OnCompTookWatch;
         }
 
         public override void Unsubscribe()
         {
-            foreach(Tank tank1 in Tanks)
+            foreach(var tank1 in Tanks)
             {
                 tank1.Unsubscribe();
-                tank1.Shoot -= OnShoot;
+                tank1.CheckPosition -= Field.GetCheckPositionListener();
+                tank1.Shot -= OnShot;
                 tank1.Destroyed -= OnTankDestroyed;
-                foreach(Tank tank2 in Tanks)
+
+                foreach(var tank2 in Tanks)
                     if(tank1 != tank2)
                         tank1.CheckPosition -= tank2.GetCheckPositionListener();
             }
-
-            Field.CompsManager.TanksDestroyed -= OnCompTanksDestroyed;
-
-            Field.BonusManager.CompTookBomb  -= OnCompTookBomb;
-            Field.BonusManager.CompTookWatch -= OnCompTookWatch;
         }
 
-        private void OnShoot(object sender, ShellEventArgs e)
+        private void InvokeTankShot(ShellEventArgs e)
         {
-            Shell s = e.Shell;
-            s.Destroyed += OnShellDestroyed;
-            foreach(Tank tank in Tanks)
-                if(tank != s.Creator)
-                    tank.CheckPosition += s.GetCheckPositionListener();
-            foreach(Tank compTank in Field.CompsManager.Tanks)
-                compTank.CheckPosition += s.GetCheckPositionListener();
-
-            InvokeTankShoot(e);
+            TankShot?.Invoke(this, e);
         }
 
-        private void OnShellDestroyed(object sender, EventArgs e)
+        private void InvokeTanksDestroyed(EventArgs e)
         {
-            Shell s = sender as Shell;
-            foreach(Tank tank in Tanks)
-                tank.CheckPosition -= s.GetCheckPositionListener();
-            foreach(Tank compTank in Field.CompsManager.Tanks)
-                compTank.CheckPosition -= s.GetCheckPositionListener();
+            TanksDestroyed?.Invoke(this, e);
+        }
+
+        private void OnShot(object sender, ShellEventArgs e)
+        {
+            InvokeTankShot(e);
         }
 
         private void OnTankDestroyed(object sender, EventArgs e)
         {
-            Tank destroyedTank = sender as Tank;
-            destroyedTank.Shoot -= OnShoot;
+            var destroyedTank = sender as Tank;
+            destroyedTank.Unsubscribe();
+            destroyedTank.CheckPosition -= Field.GetCheckPositionListener();
+            destroyedTank.Shot -= OnShot;
             destroyedTank.Destroyed -= OnTankDestroyed;
-            AliveTanks--;
-            foreach(Tank playerTank in Tanks)
+
+            foreach(var playerTank in Tanks)
                 if(playerTank != destroyedTank)
                 {
-                    destroyedTank.CheckPosition -= playerTank.GetCheckPositionListener();
                     playerTank.CheckPosition -= destroyedTank.GetCheckPositionListener();
+                    destroyedTank.CheckPosition -= playerTank.GetCheckPositionListener();
                 }
             Tanks.Remove(destroyedTank);
-            if(AliveTanks == 0)
-            {
-                Timer timer = new Timer();
-                timer.Interval = 5000;
-                timer.Tick += OnTanksDestroyedTimer;
-                timer.Start();
-            }
+
+            foreach(var compTank in Field.CompsManager.Tanks)
+                compTank.CheckPosition -= destroyedTank.GetCheckPositionListener();
+
+            AliveTanks--;
         }
 
-        private void OnTanksDestroyedTimer(object sender, EventArgs e)
+        private void OnTanksDestroyedDelayTimerTick(object sender, EventArgs e)
         {
-            Timer timer = sender as Timer;
-            timer.Stop();
-            timer.Tick -= OnTanksDestroyedTimer;
+            var tanksDestroyedDelayTimer = sender as Timer;
+            tanksDestroyedDelayTimer.Stop();
+            tanksDestroyedDelayTimer.Tick -= OnTanksDestroyedDelayTimerTick;
             InvokeTanksDestroyed(new EventArgs());
         }
 
-        private void OnCompTanksDestroyed(object sender, EventArgs e)
+        public void SetNewStageTanksParameters()
         {
-            foreach(Tank playerTank in Tanks)
-                playerTank.Respawn();
+            foreach(var tank in Tanks)
+                tank.SetNewStageParameters();
         }
 
-        private void OnCompTookBomb(object sender, EventArgs e)
-        {
-            foreach(Tank tank in Tanks)
-                if(!tank.RespawnTimer.Enabled)
-                    tank.HP = 0;
-        }
-
-        private void OnCompTookWatch(object sender, EventArgs e)
-        {
-            foreach(Tank tank in Tanks)
-                if(!tank.Rect.IsEmpty)
-                    tank.MoveTimer.Stop();
-            _watchDelayTimer.Start();
-        }
-
-        private void OnWatchDelayTimerTick(object sender, EventArgs e)
-        {
-            foreach(Tank tank in Tanks)
-                if(!tank.Rect.IsEmpty)
-                    tank.MoveTimer.Start();
-            _watchDelayTimer.Stop();
-        }
-
-        public void SetPlayers(int players)
+        public void SetNewGameTanksParameters(int players)
         {
             Tanks.Clear();
             Tanks.Add(P1Tank);
@@ -148,6 +131,13 @@ namespace BattleCity
                 Tanks.Add(P2Tank);
                 AliveTanks = 2;
             }
+            foreach(var tank in Tanks)
+                tank.SetNewGameParameters();
+        }
+
+        public int CountTanks()
+        {
+            return Tanks.Count;
         }
     }
 }

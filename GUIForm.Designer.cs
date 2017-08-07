@@ -40,7 +40,6 @@
             this.Name = "GUIForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Battle City";
-            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.GUIForm_MouseMove);
             this.ResumeLayout(false);
 
         }

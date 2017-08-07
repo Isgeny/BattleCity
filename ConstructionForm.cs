@@ -103,12 +103,14 @@ namespace BattleCity
 
         private void PlaceBlock()
         {
-            _blocks[_iPos, _jPos] = _activeBlock;
+            if(!(_iPos == 0 && _jPos == 0 || _iPos == 0 && _jPos ==  6 || _iPos == 0 && _jPos == 12 || _iPos == 12 && _jPos == 4 || _iPos == 12 && _jPos == 6 || _iPos == 12 && _jPos == 8))
+                _blocks[_iPos, _jPos] = _activeBlock;
         }
 
         private void RemoveBlock()
         {
-            _blocks[_iPos, _jPos] = 0;
+            if(!(_iPos == 12 && _jPos == 6))
+                _blocks[_iPos, _jPos] = 0;
         }
 
         private void CleanField()
@@ -203,7 +205,6 @@ namespace BattleCity
             dict[15] = "eeeb";
             dict[16] = "eebe";
 
-            _blocks[12, 6] = 14;
             string[,] obs = new string[OBST_COUNT, OBST_COUNT];
             for(int i = 0; i < BLOCKS_COUNT; i++)
                 for(int j = 0; j < BLOCKS_COUNT; j++)

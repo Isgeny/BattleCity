@@ -2,18 +2,36 @@
 
 namespace BattleCity
 {
-    public abstract class GraphicsObject : Object
+    public abstract class GameObject : Object
     {
-        public Rectangle Rect { get; set; }
+        private Rectangle _rect;
 
-        public GraphicsObject(GUIForm guiForm, Rectangle rect) : base(guiForm)
+        public GameObject(GUIForm guiForm) : base(guiForm)
+        {
+            Rect = new Rectangle();
+        }
+
+        public GameObject(GUIForm guiForm, Rectangle rect) : base(guiForm)
         {
             Rect = rect;
         }
 
+        public Rectangle Rect
+        {
+            get { return _rect; }
+            set
+            {
+                if(!_rect.IsEmpty)
+                    GUIForm.Invalidate(Rect);
+                _rect = value;
+                if(!_rect.IsEmpty)
+                    GUIForm.Invalidate(Rect);
+            }
+        }
+
         protected virtual void OnCheckPosition(object sender, RectEventArgs e)
         {
-            if(Rect.IntersectsWith(e.Rect))
+            if(Rect.IntersectsWith(e.NewRect))
                 if(sender is Tank)
                     TankCollision(sender as Tank);
                 else if(sender is Shell)

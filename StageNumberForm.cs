@@ -31,7 +31,7 @@ namespace BattleCity
         {
             var g = e.Graphics;
             g.FillRectangle(new SolidBrush(Color.FromArgb(102, 102, 102)), 0, 0, 1024, 960);
-            g.DrawString("STAGE " + FormsManager.Game.Field.Stage.ToString(), MyFont.GetFont(18), Brushes.Black, 400, 450);
+            g.DrawString("STAGE " + (FormsManager.Game.Field.Stage + 1).ToString(), MyFont.GetFont(18), Brushes.Black, 400, 450);
         }
 
         private void OnStageNumberFormTimer(object sender, EventArgs e)
@@ -39,6 +39,8 @@ namespace BattleCity
             var gameFormTimer = sender as Timer;
             gameFormTimer.Stop();
             gameFormTimer.Tick -= OnStageNumberFormTimer;
+
+            FormsManager.Game.StartNextStage();
             FormsManager.SetGameForm();
         }
     }

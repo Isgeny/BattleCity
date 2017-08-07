@@ -58,20 +58,20 @@ namespace BattleCity
             g.DrawString("MADE BY ISAEV EVGENY 8I52 2017", MyFont.GetFont(12), Brushes.Gray, 20, 920);
             Properties.Settings s = Properties.Settings.Default;
             g.DrawString(s.P1Name.Substring(0, 2) + "-" + FormsManager.Game.Field.PlayersManager.P1Tank.Points, MyFont.GetFont(19), Brushes.White, 20, 30);
-            g.DrawString("HI-" + FormsManager.Records.GetHighestRecord(), MyFont.GetFont(19), Brushes.White, 350, 30);
+            g.DrawString("HR-" + FormsManager.Records.GetHighestRecord(), MyFont.GetFont(19), Brushes.White, 350, 30);
             g.DrawString(s.P2Name.Substring(0, 2) + "-" + FormsManager.Game.Field.PlayersManager.P2Tank.Points, MyFont.GetFont(19), Brushes.White, 700, 30);
         }
 
         private void OnBtn1PlayerClick(object sender, EventArgs e)
         {
             FormsManager.SetStageNumberForm();
-            FormsManager.Game.SetPlayers(1);
+            FormsManager.Game.StartNewGame(1);
         }
 
         private void OnBtn2PlayerClick(object sender, EventArgs e)
         {
             FormsManager.SetStageNumberForm();
-            FormsManager.Game.SetPlayers(2);
+            FormsManager.Game.StartNewGame(2);
         }
 
         private void OnBtnConstructionClicked(object sender, EventArgs e)

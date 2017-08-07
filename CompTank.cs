@@ -6,29 +6,36 @@ namespace BattleCity
 {
     public class CompTank : Tank
     {
-        public bool IsBonus { get; set; }
-
-        public event EventHandler BonusShoot;
-        
-        public CompTank(GUIForm guiForm, bool isBonus) : base(guiForm, new Rectangle(), Direction.Down)
+        public override int Speed
         {
-            IsBonus = isBonus;
-            InitializeTank();
-            ImmortalDelayTimer.Interval = 10000;
+            get { return base.Speed; }
+            set
+            {
+                base.Speed = value;
+                CalcDxDyAlongDirection();
+            }
         }
 
-        public override void Subscribe()
+        public override Direction Direction
         {
-            base.Subscribe();
-            MoveTimer.Tick += OnMoveTimerTick;
-            MoveTimer.Start();
+            get { return base.Direction; }
+            set
+            {
+                base.Direction = value;
+                CalcDxDyAlongDirection();
+                GUIForm.Invalidate(Rect);
+            }
         }
 
-        public override void Unsubscribe()
+        public override int Lives
         {
-            base.Unsubscribe();
-            MoveTimer.Tick -= OnMoveTimerTick;
-            MoveTimer.Stop();
+            get { return base.Lives; }
+            set
+            {
+                base.Lives = value;
+                if(base.Lives >= 0)
+                    Direction = Direction.Down;
+            }
         }
 
         public override int Stars
@@ -37,70 +44,180 @@ namespace BattleCity
             set
             {
                 base.Stars = value;
-                switch(Stars)
+                switch(base.Stars)
                 {
                     case 0:
+                        HP = 1;
                         Points = 100;
                         Speed = 2;
                         break;
                     case 1:
+                        HP = 1;
                         Points = 200;
                         Speed = 4;
                         break;
                     case 2:
+                        HP = 1;
                         Points = 300;
                         Speed = 2;
                         break;
                     case 3:
+                        HP = 4;
                         Points = 400;
                         Speed = 2;
-                        HP = 4;
                         break;
                     default:
                         break;
                 }
+                GUIForm.Invalidate(Rect);
             }
         }
 
-        public override int HP
+        public override int Ammo
         {
-            get { return base.HP; }
+            get { return base.Ammo; }
             set
             {
-                if(!Immortal)
-                    base.HP = value;
+                base.Ammo = (value > 1) ? 1 : value;
             }
+        }
+
+        public bool IsBonus { get; set; }
+        private Timer _bonusFrameUpdateTimer;
+        private Timer _pointsTimer;
+
+        public event EventHandler BonusShoot;
+
+        public CompTank(GUIForm guiForm, bool isBonus) : base(guiForm)
+        {
+            IsBonus = isBonus;
+
+            _bonusFrameUpdateTimer = new Timer();
+            _bonusFrameUpdateTimer.Interval = 100;
+            _bonusFrameUpdateTimer.Tick += OnBonusFrameUpdateTimerTick;
+            _bonusFrameUpdateTimer.Enabled = IsBonus;
+
+            _pointsTimer = new Timer();
+            _pointsTimer.Interval = 300;
+            _pointsTimer.Tick += OnPointsTimerTick;
+        }
+
+        public override void Subscribe()
+        {
+            base.Subscribe();
+            MoveTimer.Tick += OnMoveTimerTick;
+            GUIForm.KeyDown += OnKeyDown;           //DEBUG
+        }
+
+        public override void Unsubscribe()
+        {
+            base.Unsubscribe();
+            MoveTimer.Tick -= OnMoveTimerTick;
+            GUIForm.KeyDown -= OnKeyDown;           //DEBUG
+        }
+
+        protected override void OnPaint(object sender, PaintEventArgs e)
+        {
+            if(_pointsTimer.Enabled)
+                e.Graphics.DrawString(Points.ToString(), MyFont.GetFont(12), Brushes.White, Rect.X, Rect.Y + 20);
+            else
+                base.OnPaint(sender, e);
         }
 
         protected override int GetCurrentSpriteFrame()
         {
-            int currentFrame = ((Rect.X + Rect.Y) % 8 < 4) ? 0 : 64;
-            if(Stars == 3 && HP < 4)
-                currentFrame += 256 + (4 - HP) * 64 * 2;
+            int currentFrame = base.GetCurrentSpriteFrame();
             if(IsBonus && DateTime.Now.Millisecond % 200 < 100)
                 currentFrame = ((Rect.X + Rect.Y) % 8 < 4) ? 128 : 192;
+            if(Stars == 3 && HP <= 4 && !IsBonus)
+                currentFrame += 256 + (4 - HP) * 64 * 2;
             return currentFrame;
         }
 
-        protected virtual void OnMoveTimerTick(object sender, EventArgs e)
+        protected override void ShellCollision(Shell shell)
         {
-            if(!RespawnTimer.Enabled)
+            base.ShellCollision(shell);
+            if(shell.Creator is PlayerTank && !ExplosionTimer.Enabled && !_pointsTimer.Enabled)
             {
-                if(Dx == 0 && Dy == 0 && GameRandom.RandNumber(0, 10) == 0)
-                    ChangeDirection();
-                Turn();
-                CheckTileReach();
-                MakeShoot();
-                InvokeCheckPosition(new RectEventArgs(new Rectangle(Rect.X + Dx, Rect.Y + Dy, Rect.Width, Rect.Height)));
-                Move();
+                if(IsBonus && !Immortal)
+                {
+                    InvokeBonusShoot();
+                    IsBonus = false;
+                }
+                HP--;
+                if(HP == 0)
+                    shell.Creator.Points += Points;
             }
+        }
+
+        //DEBUG
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Z)
+            {
+                Stars++;
+            }
+            else if(e.KeyCode == Keys.X)
+            {
+                Amphibian = !Amphibian;
+            }
+            else if(e.KeyCode == Keys.C)
+            {
+                Gun = !Gun;
+            }
+            else if(e.KeyCode == Keys.V)
+            {
+                HP--;
+            }
+            else if(e.KeyCode == Keys.B)
+            {
+                Immortal = !Immortal;
+            }
+        }
+
+        private void InvokeBonusShoot()
+        {
+            BonusShoot?.Invoke(this, new EventArgs());
+        }
+
+        public void RemoveBonusShootListeners()
+        {
+            BonusShoot = null;
+        }
+
+        protected override void OnExplosionTimerTick(object sender, EventArgs e)
+        {
+            base.OnExplosionTimerTick(sender, e);
+            if(ExplosionFrame == 0)
+            {
+                GUIForm.Paint += OnPaint;
+                _pointsTimer.Start();
+                GUIForm.Invalidate(Rect);
+            }
+        }
+
+        private void OnMoveTimerTick(object sender, EventArgs e)
+        {
+            RoundCoordsOnTurning();
+            CheckTileReach();
+            MakeShoot();
+            InvokeCheckPosition(new RectEventArgs(Rect, new Rectangle(Rect.X + Dx, Rect.Y + Dy, Rect.Width, Rect.Height)));
+            if(Dx != 0 || Dy != 0)
+                Rect = new Rectangle(Rect.X + Dx, Rect.Y + Dy, Rect.Width, Rect.Height);
+        }
+
+        private void OnPointsTimerTick(object sender, EventArgs e)
+        {
+            _pointsTimer.Stop();
+            GUIForm.Invalidate(Rect);
+            GUIForm.Paint -= OnPaint;
         }
 
         private void CheckTileReach()
         {
-            if(Rect.X % 64 == 0 && Rect.Y % 64 == 0 && GameRandom.RandNumber(0, 16) == 0)
+            if(Rect.X % 64 == 0 && Rect.Y % 64 == 0 && GameRandom.RandNumber(0, 64) == 0)
                 ChangeDirection();
-            else if(!MoveTimer.Enabled && GameRandom.RandNumber(0, 16) == 0)
+            else if(Dx == 0 && Dy == 0 && GameRandom.RandNumber(0, 16) == 0)
                 if(Rect.X % 64 != 0 || Rect.Y % 64 != 0)
                     InvertDirection();
                 else
@@ -121,7 +238,7 @@ namespace BattleCity
         {
             Direction = (Direction == Direction.Up) ? Direction.Right : Direction--;
         }
-   
+
         private void RotateAnticlockwise()
         {
             Direction = (Direction == Direction.Right) ? Direction.Up : Direction++;
@@ -130,102 +247,25 @@ namespace BattleCity
         public void ChangeDirection()
         {
             Direction = (Direction)GameRandom.RandNumber(0, 3);
-            switch(Direction)
-            {
-                case Direction.Up:
-                    Dx = 0;
-                    Dy = -Speed;
-                    break;
-                case Direction.Left:
-                    Dx = -Speed;
-                    Dy = 0;
-                    break;
-                case Direction.Down:
-                    Dx = 0;
-                    Dy = Speed;
-                    break;
-                case Direction.Right:
-                    Dx = Speed;
-                    Dy = 0;
-                    break;
-                default:
-                    break;
-            }
-            GUIForm.Invalidate(Rect);
         }
 
         private void InvertDirection()
         {
-            int temp = Dx;
-            Dx = Dy;
-            Dy = temp;
-            switch(Direction)
-            {
-                case Direction.Up:
-                    Direction = Direction.Down;
-                    break;
-                case Direction.Left:
-                    Direction = Direction.Right;
-                    break;
-                case Direction.Down:
-                    Direction = Direction.Up;
-                    break;
-                case Direction.Right:
-                    Direction = Direction.Left;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        public override void InitializeTank()
-        {
-            //Respawn();
-            HP = 1;
-            Lives = 0;
-            Immortal = false;
-            Amphibian = false;
-            Gun = false;
-            Ammo = 1;
-            switch(GameRandom.RandNumber(1, 4))
-            {
-                case 1:
-                    Stars = 0;
-                    Points = 100;
-                    Speed = 2;
-                    break;
-                case 2:
-                    Stars = 1;
-                    Points = 200;
-                    Speed = 4;
-                    break;
-                case 3:
-                    Stars = 2;
-                    Points = 300;
-                    Speed = 2;
-                    break;
-                case 4:
-                    HP = 4;
-                    Stars = 3;
-                    Points = 400;
-                    Speed = 2;
-                    break;
-                default:
-                    break;
-            }
+            Direction = (Direction)((int)(Direction + 2) % 4);
         }
 
         private void MakeShoot()
         {
-            if(GameRandom.RandNumber(0, 75) == 0 && Ammo > 0)
+            if(GameRandom.RandNumber(0, 64) == 0 && Ammo > 0)
             {
                 Ammo--;
-                Shell shell = new Shell(GUIForm, this);
-                InvokeShoot(new ShellEventArgs(shell));
+                var shell = new Shell(GUIForm, this);
+                shell.Subscribe();
+                InvokeShot(new ShellEventArgs(shell));
             }
         }
 
-        public override void Respawn()
+        protected override void MoveToStartPosition()
         {
             switch(GameRandom.RandNumber(1, 3))
             {
@@ -243,44 +283,35 @@ namespace BattleCity
             }
         }
 
-        protected override void OnCheckPosition(object sender, RectEventArgs e)
+        public override void SetNewGameParameters()
         {
-            if(Rect.IntersectsWith(e.Rect))
-            {
-                if(sender is Tank)
-                {
-                    var tank = sender as Tank;
-                    tank.StopMoving();
-                    if(sender is CompTank)
-                        StopMoving();
-                }
-                /*else if(sender is Shell)
-                {
-                    var shell = sender as Shell;
-                    if(shell.Creator is PlayerTank)
-                    {
-                        if(IsBonus && !Immortal)
-                        {
-                            InvokeBonusShoot();
-                            IsBonus = false;
-                        }
-                        HP--;
-                        InvokeDestroyed();
-                    }
-                    shell.InvokeDestroyed();
-                }*/
-            }
-        }
-
-        protected override void OnRespawnDelayTimer(object sender, EventArgs e)
-        {
-            base.OnRespawnDelayTimer(sender, e);
+            MoveToStartPosition();
+            Direction = Direction.Down;
+            Lives = 0;
+            Stars = GameRandom.RandNumber(0, 3);
             Immortal = false;
+            Amphibian = false;
+            Gun = false;
+            Ammo = 1;
+            MoveTimer.Stop();
         }
 
-        public void InvokeBonusShoot()
+        public override void SetNewStageParameters()
         {
-            BonusShoot?.Invoke(this, new EventArgs());
+            MoveToStartPosition();
+            Direction = Direction.Down;
+            Lives = 0;
+            Stars = GameRandom.RandNumber(0, 3);
+            Immortal = false;
+            Amphibian = false;
+            Gun = false;
+            MoveTimer.Stop();
+            RespawnTimer.Start();
+        }
+
+        private void OnBonusFrameUpdateTimerTick(object sender, EventArgs e)
+        {
+            GUIForm.Invalidate(Rect);
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public abstract class Obstacle : GraphicsObject
+    public abstract class Obstacle : GameObject
     {
         public event EventHandler Destroyed;
 
@@ -26,8 +26,7 @@ namespace BattleCity
 
         protected virtual void OnPaint(object sender, PaintEventArgs e)
         {
-            var clipRect = e.ClipRectangle;
-            if(Rect.IntersectsWith(clipRect))
+            if(Rect.IntersectsWith(e.ClipRectangle))
             {
                 var g = e.Graphics;
                 var rm = Properties.Resources.ResourceManager;
@@ -45,6 +44,11 @@ namespace BattleCity
         public void InvokeDestroyed()
         {
             Destroyed?.Invoke(this, new EventArgs());
+        }
+
+        public void RemoveDestroyedListeners()
+        {
+            Destroyed = null;
         }
     }
 }

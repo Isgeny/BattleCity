@@ -6,17 +6,13 @@ namespace BattleCity
 
     public class RectEventArgs
     {
-        private Rectangle _rect;
+        public Rectangle CurrentRect { get; set; }
+        public Rectangle NewRect { get; set; }
 
-        public RectEventArgs(Rectangle rect)
+        public RectEventArgs(Rectangle currentRect, Rectangle newRect)
         {
-            _rect = rect;
-        }
-
-        public Rectangle Rect
-        {
-            get { return _rect; }
-            set { _rect = value; }
+            CurrentRect = currentRect;
+            NewRect = newRect;
         }
     }
 }

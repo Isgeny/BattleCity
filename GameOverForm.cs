@@ -16,7 +16,7 @@ namespace BattleCity
             GUIForm.Paint += OnPaint;
 
             var gameFormTimer = new Timer();
-            gameFormTimer.Interval = 4000;
+            gameFormTimer.Interval = 3000;
             gameFormTimer.Tick += OnGameFormTimer;
             gameFormTimer.Start();
         }

@@ -1,56 +1,89 @@
 ﻿using System;
 using System.Drawing;
-using System.Resources;
 using System.Windows.Forms;
 
 namespace BattleCity
 {
-    public abstract class Bonus : GraphicsObject
+    public abstract class Bonus : GameObject
     {
         private Timer _bonusTimer;
+        private Timer _pointsTimer;
+        private Timer _flickerTimer;
 
         public event EventHandler TankTook;
         public event EventHandler PlayerTook;
         public event EventHandler CompTook;
         public event EventHandler TimeUp;
 
-        public Bonus(GUIForm guiForm) : base(guiForm, new Rectangle())
+        public Bonus(GUIForm guiForm) : base(guiForm)
         {
             _bonusTimer = new Timer();
             _bonusTimer.Interval = 60 * 1000;
+            _bonusTimer.Tick += OnBonusTimer;
+
+            _pointsTimer = new Timer();
+            _pointsTimer.Interval = 300;
+            _pointsTimer.Tick += OnPointsTimerTick;
+
+            _flickerTimer = new Timer();
+            _flickerTimer.Interval = 150;
+            _flickerTimer.Tick += OnFlickerTimerTick;
         }
 
         public override void Subscribe()
         {
-            GUIForm.Paint       += OnPaint;
-            _bonusTimer.Tick    += OnBonusTimer;
+            GUIForm.Paint += OnPaint;
             MoveToNewPosition();
+            _bonusTimer.Start();
+            _flickerTimer.Start();
         }
 
         public override void Unsubscribe()
         {
-            GUIForm.Invalidate(Rectangle.Inflate(Rect, 8, 8));
-            GUIForm.Paint       -= OnPaint;
-            _bonusTimer.Tick    -= OnBonusTimer;
+            _bonusTimer.Stop();
+            _pointsTimer.Stop();
+            _flickerTimer.Stop();
+            GUIForm.Invalidate(Rect);
+            GUIForm.Paint -= OnPaint;
         }
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            Rectangle clipRect = e.ClipRectangle;
-            if(Rectangle.Inflate(Rect, 8, 8).IntersectsWith(clipRect))
+            if(Rect.IntersectsWith(e.ClipRectangle))
             {
-                Graphics g = e.Graphics;
-                ResourceManager rm = Properties.Resources.ResourceManager;
-                string filename = "Bonus_" + GetType().Name;
-                Bitmap bmp = (Bitmap)rm.GetObject(filename);
-                g.DrawImageUnscaled(bmp, Rect.Location);
+                var g = e.Graphics;
+                if(_bonusTimer.Enabled && _flickFlag)
+                {
+                    var rm = Properties.Resources.ResourceManager;
+                    var filename = "Bonus_" + GetType().Name;
+                    var bmp = (Bitmap)rm.GetObject(filename);
+                    g.DrawImageUnscaled(bmp, Rect);
+                }
+                else if(_pointsTimer.Enabled)
+                    g.DrawString("500", MyFont.GetFont(12), Brushes.White, Rect.X, Rect.Y + 20);
             }
         }
 
-        protected override void OnCheckPosition(object sender, RectEventArgs e)
+        protected override void TankCollision(Tank tank)
         {
-            if(Rect.IntersectsWith(e.Rect) && sender is Tank)
+            GUIForm.Paint -= OnPaint;
+            GUIForm.Paint += OnPaint;
+            if(Rect.IntersectsWith(tank.Rect) && (tank is PlayerTank || tank is CompTank && Properties.Settings.Default.AIUseBonus))
+            {
                 TankTook.Invoke(this, new EventArgs());
+
+                if(tank is PlayerTank)
+                {
+                    tank.Points += 500;
+                    _bonusTimer.Stop();
+                    _flickerTimer.Stop();
+                    InvokePlayerTook(tank);
+                    _pointsTimer.Start();
+                    GUIForm.Invalidate(Rect);
+                }
+                else if(tank is CompTank)
+                    InvokeCompTook();
+            }
         }
 
         private void OnBonusTimer(object sender, EventArgs e)
@@ -59,20 +92,31 @@ namespace BattleCity
             TimeUp.Invoke(this, new EventArgs());
         }
 
-        private void MoveToNewPosition()
+        private void OnPointsTimerTick(object sender, EventArgs e)
         {
-            Rect = new Rectangle(64 + GameRandom.RandNumber(0, 24) * 32 + 4, 64 + GameRandom.RandNumber(0, 24) * 32 + 4, 56, 56);
-            GUIForm.Invalidate(Rectangle.Inflate(Rect, 8, 8));
+            Unsubscribe();
         }
 
-        protected void InvokePlayerTook()
+        private bool _flickFlag;
+        private void OnFlickerTimerTick(object sender, EventArgs e)
         {
-            PlayerTook.Invoke(this, new EventArgs());
+            _flickFlag = !_flickFlag;
+            GUIForm.Invalidate(Rect);
+        }
+
+        private void MoveToNewPosition()
+        {
+            Rect = new Rectangle(64 + GameRandom.RandNumber(0, 24) * 32, 64 + GameRandom.RandNumber(0, 24) * 32, 64, 64);
+        }
+
+        protected void InvokePlayerTook(object tank)
+        {
+            PlayerTook?.Invoke(tank, new EventArgs());
         }
 
         protected void InvokeCompTook()
         {
-            CompTook.Invoke(this, new EventArgs());
+            CompTook?.Invoke(this, new EventArgs());
         }
     }
 }

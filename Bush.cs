@@ -18,7 +18,7 @@ namespace BattleCity
         {
             GUIForm.Paint -= OnPaint;
             GUIForm.Paint += OnPaint;
-            if(shell.Creator.Gun)
+            if(shell.Creator is PlayerTank && shell.Creator.Gun)
                 InvokeDestroyed();
         }
     }

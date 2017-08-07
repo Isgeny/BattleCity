@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using System.Collections.Generic;
 
 namespace BattleCity
@@ -7,7 +8,32 @@ namespace BattleCity
     {
         private Field _field;
         private List<Bonus> _bonuses;
+
         private Bonus _currentBonus;
+        private Bonus CurrentBonus
+        {
+            get { return _currentBonus; }
+            set
+            {
+                _currentBonus?.Unsubscribe();
+
+                foreach(var playerTank in _field.PlayersManager.Tanks)
+                    playerTank.CheckPosition -= _currentBonus?.GetCheckPositionListener();
+
+                foreach(var compTank in _field.CompsManager.Tanks)
+                    compTank.CheckPosition -= _currentBonus?.GetCheckPositionListener();
+
+                _currentBonus = value;
+
+                _currentBonus.Subscribe();
+
+                foreach(var playerTank in _field.PlayersManager.Tanks)
+                    playerTank.CheckPosition += _currentBonus?.GetCheckPositionListener();
+
+                foreach(var compTank in _field.CompsManager.Tanks)
+                    compTank.CheckPosition += _currentBonus?.GetCheckPositionListener();
+            }
+        }
 
         public event EventHandler PlayerTookBomb;
         public event EventHandler CompTookBomb;
@@ -27,71 +53,87 @@ namespace BattleCity
             _bonuses.Add(new Ship(guiForm));
             _bonuses.Add(new Gun(guiForm));
 
-            Bonus bonus = new Bomb(guiForm);
-            bonus.PlayerTook    += OnPlayerTookBomb;
-            bonus.CompTook      += OnCompTookBomb;
-            _bonuses.Add(bonus);
+            var bonusBomb = new Bomb(guiForm);
+            bonusBomb.PlayerTook    += OnPlayerTookBomb;
+            bonusBomb.CompTook      += OnCompTookBomb;
+            _bonuses.Add(bonusBomb);
 
-            bonus = new Watch(guiForm);
-            bonus.PlayerTook += OnPlayerTookWatch;
-            bonus.CompTook += OnCompTookWatch;
-            _bonuses.Add(bonus);
+            var bonusWatch = new Watch(guiForm);
+            bonusWatch.PlayerTook   += OnPlayerTookWatch;
+            bonusWatch.CompTook     += OnCompTookWatch;
+            _bonuses.Add(bonusWatch);
 
-            bonus = new Showel(guiForm);
-            bonus.PlayerTook += OnPlayerTookShowel;
-            bonus.CompTook += OnCompTookShowel;
-            _bonuses.Add(bonus);
+            var bonusShowel = new Showel(guiForm);
+            bonusShowel.PlayerTook  += OnPlayerTookShowel;
+            bonusShowel.CompTook    += OnCompTookShowel;
+            _bonuses.Add(bonusShowel);
 
-            foreach(Bonus b in _bonuses)
-                b.TankTook += OnTankTookBonus;
+            foreach(Bonus bonus in _bonuses)
+            {
+                bonus.TankTook  += OnTankTookBonusOrBonusTimeUp;
+                bonus.TimeUp    += OnTankTookBonusOrBonusTimeUp;
+            }
         }
 
         public override void Subscribe()
         {
-            _currentBonus.Subscribe();
-            _currentBonus.TimeUp            += OnBonusTimeUp;
-            foreach(Tank playerTank in _field.PlayersManager.Tanks)
-                playerTank.CheckPosition    += _currentBonus.GetCheckPositionListener();
-            foreach(Tank compTank in _field.CompsManager.Tanks)
-                compTank.CheckPosition      += _currentBonus.GetCheckPositionListener();
+            GUIForm.KeyDown += OnKeyDown;   //DEBUG
+
+            _field.CompsManager.BonusTankShoot += OnBonusTankShoot;
         }
 
         public override void Unsubscribe()
         {
-            _currentBonus.Unsubscribe();
-            _currentBonus.TimeUp            -= OnBonusTimeUp;
-            foreach(Tank playerTank in _field.PlayersManager.Tanks)
-                playerTank.CheckPosition    -= _currentBonus.GetCheckPositionListener();
-            foreach(Tank compTank in _field.CompsManager.Tanks)
-                compTank.CheckPosition      -= _currentBonus.GetCheckPositionListener();
+            GUIForm.KeyDown -= OnKeyDown;   //DEBUG
+
+            _field.CompsManager.BonusTankShoot -= OnBonusTankShoot;
         }
 
-        private void OnBonusTankShooted(object sender, EventArgs e)
+        private void GenerateRandomBonus()
         {
-            if(_currentBonus != null)
-                Unsubscribe();
+            CurrentBonus = _bonuses[GameRandom.RandNumber(0, _bonuses.Count - 1)];
+        }
+
+        //DEBUG
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.NumPad0)
+                CurrentBonus = _bonuses[0];
+            else if(e.KeyCode == Keys.NumPad1)
+                CurrentBonus = _bonuses[1];
+            else if(e.KeyCode == Keys.NumPad2)
+                CurrentBonus = _bonuses[2];
+            else if(e.KeyCode == Keys.NumPad3)
+                CurrentBonus = _bonuses[3];
+            else if(e.KeyCode == Keys.NumPad4)
+                CurrentBonus = _bonuses[4];
+            else if(e.KeyCode == Keys.NumPad5)
+                CurrentBonus = _bonuses[5];
+            else if(e.KeyCode == Keys.NumPad6)
+                CurrentBonus = _bonuses[6];
+            else if(e.KeyCode == Keys.NumPad7)
+                CurrentBonus = _bonuses[7];
+        }
+
+        private void OnBonusTankShoot(object sender, EventArgs e)
+        {
             GenerateRandomBonus();
-            Subscribe();
         }
 
-        public EventHandler GetBonusTankShootedListener()
+        private void OnTankTookBonusOrBonusTimeUp(object sender, EventArgs e)
         {
-            return OnBonusTankShooted;
-        }
+            foreach(var playerTank in _field.PlayersManager.Tanks)
+                playerTank.CheckPosition -= _currentBonus?.GetCheckPositionListener();
 
-        private void OnBonusTimeUp(object sender, EventArgs e)
-        {
-            Unsubscribe();
-        }
+            foreach(var compTank in _field.CompsManager.Tanks)
+                compTank.CheckPosition -= _currentBonus?.GetCheckPositionListener();
 
-        private void OnTankTookBonus(object sender, EventArgs e)
-        {
-            Unsubscribe();
+            _currentBonus = null;
         }
 
         private void OnPlayerTookBomb(object sender, EventArgs e)
         {
-            PlayerTookBomb?.Invoke(this, new EventArgs());
+            PlayerTookBomb?.Invoke(sender, new EventArgs());
         }
 
         private void OnCompTookBomb(object sender, EventArgs e)
@@ -117,12 +159,6 @@ namespace BattleCity
         private void OnCompTookShowel(object sender, EventArgs e)
         {
             CompTookShowel?.Invoke(this, new EventArgs());
-        }     
-
-        private void GenerateRandomBonus()
-        {
-            _currentBonus = _bonuses[GameRandom.RandNumber(0, _bonuses.Count - 1)];
-            //_currentBonus = _bonuses[7]; //DEBUG
         }
     }
 }

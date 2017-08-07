@@ -14,8 +14,7 @@ namespace BattleCity
 
         protected override void OnPaint(object sender, PaintEventArgs e)
         {
-            var clipRect = e.ClipRectangle;
-            if(Rect.IntersectsWith(clipRect))
+            if(Rect.IntersectsWith(e.ClipRectangle))
             {
                 var g = e.Graphics;
                 g.DrawImage(Properties.Resources.Tile_Brick, Rect.X + _cuttedRect.X, Rect.Y + _cuttedRect.Y, _cuttedRect, GraphicsUnit.Pixel);

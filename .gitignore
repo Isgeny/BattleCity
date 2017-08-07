@@ -8,7 +8,7 @@ Stages/
 *.csproj
 *.user
 *.sln
-ClassDiagram.cd
+*.cd
 *.resx
 .vs/
 /Font

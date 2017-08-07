@@ -55,9 +55,14 @@ namespace BattleCity
             FormsManager.SetGameOverForm();
         }
 
-        public void SetPlayers(int players)
+        public void StartNewGame(int players)
         {
-            _field.SetPlayers(players);            
+            _field.StartNewGame(players);            
+        }
+
+        public void StartNextStage()
+        {
+            _field.Stage++;
         }
     }
 }

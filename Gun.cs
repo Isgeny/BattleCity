@@ -6,11 +6,11 @@
         {
         }
 
-        protected override void OnCheckPosition(object sender, RectEventArgs e)
+        protected override void TankCollision(Tank tank)
         {
-            base.OnCheckPosition(sender, e);
-            if(Rect.IntersectsWith(e.Rect) && sender is Tank)
-                ((Tank)sender).Gun = true;
+            base.TankCollision(tank);
+            if(Rect.IntersectsWith(tank.Rect) && (tank is PlayerTank || tank is CompTank && Properties.Settings.Default.AIUseBonus))
+                tank.Gun = true;
         }
     }
 }

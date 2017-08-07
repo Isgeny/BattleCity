@@ -14,22 +14,21 @@ namespace BattleCity
         {
             _destroyed = false;
             _explosionTimer = new Timer();
-            _explosionTimer.Interval = 100;
+            _explosionTimer.Interval = 50;
             _explosionTimer.Tick += OnExplosionTimer;
             _explosionFrame = 0;
         }
 
         protected override void OnPaint(object sender, PaintEventArgs e)
         {
-            var clipRect = e.ClipRectangle;
-            if(Rect.IntersectsWith(clipRect))
+            if(Rect.IntersectsWith(e.ClipRectangle))
             {
                 var g = e.Graphics;
                 if(_explosionTimer.Enabled)
                     g.DrawImage(Properties.Resources.Tank_Death, new Rectangle(Rect.X - 32, Rect.Y - 32, 128, 128), new Rectangle(_explosionFrame, 0, 128, 128), GraphicsUnit.Pixel);
                 else
                 {
-                    int currentFrame = (!_destroyed) ? 0 : 64;
+                    int currentFrame = (_destroyed) ? 64 : 0;
                     g.DrawImage(Properties.Resources.Tile_HQ, Rect, new Rectangle(currentFrame, 0, Rect.Width, Rect.Height), GraphicsUnit.Pixel);
                 }
             }
@@ -37,9 +36,10 @@ namespace BattleCity
 
         private void OnExplosionTimer(object sender, EventArgs e)
         {
-            _explosionFrame = _explosionFrame + 128;
-            if(_explosionFrame % 1152 == 0)
+            _explosionFrame += 128;
+            if(_explosionFrame == 1152)
             {
+                _explosionFrame = 0;
                 _explosionTimer.Stop();
                 _explosionTimer.Tick -= OnExplosionTimer;
             }
@@ -49,18 +49,21 @@ namespace BattleCity
         protected override void ShellCollision(Shell shell)
         {
             base.ShellCollision(shell);
-            _destroyed = true;
-            _explosionTimer.Start();
+            if(!_destroyed)
+            {
+                _destroyed = true;
+                _explosionTimer.Start();
 
-            var hqDestroyedtimer = new Timer();
-            hqDestroyedtimer.Interval = 5000;
-            hqDestroyedtimer.Start();
-            hqDestroyedtimer.Tick += OnHQDestroyedTimer;
+                var hqDestroyedtimer = new Timer();
+                hqDestroyedtimer.Interval = 5000;
+                hqDestroyedtimer.Start();
+                hqDestroyedtimer.Tick += OnHQDestroyedTimer;
+            }
         }
 
         private void OnHQDestroyedTimer(object sender, EventArgs e)
         {
-            var hqDestroyedtimer = new Timer();
+            var hqDestroyedtimer = sender as Timer;
             hqDestroyedtimer.Stop();
             hqDestroyedtimer.Tick -= OnHQDestroyedTimer;
             InvokeDestroyed();

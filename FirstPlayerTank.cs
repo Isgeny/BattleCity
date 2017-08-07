@@ -1,118 +1,90 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
+﻿using System.Drawing;
 using System.Windows.Input;
+using System.Windows.Forms;
 
 namespace BattleCity
 {
     public class FirstPlayerTank : PlayerTank
     {
-        public FirstPlayerTank(GUIForm guiForm) : base(guiForm, new Rectangle())
-        {
-        }
-
-        public override void Subscribe()
-        {
-            base.Subscribe();
-            GUIForm.KeyDown += OnKeyDown;
-        }
-
-        public override void Unsubscribe()
-        {
-            GUIForm.Invalidate(new Rectangle(910, 585, 150, 41));
-            GUIForm.Invalidate(new Rectangle(910, 626, 32, 32));
-            GUIForm.Invalidate(new Rectangle(940, 626, 150, 41));
-            base.Unsubscribe();
-            GUIForm.KeyDown -= OnKeyDown;
-        }
-
         public override int Lives
         {
             get { return base.Lives; }
             set
             {
+                base.Lives = value;
                 GUIForm.Invalidate(new Rectangle(910, 585, 150, 41));
                 GUIForm.Invalidate(new Rectangle(910, 626, 32, 32));
                 GUIForm.Invalidate(new Rectangle(940, 626, 150, 41));
-                base.Lives = value;
             }
+        }
+
+        public FirstPlayerTank(GUIForm guiForm) : base(guiForm)
+        {
         }
 
         protected override void OnPaint(object sender, PaintEventArgs e)
         {
             base.OnPaint(sender, e);
-            if(Lives >= 0)
+            var g = e.Graphics;
+            g.DrawImageUnscaled(Properties.Resources.Player_Icon, 910, 626);
+            string name = "";
+            name += Properties.Settings.Default.P1Name[0];
+            name += Properties.Settings.Default.P1Name[1];
+            g.DrawString(name, MyFont.GetFont(22), Brushes.Black, 910, 585);
+            g.DrawString(Lives.ToString(), MyFont.GetFont(22), Brushes.Black, 940, 626);
+        }
+
+        protected override void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+                base.OnKeyDown(sender, e);
+
+            //DEBUG
+            if(e.KeyCode == Keys.F1)
             {
-                Graphics g = e.Graphics;
-                g.DrawImageUnscaled(Properties.Resources.Player_Icon, 910, 626);
-                string name = "";
-                name += Properties.Settings.Default.P1Name[0];
-                name += Properties.Settings.Default.P1Name[1];
-                g.DrawString(name, MyFont.GetFont(22), Brushes.Black, 910, 585);
-                g.DrawString(Lives.ToString(), MyFont.GetFont(22), Brushes.Black, 940, 626);
+                Stars++;
+            }
+            else if(e.KeyCode == Keys.F2)
+            {
+                Amphibian = !Amphibian;
+            }
+            else if(e.KeyCode == Keys.F3)
+            {
+                Gun = !Gun;
+            }
+            else if(e.KeyCode == Keys.F4)
+            {
+                HP--;
+            }
+            else if(e.KeyCode == Keys.F5)
+            {
+                Immortal = !Immortal;
             }
         }
 
-        protected override void OnMoveTimerTick(object sender, EventArgs e)
+        protected override bool UpPressed()
         {
-            if(!RespawnTimer.Enabled)
-            {
-                if(Keyboard.IsKeyDown(Key.Up))
-                {
-                    Dx = 0;
-                    Dy = -3;
-                    Direction = Direction.Up;
-                    IceTicks = 28;
-                }
-                else if(Keyboard.IsKeyDown(Key.Left))
-                {
-                    Dx = -3;
-                    Dy = 0;
-                    Direction = Direction.Left;
-                    IceTicks = 28;
-                }
-                else if(Keyboard.IsKeyDown(Key.Down))
-                {
-                    Dx = 0;
-                    Dy = 3;
-                    Direction = Direction.Down;
-                    IceTicks = 28;
-                }
-                else if(Keyboard.IsKeyDown(Key.Right))
-                {
-                    Dx = 3;
-                    Dy = 0;
-                    Direction = Direction.Right;
-                    IceTicks = 28;
-                }
-                else
-                {
-                    Dx = 0;
-                    Dy = 0;
-                }
-                base.OnMoveTimerTick(sender, e);
-            }
+            return Keyboard.IsKeyDown(Key.Up);
         }
 
-        private void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        protected override bool LeftPressed()
         {
-            if(e.KeyCode == Keys.Enter && Ammo > 0 && !ShootPressed && !ShotDelayTimer.Enabled && !RespawnTimer.Enabled)
-            {
-                Ammo--;
-                Shell shell = new Shell(GUIForm, this);
-                InvokeShoot(new ShellEventArgs(shell));
-                ShootPressed = true;
-                ShotDelayTimer.Start();
-            }
+            return Keyboard.IsKeyDown(Key.Left);
         }
 
-        public override void Respawn()
+        protected override bool DownPressed()
         {
-            if(Lives >= 0)
-            {
-                Rect = new Rectangle(320, 832, 64, 64);
-                base.Respawn();
-            }
+            return Keyboard.IsKeyDown(Key.Down);
+        }
+
+        protected override bool RightPressed()
+        {
+            return Keyboard.IsKeyDown(Key.Right);
+        }
+
+        protected override void MoveToStartPosition()
+        {
+            Rect = new Rectangle(320, 832, 64, 64);
         }
     }
 }
